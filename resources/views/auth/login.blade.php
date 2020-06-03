@@ -7,7 +7,7 @@
         <form action="{{ url('/login') }}" method="post" class="login100-form validate-form flex-sb flex-w">
 
             <span class="login100-form-title p-b-32">
-                SISCAI - SUNAT
+                SISDISGAS
             </span>
 
             {{ csrf_field() }}

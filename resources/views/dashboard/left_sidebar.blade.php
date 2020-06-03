@@ -17,7 +17,7 @@ $menu                  = generarMenu($tipousuario_id);
         <div class="col-md-3 left_col">
             <div class="left_col scroll-view">
                 <div class="navbar nav_title" style="border: 0;">
-                    <a href="dashboard" class="site_title"><i class="fa fa-home"></i> <span>SISCAI - SUNAT</span></a>
+                    <a href="dashboard" class="site_title"><i class="fa fa-home"></i> <span>SISDISGAS</span></a>
                 </div>
 
                 <div class="clearfix"></div>

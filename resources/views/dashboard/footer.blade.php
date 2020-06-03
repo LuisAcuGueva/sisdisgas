@@ -1,7 +1,7 @@
 <!-- footer content -->
     <footer style="position: absolute; right: 0px; bottom: 0px; width: 100%;">
         <div class="pull-right">
-            {{ date("Y") }} &copy; SISCAI - SUNAT - Acuña Guevara Luis Edgardo
+            {{ date("Y") }} &copy; SISDISGAS - Acuña Guevara Luis Edgardo
         </div>
     </footer>
 <!-- /footer content -->
