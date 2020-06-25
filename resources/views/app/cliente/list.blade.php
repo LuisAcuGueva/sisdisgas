@@ -20,7 +20,6 @@
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-sm btn-dark glyphicon glyphicon-pencil')) !!}</td>
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-dark glyphicon glyphicon-remove')) !!}</td>
 			<td>{{ $value->dni }}</td>
-			<td>{{ $value->registro }}</td>
 			<td>{{ $value->apellido_pat.' '.$value->apellido_mat.' '.$value->nombres  }}</td>
 		</tr>
 		<?php

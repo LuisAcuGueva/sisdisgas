@@ -47,29 +47,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('profile/save','ProfileController@save')->name('profile.save');
     Route::resource('profile', 'ProfileController', array('except' => array('show')));
 
-    Route::post('personal/buscar','PersonalController@buscar')->name('personal.buscar');
-    Route::get('personal/eliminar/{id}/{listarluego}','PersonalController@eliminar')->name('personal.eliminar');
-    Route::resource('personal', 'PersonalController', array('except' => array('show')));
-    Route::get('personal/personalautocompleting/{searching}', 'PersonalController@personalautocompleting')->name('personal.personalautocompleting');
-    Route::get('personal/verificadorautocompleting/{searching}', 'PersonalController@verificadorautocompleting')->name('personal.verificadorautocompleting');
-    Route::get('personal/supervisorautocompleting/{searching}', 'PersonalController@supervisorautocompleting')->name('personal.supervisorautocompleting');
-    
-    Route::post('contribuyente/buscar','ContribuyenteController@buscar')->name('contribuyente.buscar');
-    Route::get('contribuyente/eliminar/{id}/{listarluego}','ContribuyenteController@eliminar')->name('contribuyente.eliminar');
-    Route::resource('contribuyente', 'ContribuyenteController', array('except' => array('show')));
-    //Route::get('contribuyente/personalautocompleting/{searching}', 'PersonalController@personalautocompleting')->name('contribuyente.personalautocompleting');
+    Route::post('trabajador/buscar','TrabajadorController@buscar')->name('trabajador.buscar');
+    Route::get('trabajador/eliminar/{id}/{listarluego}','TrabajadorController@eliminar')->name('trabajador.eliminar');
+    Route::resource('trabajador', 'TrabajadorController', array('except' => array('show')));
+    Route::get('trabajador/trabajadorautocompleting/{searching}', 'TrabajadorController@trabajadorautocompleting')->name('trabajador.trabajadorautocompleting');
 
-    Route::post('esquela/buscar','EsquelaController@buscar')->name('esquela.buscar');
-    Route::get('esquela/eliminar/{id}/{listarluego}','EsquelaController@eliminar')->name('esquela.eliminar');
-    Route::resource('esquela', 'EsquelaController', array('except' => array('show')));
-
-    Route::post('carta/buscar','CartaController@buscar')->name('carta.buscar');
-    Route::get('carta/eliminar/{id}/{listarluego}','CartaController@eliminar')->name('carta.eliminar');
-    Route::resource('carta', 'CartaController', array('except' => array('show')));
-
-    Route::post('carga/buscar','CargaController@buscar')->name('carga.buscar');
-    Route::get('carga/eliminar/{id}/{listarluego}','CargaController@eliminar')->name('carga.eliminar');
-    Route::resource('carga', 'CargaController', array('except' => array('show')));
+    Route::post('cliente/buscar','ClienteController@buscar')->name('cliente.buscar');
+    Route::get('cliente/eliminar/{id}/{listarluego}','ClienteController@eliminar')->name('cliente.eliminar');
+    Route::resource('cliente', 'ClienteController', array('except' => array('show')));
+    Route::get('cliente/clienteautocompleting/{searching}', 'ClienteController@clienteautocompleting')->name('cliente.clienteautocompleting');
 
     Route::post('categoriaopcionmenu/buscar', 'CategoriaopcionmenuController@buscar')->name('categoriaopcionmenu.buscar');
     Route::get('categoriaopcionmenu/eliminar/{id}/{listarluego}', 'CategoriaopcionmenuController@eliminar')->name('categoriaopcionmenu.eliminar');

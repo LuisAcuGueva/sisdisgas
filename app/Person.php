@@ -13,7 +13,7 @@ class Person extends Model
     protected $table = 'person';
     protected $dates = ['deleted_at'];
 
-    public function scopelistar($query, $nombre, $dni, $registro)
+    public function scopelistar($query, $nombre, $dni)
     {   
         return $query->where(function($subquery) use($nombre)
 		            {
@@ -27,13 +27,7 @@ class Person extends Model
                             $subquery->orwhere('dni', '=', $dni);
 		            	}
                     })
-                    ->orWhere(function($subquery) use($registro)
-		            {
-		            	if (!is_null($registro)) {
-                            $subquery->orwhere('registro', '=', $registro);
-		            	}
-                    })
-                    ->orderBy('registro', 'ASC')->orderBy('apellido_pat', 'ASC')->orderBy('apellido_mat', 'ASC')->orderBy('nombres', 'ASC');
+                    ->orderBy('apellido_pat', 'ASC')->orderBy('apellido_mat', 'ASC')->orderBy('nombres', 'ASC');
     }
 
 }

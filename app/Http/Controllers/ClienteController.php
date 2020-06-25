@@ -16,18 +16,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class PersonalController extends Controller
+class ClienteController extends Controller
 {
-    protected $folderview      = 'app.personal';
-    protected $tituloAdmin     = 'Trabajadores';
-    protected $tituloRegistrar = 'Registrar Trabajador';
-    protected $tituloModificar = 'Modificar Trabajador';
-    protected $tituloEliminar  = 'Eliminar Trabajador';
-    protected $rutas           = array('create' => 'personal.create', 
-            'edit'   => 'personal.edit', 
-            'delete' => 'personal.eliminar',
-            'search' => 'personal.buscar',
-            'index'  => 'personal.index',
+    protected $folderview      = 'app.cliente';
+    protected $tituloAdmin     = 'Clientes';
+    protected $tituloRegistrar = 'Registrar Cliente';
+    protected $tituloModificar = 'Modificar Cliente';
+    protected $tituloEliminar  = 'Eliminar Cliente';
+    protected $rutas           = array('create' => 'cliente.create', 
+            'edit'   => 'cliente.edit', 
+            'delete' => 'cliente.eliminar',
+            'search' => 'cliente.buscar',
+            'index'  => 'cliente.index',
         );
 
     /**
@@ -49,7 +49,7 @@ class PersonalController extends Controller
     {
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
-        $entidad          = 'Personal';
+        $entidad          = 'Cliente';
         $nombre           = Libreria::getParam($request->input('nombre'));
         $dni              = Libreria::getParam($request->input('dni'));
         $registro         = Libreria::getParam($request->input('registro'));
@@ -58,9 +58,8 @@ class PersonalController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'EDIT', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ELIM', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'DNI', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Registro', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Nombre Completo', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DNI / RUC', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Nombre Completo / Razón Social', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -86,7 +85,7 @@ class PersonalController extends Controller
      */
     public function index()
     {
-        $entidad          = 'Personal';
+        $entidad          = 'Cliente';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $ruta             = $this->rutas;
@@ -101,13 +100,13 @@ class PersonalController extends Controller
     public function create(Request $request)
     {
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $entidad        = 'Personal'; 
-        $personal        = null;
-        $formData       = array('personal.store');
+        $entidad        = 'Cliente'; 
+        $cliente        = null;
+        $formData       = array('cliente.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
         $accion = 0;
-        return view($this->folderview.'.mant')->with(compact('accion' ,'personal', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact('accion' ,'cliente', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -131,13 +130,13 @@ class PersonalController extends Controller
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request){
-            $personal                = new Person();
-            $personal->dni           = $request->input('dni');
-            $personal->registro      = $request->input('registro');
-            $personal->nombres       = strtoupper($request->input('nombres'));
-            $personal->apellido_pat  = strtoupper($request->input('apellido_pat'));
-            $personal->apellido_mat  = strtoupper($request->input('apellido_mat'));
-            $personal->save();
+            $cliente                = new Person();
+            $cliente->dni           = $request->input('dni');
+            $cliente->registro      = $request->input('registro');
+            $cliente->nombres       = strtoupper($request->input('nombres'));
+            $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
+            $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
+            $cliente->save();
             
         });
         return is_null($error) ? "OK" : $error;
@@ -167,13 +166,13 @@ class PersonalController extends Controller
             return $existe;
         }
         $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $personal        = person::find($id);
-        $entidad        = 'Personal';
-        $formData       = array('personal.update', $id);
+        $cliente        = person::find($id);
+        $entidad        = 'Cliente';
+        $formData       = array('cliente.update', $id);
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
         $accion = 1;
-        return view($this->folderview.'.mant')->with(compact( 'accion' , 'personal', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact( 'accion' , 'cliente', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -201,13 +200,13 @@ class PersonalController extends Controller
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request, $id){
-            $personal                = Person::find($id);
-            $personal->dni           = $request->input('dni');
-            $personal->registro      = $request->input('registro');
-            $personal->nombres       = strtoupper($request->input('nombres'));
-            $personal->apellido_pat  = strtoupper($request->input('apellido_pat'));
-            $personal->apellido_mat  = strtoupper($request->input('apellido_mat'));
-            $personal->save();
+            $cliente                = Person::find($id);
+            $cliente->dni           = $request->input('dni');
+            $cliente->registro      = $request->input('registro');
+            $cliente->nombres       = strtoupper($request->input('nombres'));
+            $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
+            $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
+            $cliente->save();
             
         });
         return is_null($error) ? "OK" : $error;
@@ -226,8 +225,8 @@ class PersonalController extends Controller
             return $existe;
         }
         $error = DB::transaction(function() use($id){
-            $personal = Person::find($id);
-            $personal->delete();
+            $cliente = Person::find($id);
+            $cliente->delete();
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -249,15 +248,15 @@ class PersonalController extends Controller
             $listar = $listarLuego;
         }
         $modelo   = Person::find($id);
-        $entidad  = 'Personal';
-        $formData = array('route' => array('personal.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $entidad  = 'Cliente';
+        $formData = array('route' => array('cliente.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Eliminar';
         return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
     }
 
-    public function personalautocompleting($searching)
+    public function clienteautocompleting($searching)
     {
-        $entidad    = 'Personal';
+        $entidad    = 'Cliente';
         $mdlPerson = new Person();
         $resultado = Person::where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
         ->whereNull('person.deleted_at')
@@ -272,51 +271,6 @@ class PersonalController extends Controller
                             'id'    => $value->id,
                             'value' => $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat,
                             'registro'    => $value->registro,
-                        );
-        }
-        return json_encode($data);
-    }
-
-    
-    public function verificadorautocompleting($searching)
-    {
-        $entidad    = 'Personal';
-        $mdlPerson = new Person();
-        $resultado = Person::where(DB::raw('CONCAT(registro," ",apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
-        ->whereNull('person.deleted_at')
-        ->orderBy('registro', 'ASC')
-        ->orderBy('apellido_pat', 'ASC')
-        ->orderBy('apellido_mat', 'ASC')
-        ->orderBy('nombres', 'ASC');
-        $list      = $resultado->get();
-        $data = array();
-        foreach ($list as $key => $value) {
-            $data[] = array(
-                            'label' => $value->registro.' - '.$value->apellido_pat.' '.$value->apellido_mat.' '.$value->nombres,
-                            'id'    => $value->id,
-                            'value' => $value->registro.' - '.$value->apellido_pat.' '.$value->apellido_mat.' '.$value->nombres,
-                        );
-        }
-        return json_encode($data);
-    }
-
-    public function supervisorautocompleting($searching)
-    {
-        $entidad    = 'Personal';
-        $mdlPerson = new Person();
-        $resultado = Person::where(DB::raw('CONCAT(registro," ",apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
-        ->whereNull('person.deleted_at')
-        ->orderBy('registro', 'ASC')
-        ->orderBy('apellido_pat', 'ASC')
-        ->orderBy('apellido_mat', 'ASC')
-        ->orderBy('nombres', 'ASC');
-        $list      = $resultado->get();
-        $data = array();
-        foreach ($list as $key => $value) {
-            $data[] = array(
-                            'label' => $value->registro.' - '.$value->apellido_pat.' '.$value->apellido_mat.' '.$value->nombres,
-                            'id'    => $value->id,
-                            'value' => $value->registro.' - '.$value->apellido_pat.' '.$value->apellido_mat.' '.$value->nombres,
                         );
         }
         return json_encode($data);

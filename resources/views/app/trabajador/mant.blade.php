@@ -1,6 +1,18 @@
 <div id="divMensajeError{!! $entidad !!}"></div>
-{!! Form::model($personal, $formData) !!}
+{!! Form::model($trabajador, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
+<div class="form-group">
+	{!! Form::label('dni', 'DNI:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
+	<div class="col-lg-8 col-md-8 col-sm-8">
+		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI')) !!}
+	</div>
+</div>
+<div class="form-group">
+	{!! Form::label('nombres', 'Nombre:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
+	<div class="col-lg-8 col-md-8 col-sm-8">
+		{!! Form::text('nombres', null, array('class' => 'form-control input-xs', 'id' => 'nombres', 'placeholder' => 'Ingrese nombres')) !!}
+	</div>
+</div>
 <div class="form-group">
 	{!! Form::label('apellido_pat', 'Ap. Paterno:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 	<div class="col-lg-8 col-md-8 col-sm-8">
@@ -11,24 +23,6 @@
 	{!! Form::label('apellido_mat', 'Ap. Materno:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 	<div class="col-lg-8 col-md-8 col-sm-8">
 		{!! Form::text('apellido_mat', null, array('class' => 'form-control input-xs', 'id' => 'apellido_mat', 'placeholder' => 'Ingrese apellido materno')) !!}
-	</div>
-</div>
-<div class="form-group">
-	{!! Form::label('nombres', 'Nombres:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
-	<div class="col-lg-8 col-md-8 col-sm-8">
-		{!! Form::text('nombres', null, array('class' => 'form-control input-xs', 'id' => 'nombres', 'placeholder' => 'Ingrese nombres')) !!}
-	</div>
-</div>
-<div class="form-group">
-	{!! Form::label('dni', 'DNI:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
-	<div class="col-lg-8 col-md-8 col-sm-8">
-		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI')) !!}
-	</div>
-</div>
-<div class="form-group">
-	{!! Form::label('registro', 'Registro:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
-	<div class="col-lg-8 col-md-8 col-sm-8">
-		{!! Form::text('registro', null, array('class' => 'form-control input-xs', 'id' => 'registro', 'placeholder' => 'Ingrese num. registro')) !!}
 	</div>
 </div>
 <div class="form-group">
@@ -50,7 +44,7 @@
 			},
 			queryTokenizer: Bloodhound.tokenizers.whitespace,
 			remote: {
-				url: 'person/employeesautocompleting/%QUERY',
+				url: 'trabajador/trabajadorautocompleting/%QUERY',
 				filter: function (personas) {
 					return $.map(personas, function (movie) {
 						return {

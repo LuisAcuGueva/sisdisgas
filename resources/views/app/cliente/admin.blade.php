@@ -15,10 +15,6 @@
 					{!! Form::text('nombre', '', array('class' => 'form-control input-sm', 'id' => 'nombre')) !!}
 				</div>
 				<div class="form-group">
-					{!! Form::label('registro', 'Registro:') !!}
-					{!! Form::text('registro', '', array('class' => 'form-control input-sm', 'id' => 'registro')) !!}
-				</div>
-				<div class="form-group">
 					{!! Form::label('filas', 'Filas a mostrar:')!!}
 					{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-sm', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 				</div>
@@ -39,12 +35,6 @@
 		buscar('{{ $entidad }}');
 		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
 		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="nombre"]').keyup(function (e) {
-			var key = window.event ? e.keyCode : e.which;
-			if (key == '13') {
-				buscar('{{ $entidad }}');
-			}
-		});
-		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="registro"]').keyup(function (e) {
 			var key = window.event ? e.keyCode : e.which;
 			if (key == '13') {
 				buscar('{{ $entidad }}');
