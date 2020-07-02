@@ -1,11 +1,37 @@
+<?php
+$dni = null;
+$ruc = null;
+if(!is_null($cliente)){
+	if(!is_null($cliente->dni)){
+		$dni = $cliente->dni;
+	}else if(!is_null($cliente->ruc)){
+		$ruc = $cliente->ruc;
+	}
+}
+?>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($cliente, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 <div class="form-group">
 	{!! Form::label('dni', 'DNI:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
-	<div class="col-lg-8 col-md-8 col-sm-8">
-		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
-	</div>
+	@if(is_null($cliente))
+		<div class="col-lg-8 col-md-8 col-sm-8">
+			{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
+			{!! Form::hidden('cant', null, array('id' => 'cant')) !!}
+		</div>
+	@else
+		@if(!is_null($cliente->dni))
+			<div class="col-lg-8 col-md-8 col-sm-8">
+				{!! Form::text('dni', $dni, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
+				{!! Form::hidden('cant', null, array('id' => 'cant')) !!}
+			</div>
+		@elseif(!is_null($cliente->ruc))
+			<div class="col-lg-8 col-md-8 col-sm-8">
+				{!! Form::text('dni', $ruc, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
+				{!! Form::hidden('cant', null, array('id' => 'cant')) !!}
+			</div>
+		@endif
+	@endif
 </div>
 <div class="form-group dni">
 	{!! Form::label('nombres', 'Nombre:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
@@ -42,6 +68,16 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 	$(document).ready(function() {
+		$(".ruc").css("display","none");
+		var cant = $("#dni").val();
+		if(cant.length == 8){
+			$(".dni").css("display","");
+			$(".ruc").css("display","none");
+
+		}else if(cant.length == 11){
+			$(".ruc").css("display","");
+			$(".dni").css("display","none");
+		}
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
 		configurarAnchoModal('400');
@@ -74,16 +110,15 @@
 			//hacer que aparezcan los inputs seguna la cantidad de largo del string 8 dni 11 ruc
 			var cant = $("#dni").val();
 			mostrarinputs(cant.length);
+			$("#cant").val(cant.length);
 		}); 
 
 		function mostrarinputs(cant){
 			if(cant == 8){
-				console.log("DNI");
 				$(".dni").css("display","");
 				$(".ruc").css("display","none");
 
 			}else if(cant == 11){
-				console.log("RUC");
 				$(".ruc").css("display","");
 				$(".dni").css("display","none");
 			}

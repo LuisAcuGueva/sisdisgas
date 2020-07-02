@@ -53,13 +53,13 @@ class ClienteController extends Controller
         $nombre           = Libreria::getParam($request->input('nombre'));
         $dni              = Libreria::getParam($request->input('dni'));
         $registro         = Libreria::getParam($request->input('registro'));
-        $resultado        = Person::listar($nombre,$dni,$registro);
+        $resultado        = Person::listar($nombre,$dni,'C');
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'EDIT', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ELIM', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DNI / RUC', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Nombre Completo / Razón Social', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'NOMBRE COMPLETO / RAZÓN SOCIAL', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -118,26 +118,38 @@ class ClienteController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $documento = $request->input('dni');
-        $reglas = array(
-            'dni'       => 'required|max:8|unique:person,dni,NULL,id,deleted_at,NULL',
-            'nombres'    => 'required|max:100',
-            'apellido_pat'    => 'required|max:100',
-            'apellido_mat'    => 'required|max:100',
-            );
+        $cant = $request->input('cant');
+        if($cant == 8){
+            $reglas = array(
+                'dni'       => 'required|max:11',
+                'nombres'    => 'required|max:100',
+                'apellido_pat'    => 'required|max:100',
+                'apellido_mat'    => 'required|max:100',
+                );
+        }else if($cant == 11){
+            $reglas = array(
+                'dni'       => 'required|max:11',
+                'razon_social'    => 'required|max:200',
+                );
+        }
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request){
             $cliente                = new Person();
-            $cliente->dni           = $request->input('dni');
-            $cliente->registro      = $request->input('registro');
-            $cliente->nombres       = strtoupper($request->input('nombres'));
-            $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
-            $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
+            $cant = $request->input('cant');
+            if($cant == 8){
+                $cliente->dni           = $request->input('dni');
+                $cliente->nombres       = strtoupper($request->input('nombres'));
+                $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
+                $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
+            }else{
+                $cliente->ruc           = $request->input('dni');
+                $cliente->razon_social  = strtoupper($request->input('razon_social'));
+            }
+            $cliente->tipo_persona  = "C";
             $cliente->save();
-            
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -189,25 +201,38 @@ class ClienteController extends Controller
             return $existe;
         }
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $reglas = array(
-            'dni'       => 'required|max:8',
-            'nombres'    => 'required|max:100',
-            'apellido_pat'    => 'required|max:100',
-            'apellido_mat'    => 'required|max:100',
-            );
+        $cant = $request->input('dni').strlen();
+        if($cant == 8){
+            $reglas = array(
+                'dni'       => 'required|max:11',
+                'nombres'    => 'required|max:100',
+                'apellido_pat'    => 'required|max:100',
+                'apellido_mat'    => 'required|max:100',
+                );
+        }else if($cant == 11){
+            $reglas = array(
+                'dni'       => 'required|max:11',
+                'razon_social'    => 'required|max:200',
+                );
+        }
         $validacion = Validator::make($request->all(),$reglas);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request, $id){
             $cliente                = Person::find($id);
-            $cliente->dni           = $request->input('dni');
-            $cliente->registro      = $request->input('registro');
-            $cliente->nombres       = strtoupper($request->input('nombres'));
-            $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
-            $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
+            $cant = $request->input('dni').strlen();
+            if($cant == 8){
+                $cliente->dni           = $request->input('dni');
+                $cliente->nombres       = strtoupper($request->input('nombres'));
+                $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
+                $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
+            }else{
+                $cliente->ruc           = $request->input('dni');
+                $cliente->razon_social  = strtoupper($request->input('razon_social'));
+            }
+            $cliente->tipo_persona  = "C";
             $cliente->save();
-            
         });
         return is_null($error) ? "OK" : $error;
     }

@@ -47,6 +47,35 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('profile/save','ProfileController@save')->name('profile.save');
     Route::resource('profile', 'ProfileController', array('except' => array('show')));
 
+    Route::get('venta/clienteautocompletar/{searching}', 'VentaController@clienteautocompletar')->name('venta.clienteautocompletar');
+    Route::get('venta/servicioautocompletar/{searching}', 'VentaController@servicioautocompletar')->name('venta.servicioautocompletar');
+    Route::get('venta/productoautocompletar/{searching}', 'VentaController@productoautocompletar')->name('venta.productoautocompletar');
+    Route::post('venta/guardarventa', 'VentaController@guardarventa')->name('venta.guardarventa');
+    Route::post('venta/guardardetalle', 'VentaController@guardardetalle')->name('venta.guardardetalle');
+    Route::post('venta/serieventa', 'VentaController@serieventa')->name('venta.serieventa');
+    Route::post('venta/permisoRegistrar', 'VentaController@permisoRegistrar')->name('venta.permisoRegistrar');
+    Route::resource('venta', 'VentaController', array('except' => array('show')));
+
+    Route::get('caja/pdfDetalleCierre', 'CajaController@pdfDetalleCierre')->name('caja.pdfDetalleCierre');
+    Route::get('caja/clienteautocompletar/{searching}', 'CajaController@clienteautocompletar')->name('caja.clienteautocompletar');
+    Route::get('caja/proveedorautocompletar/{searching}', 'CajaController@proveedorautocompletar')->name('caja.proveedorautocompletar');
+    Route::get('caja/empleadoautocompletar/{searching}', 'CajaController@empleadoautocompletar')->name('caja.empleadoautocompletar');
+    Route::get('caja/generarConcepto','CajaController@generarConcepto')->name('caja.generarConcepto');
+    Route::post('caja/buscar','CajaController@buscar')->name('caja.buscar');
+    Route::get('caja/eliminar/{id}/{listarluego}','CajaController@eliminar')->name('caja.eliminar');
+    Route::get('caja/apertura', 'CajaController@apertura')->name('caja.apertura');
+    Route::get('caja/cierre', 'CajaController@cierre')->name('caja.cierre');
+    Route::get('caja/persona', 'CajaController@persona')->name('caja.persona');
+    Route::post('caja/guardarpersona', 'CajaController@guardarpersona')->name('caja.guardarpersona');
+    Route::get('caja/repetido/{id}/{listarluego}','CajaController@repetido')->name('caja.repetido');
+    Route::post('caja/guardarrepetido','CajaController@guardarrepetido')->name('caja.guardarrepetido');
+    Route::get('caja/aperturaycierre', 'CajaController@aperturaycierre')->name('caja.aperturaycierre');
+    Route::resource('caja', 'CajaController', array('except' => array('show')));
+
+    Route::post('producto/buscar','ProductoController@buscar')->name('producto.buscar');
+    Route::get('producto/eliminar/{id}/{listarluego}','ProductoController@eliminar')->name('producto.eliminar');
+    Route::resource('producto', 'ProductoController', array('except' => array('show')));
+
     Route::post('trabajador/buscar','TrabajadorController@buscar')->name('trabajador.buscar');
     Route::get('trabajador/eliminar/{id}/{listarluego}','TrabajadorController@eliminar')->name('trabajador.eliminar');
     Route::resource('trabajador', 'TrabajadorController', array('except' => array('show')));
@@ -56,6 +85,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('cliente/eliminar/{id}/{listarluego}','ClienteController@eliminar')->name('cliente.eliminar');
     Route::resource('cliente', 'ClienteController', array('except' => array('show')));
     Route::get('cliente/clienteautocompleting/{searching}', 'ClienteController@clienteautocompleting')->name('cliente.clienteautocompleting');
+
+    Route::post('concepto/buscar','ConceptoController@buscar')->name('concepto.buscar');
+    Route::get('concepto/eliminar/{id}/{listarluego}','ConceptoController@eliminar')->name('concepto.eliminar');
+    Route::resource('concepto', 'ConceptoController', array('except' => array('show')));
+
+    Route::post('sucursal/buscar','SucursalController@buscar')->name('sucursal.buscar');
+    Route::get('sucursal/eliminar/{id}/{listarluego}','SucursalController@eliminar')->name('sucursal.eliminar');
+    Route::resource('sucursal', 'SucursalController', array('except' => array('show')));
 
     Route::post('categoriaopcionmenu/buscar', 'CategoriaopcionmenuController@buscar')->name('categoriaopcionmenu.buscar');
     Route::get('categoriaopcionmenu/eliminar/{id}/{listarluego}', 'CategoriaopcionmenuController@eliminar')->name('categoriaopcionmenu.eliminar');

@@ -52,13 +52,13 @@ class TrabajadorController extends Controller
         $entidad          = 'Trabajador';
         $nombre           = Libreria::getParam($request->input('nombre'));
         $dni              = Libreria::getParam($request->input('dni'));
-        $resultado        = Person::listar($nombre,$dni);
+        $resultado        = Person::listar($nombre,$dni,'T');
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'EDIT', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ELIM', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DNI', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Nombre Completo', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'NOMBRE COMPLETO', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -134,6 +134,7 @@ class TrabajadorController extends Controller
             $trabajador->nombres       = strtoupper($request->input('nombres'));
             $trabajador->apellido_pat  = strtoupper($request->input('apellido_pat'));
             $trabajador->apellido_mat  = strtoupper($request->input('apellido_mat'));
+            $cliente->tipo_persona  = "T";
             $trabajador->save();
             
         });
@@ -203,6 +204,7 @@ class TrabajadorController extends Controller
             $trabajador->nombres       = strtoupper($request->input('nombres'));
             $trabajador->apellido_pat  = strtoupper($request->input('apellido_pat'));
             $trabajador->apellido_mat  = strtoupper($request->input('apellido_mat'));
+            $cliente->tipo_persona  = "T";
             $trabajador->save();
             
         });

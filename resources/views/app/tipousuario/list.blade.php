@@ -17,8 +17,8 @@
 		?>
 		@foreach ($lista as $key => $value)
 		<tr>
-			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-sm btn-dark glyphicon glyphicon-pencil')) !!}</td>
-			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-dark glyphicon glyphicon-remove')) !!}</td>
+			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-sm btn-warning glyphicon glyphicon-pencil')) !!}</td>
+			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
 			<td>{{ $value->name }}</td>
 			<td align="center">{!! Form::button('<div class="glyphicon glyphicon-eye-open"></div> Acceso', array('onclick' => 'modal(\''.URL::route($ruta["permisos"], array('SI', $value->id)).'\', \'Permisos: '.$value->name.'\', this);', 'class' => 'btn btn-default btn-xs')) !!}</td>
 			<td align="center">{!! Form::button('<div class="glyphicon glyphicon-list"></div> Operaciones', array('onclick' => 'modal(\''.URL::route($ruta["operaciones"], array('SI', $value->id)).'\', \'Operaciones: '.$value->name.'\', this);', 'class' => 'btn btn-default btn-xs')) !!}</td>

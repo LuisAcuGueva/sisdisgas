@@ -31,7 +31,7 @@ class Libreria
 		$cadenaPagina  = "";
 		$puntosDelante = "";
 		$puntosDetras  = "";
-		$cadenaPagina .= "<ul class=\"pagination pagination-sm\" style='margin: -10px 0px 10px 0px;' >";
+		$cadenaPagina .= "<ul class=\"pagination pagination-sm\" style='margin: 0px 0px 10px 0px;' >";
 		$cadenaPagina .= "<li class=\"active\"><a href=\"#\">TOTAL DE REGISTROS : " . $cantidadTotal . "</a></li>";
 
 		for ($i=1; $i <= $div ; $i++) { 

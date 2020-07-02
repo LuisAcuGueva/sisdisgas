@@ -9,7 +9,7 @@
 
     <link rel="shortcut icon" href="images/favicon.ico">
 
-    <title>SISCAI - SUNAT</title>
+    <title>SISDISGAS</title>
     
     {!! Html::style('iniciosesion/bootstrap.min.css') !!}
     {!! Html::style('fonts/font-awesome-4.7.0/css/font-awesome.min.css') !!}

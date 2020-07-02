@@ -7,7 +7,7 @@
 	<thead>
 		<tr class="success" style="height: 35px;">
 			@foreach($cabecera as $key => $value)
-				<th @if((int)$value['numero'] > 1) colspan="{{ $value['numero'] }}" @endif>{!! $value['valor'] !!}</th>
+				<th @if((int)$value["numero"] > 1) colspan="{{ $value['numero'] }}" @endif>{!! $value['valor'] !!}</th>
 			@endforeach
 		</tr>
 	</thead>
@@ -17,20 +17,14 @@
 		?>
 		@foreach ($lista as $key => $value)
 		<tr>
-			<?php 
-				$posicion = '';
-				if ($value->position == 'V') {
-					$posicion = 'Vertical';
-				}elseif ($value->position == 'H') {
-					$posicion = 'Horizontal';
-				}
-			?>
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-sm btn-warning glyphicon glyphicon-pencil')) !!}</td>
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
-			<td>{{ $value->name }}</td>
-			<td>{{ $value->order }}</td>
-			<td>{{ $value->Fathercategory->name or '-' }}</td>
-			<td>{{ $posicion }}</td>
+			<td>{{ $value->concepto }}</td>
+			@if($value->tipo == 0)
+				<td>INGRESO</td>
+			@else
+				<td>EGRESO</td>
+			@endif
 		</tr>
 		<?php
 		$contador = $contador + 1;
@@ -39,4 +33,5 @@
 	</tbody>
 </table>
 </div>
+
 @endif
