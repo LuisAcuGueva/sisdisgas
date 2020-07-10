@@ -16,6 +16,7 @@
 		$contador = $inicio + 1;
 		?>
 		@foreach ($lista as $key => $value)
+		@if($value->id != 1)
 		<tr>
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-sm btn-warning glyphicon glyphicon-pencil')) !!}</td>
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
@@ -30,6 +31,7 @@
 		<?php
 		$contador = $contador + 1;
 		?>
+		@endif
 		@endforeach
 	</tbody>
 </table>

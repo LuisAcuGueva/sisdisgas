@@ -134,7 +134,7 @@ class TrabajadorController extends Controller
             $trabajador->nombres       = strtoupper($request->input('nombres'));
             $trabajador->apellido_pat  = strtoupper($request->input('apellido_pat'));
             $trabajador->apellido_mat  = strtoupper($request->input('apellido_mat'));
-            $cliente->tipo_persona  = "T";
+            $trabajador->tipo_persona  = "T";
             $trabajador->save();
             
         });
@@ -204,7 +204,7 @@ class TrabajadorController extends Controller
             $trabajador->nombres       = strtoupper($request->input('nombres'));
             $trabajador->apellido_pat  = strtoupper($request->input('apellido_pat'));
             $trabajador->apellido_mat  = strtoupper($request->input('apellido_mat'));
-            $cliente->tipo_persona  = "T";
+            $trabajador->tipo_persona  = "T";
             $trabajador->save();
             
         });
@@ -257,6 +257,7 @@ class TrabajadorController extends Controller
     {
         $entidad    = 'Trabajador';
         $resultado = Person::where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
+        ->where('tipo_persona','T')
         ->whereNull('person.deleted_at')
         ->orderBy('apellido_pat', 'ASC')
         ->orderBy('apellido_mat', 'ASC')

@@ -22,6 +22,7 @@
 {!! Html::script('js/custom.min.js') !!}
 <!-- Funciones Scripts -->
 {!! Html::script('js/funciones.js') !!}
+{!! Html::script('js/sweetalert2.all.min.js') !!}
 
 
 {!! Html::script('js/jquery.core.js') !!}

@@ -77,7 +77,7 @@ if (!is_null($usuario)) {
 			},
 			queryTokenizer: Bloodhound.tokenizers.whitespace,
 			remote: {
-				url: 'personal/personalautocompleting/%QUERY',
+				url: 'trabajador/trabajadorautocompleting/%QUERY',
 				filter: function (personas) {
 					return $.map(personas, function (movie) {
 						return {

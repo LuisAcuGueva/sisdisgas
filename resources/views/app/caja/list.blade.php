@@ -19,6 +19,8 @@ $container = "'container'";
 		
 	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
 
+	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Iniciar Turno de Repartidor', array('class' => 'btn btn-primary waves-effect waves-light m-l-10 btn-sm btnApertura', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["turnoRepartidor"], array('listar'=>'SI')).'\', \''.$tituloTurnoRepartidor.'\', this);')) !!}
+
 	{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-sm btnNuevo', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
 
 	{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Registrar Pedido', array('class' => 'btn btn-dark waves-effect waves-light m-l-10 btn-sm btnNuevo', 'disabled', 'onclick' => 'cargarRutaMenu("venta", "container", 16)')) !!}
@@ -30,6 +32,8 @@ $container = "'container'";
 @else
 
 	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
+
+	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Iniciar Turno de Repartidor', array('class' => 'btn btn-primary waves-effect waves-light m-l-10 btn-sm btnApertura' , 'onclick' => 'modalCaja (\''.URL::route($ruta["turnoRepartidor"], array('listar'=>'SI')).'\', \''.$tituloTurnoRepartidor.'\', this);')) !!}
 
 	{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-sm btnNuevo', 'activo' => 'si' , 'onclick' => 'modalCaja (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
 
@@ -83,6 +87,8 @@ $container = "'container'";
 				@if($concepto->id == 1)
 					-
 				@elseif ($concepto->id == 2)
+					-
+				@elseif ($concepto->id == 12)
 					-
 				@else
 					{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar' ,'activo' => 'si')) !!}

@@ -44,7 +44,7 @@ class ProductoController extends Controller
         $cabecera[]       = array('valor' => 'ELIM', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Descripcion', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Precio', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Frecuente', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'Activo', 'numero' => '1');
         $cabecera[]       = array('valor' => 'Precio Editable', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;

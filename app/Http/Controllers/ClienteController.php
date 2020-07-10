@@ -118,7 +118,9 @@ class ClienteController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $cant = $request->input('cant');
+        $cant = $request->input('cantc');
+        $reglas = array(
+            );
         if($cant == 8){
             $reglas = array(
                 'dni'       => 'required|max:11',
@@ -138,13 +140,19 @@ class ClienteController extends Controller
         }
         $error = DB::transaction(function() use($request){
             $cliente                = new Person();
-            $cant = $request->input('cant');
+            $cant = $request->input('cantc');
             if($cant == 8){
                 $cliente->dni           = $request->input('dni');
                 $cliente->nombres       = strtoupper($request->input('nombres'));
                 $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
                 $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
+                $cliente->ruc           = null;
+                $cliente->razon_social  = null;
             }else{
+                $cliente->dni           = null;
+                $cliente->nombres       = null;
+                $cliente->apellido_pat  = null;
+                $cliente->apellido_mat  = null;
                 $cliente->ruc           = $request->input('dni');
                 $cliente->razon_social  = strtoupper($request->input('razon_social'));
             }
@@ -201,7 +209,7 @@ class ClienteController extends Controller
             return $existe;
         }
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $cant = $request->input('dni').strlen();
+        $cant = $request->input('cantc');
         if($cant == 8){
             $reglas = array(
                 'dni'       => 'required|max:11',
@@ -221,13 +229,19 @@ class ClienteController extends Controller
         }
         $error = DB::transaction(function() use($request, $id){
             $cliente                = Person::find($id);
-            $cant = $request->input('dni').strlen();
+            $cant = $request->input('cantc');
             if($cant == 8){
                 $cliente->dni           = $request->input('dni');
                 $cliente->nombres       = strtoupper($request->input('nombres'));
                 $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
                 $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
+                $cliente->ruc           = null;
+                $cliente->razon_social  = null;
             }else{
+                $cliente->dni           = null;
+                $cliente->nombres       = null;
+                $cliente->apellido_pat  = null;
+                $cliente->apellido_mat  = null;
                 $cliente->ruc           = $request->input('dni');
                 $cliente->razon_social  = strtoupper($request->input('razon_social'));
             }
@@ -284,6 +298,7 @@ class ClienteController extends Controller
         $entidad    = 'Cliente';
         $mdlPerson = new Person();
         $resultado = Person::where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
+        ->where('tipo_persona','C')
         ->whereNull('person.deleted_at')
         ->orderBy('apellido_pat', 'ASC')
         ->orderBy('apellido_mat', 'ASC')

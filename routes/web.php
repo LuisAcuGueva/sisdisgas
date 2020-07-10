@@ -64,11 +64,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('caja/buscar','CajaController@buscar')->name('caja.buscar');
     Route::get('caja/eliminar/{id}/{listarluego}','CajaController@eliminar')->name('caja.eliminar');
     Route::get('caja/apertura', 'CajaController@apertura')->name('caja.apertura');
+    Route::get('caja/turnoRepartidor', 'CajaController@turnoRepartidor')->name('caja.turnoRepartidor');
     Route::get('caja/cierre', 'CajaController@cierre')->name('caja.cierre');
     Route::get('caja/persona', 'CajaController@persona')->name('caja.persona');
     Route::post('caja/guardarpersona', 'CajaController@guardarpersona')->name('caja.guardarpersona');
-    Route::get('caja/repetido/{id}/{listarluego}','CajaController@repetido')->name('caja.repetido');
-    Route::post('caja/guardarrepetido','CajaController@guardarrepetido')->name('caja.guardarrepetido');
+    //Route::get('caja/repetido/{id}/{listarluego}','CajaController@repetido')->name('caja.repetido');
+    //Route::post('caja/guardarrepetido','CajaController@guardarrepetido')->name('caja.guardarrepetido');
     Route::get('caja/aperturaycierre', 'CajaController@aperturaycierre')->name('caja.aperturaycierre');
     Route::resource('caja', 'CajaController', array('except' => array('show')));
 

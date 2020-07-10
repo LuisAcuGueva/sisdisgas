@@ -4,17 +4,13 @@
 		{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 		{!! Form::hidden('sucursal',null,array('id'=>'sucursal')) !!}
 		{!! Form::hidden('tipopago',null,array('id'=>'tipopago')) !!}
-		{!! Form::hidden('persona_id', $persona_id,array('id'=>'persona_id')) !!}
+		{!! Form::hidden('total',null,array('id'=>'total')) !!}
 	</div>
-
-	@if($turnos_cerrados == "NO" && $sucursal_id == 1)
-	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">EXISTEN REPARTIDORES EN TURNO, POR FAVOR CIERRE TODOS LOS TURNOS DE REPARTIDORES</h4>
-	@endif
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('fecha', 'Fecha:')!!}
 		</div>
-		<div class="col-lg-6 col-md-6 col-sm-6">
+		<div class="col-lg-4 col-md-4 col-sm-4">
 			{!! Form::text('fecha', '', array('class' => 'form-control input-xs', 'id' => 'fecha', 'readOnly')) !!}
 		</div>
 	</div>
@@ -22,11 +18,11 @@
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('hora', 'Hora:')!!}
 		</div>
-		<div class="col-lg-6 col-md-6 col-sm-6">
+		<div class="col-lg-4 col-md-4 col-sm-4">
 			{!! Form::text('hora', '', array('class' => 'form-control input-xs', 'id' => 'hora', 'readOnly')) !!}
 		</div>
 	</div>
-	<div class="form-group" style="display:none;">		
+	<div class="form-group" style="display:none;">	
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('num_caja', 'Nro:')!!}
 		</div>
@@ -43,12 +39,38 @@
 			{!! Form::hidden('concepto_id',null,array('id'=>'concepto_id')) !!}
 		</div>
 	</div>
+	<!--div class="form-group">
+		{!! Form::label('nombrepersona', 'Trabajador:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
+		{!! Form::hidden('persona_id', null, array('id' => 'persona_id')) !!}
+		<div class="col-lg-8 col-md-8 col-sm-8">
+			{!! Form::text('nombrepersona', null, array('class' => 'form-control input-xs', 'id' => 'nombrepersona', 'placeholder' => 'Seleccione persona')) !!}
+		</div>
+	</div-->
+	@if(empty($trabajadores_sinturno))
+	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">TODOS LOS REPARTIDORES EN TURNO</h4>
+	@else
+	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center;">SELECCIONE REPARTIDOR</h4>
+	<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
+		@foreach($trabajadores_sinturno  as $key => $value)
+			<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 100px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
+				<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
+				<label style="font-size: 11px;  color: #2a3f54;">{{ $value->razon_social ? $value->razon_social : $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat}}</label>
+			</div>
+		@endforeach
+		{!! Form::hidden('persona_id',null,array('id'=>'persona_id')) !!}
+		{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
+	</div>
+	@endif
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
-			{!! Form::label('total', 'Total:')!!}
+			{!! Form::label('monto', 'Monto:')!!}<div class="" style="display: inline-block;color: red;">*</div>
 		</div>
-		<div class="col-lg-6 col-md-6 col-sm-6">
-			{!! Form::text('total', '', array('class' => 'form-control input-xs', 'id' => 'total', 'readOnly')) !!}
+		<div class="col-lg-4 col-md-4 col-sm-4">
+			@if($cierre_ultimo == null)
+				{!! Form::text('monto', '' , array('class' => 'form-control input-xs', 'id' => 'monto')) !!}
+			@else
+				{!! Form::text('monto', $cierre_ultimo->total , array('class' => 'form-control input-xs', 'id' => 'monto')) !!}
+			@endif
 		</div>
 	</div>
 	<div class="form-group">
@@ -61,20 +83,19 @@
 	</div>
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		@if($turnos_cerrados == "NO")
+			@if(empty($trabajadores_sinturno))
 			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'disabled' => 'true', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
-		@else
-			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar','onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
-		@endif
+			@else
+			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+			@endif
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 		</div>
 	</div>
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	configurarAnchoModal('400');
+	configurarAnchoModal('600');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
-	
 	//SUCURSAL
 	var sucursal = $('#sucursal_id').val();
 	$('#sucursal').val(sucursal);
@@ -96,8 +117,8 @@ $(document).ready(function() {
 	$('#fecha').val(fecha);
 
 	//CONCEPTO
-	$('#concepto').val('CIERRE DE CAJA');
-	$('#concepto_id').val(2);
+	$('#concepto').val('VUELTO PARA TURNO DEL REPARTIDOR');
+	$('#concepto_id').val(12);
 
 	//NRO MOVIMIENTO
 	$('#num_caja').val({{$num_caja}});
@@ -106,14 +127,51 @@ $(document).ready(function() {
 	$('#tipopago').val(1);
 
 	//TOTAL
-	var caja_efectivo = parseFloat($('#caja_efectivo').val());
-	$('#total').val(caja_efectivo.toFixed(2));
+	$('#total').val(0);
 
-	$('#comentario').focus();
+	$('#monto').focus();
 
 	mueveReloj();
 
 }); 
+
+$(document).ready(function() {
+
+	var personas = new Bloodhound({
+		datumTokenizer: function (d) {
+			return Bloodhound.tokenizers.whitespace(d.value);
+		},
+		queryTokenizer: Bloodhound.tokenizers.whitespace,
+		remote: {
+			url: 'trabajador/trabajadorautocompleting/%QUERY',
+			filter: function (personas) {
+				return $.map(personas, function (movie) {
+					return {
+						value: movie.value,
+						id: movie.id,
+						registro: movie.registro
+					};
+				});
+			}
+		}
+	});
+	personas.initialize();
+	$('#nombrepersona').typeahead(null,{
+		displayKey: 'value',
+		source: personas.ttAdapter()
+	}).on('typeahead:selected', function (object, datum) {
+		$('#persona_id').val(datum.id);
+	});
+
+	$(".empleado").on('click', function(){
+		var idempleado = $(this).attr('id');
+		$(".empleado").css('background', 'rgb(255,255,255)');
+		$(this).css('background', 'rgb(179,188,237)');
+		$('#persona_id').attr('value',idempleado);
+		$("#empleado_nombre").val($(this).children('label').html());
+	});
+}); 
+
 	
 /*Script del Reloj */
 function mueveReloj() {

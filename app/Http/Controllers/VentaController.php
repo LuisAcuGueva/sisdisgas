@@ -5,14 +5,16 @@ namespace App\Http\Controllers;
 use Validator;
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Persona;
+use App\Person;
 use App\Personamaestro;
 use App\Movimiento;
 use App\Detalleventa;
 use App\Detallecomision;
 use App\Serieventa;
-use App\Servicio;
+use App\Producto;
 use App\Tipodocumento;
+use App\Turnorepartidor;
+use App\Detalleturnopedido;
 use App\Sucursal;
 use App\Empresa;
 use App\Librerias\Libreria;
@@ -50,18 +52,20 @@ class VentaController extends Controller
         $title            = $this->tituloAdmin;
         $titulo_cliente   = $this->tituloCliente;
         $ruta             = $this->rutas;
-        $user = Auth::user();
-        $empresa_id = $user->empresa_id;
-        $type = 'E';
-        $empleados        = DB::table('person')->where('tipo_persona')
-        ->orderBy('apellido_pat', 'ASC')->orderBy('apellido_mat', 'ASC')->orderBy('nombres', 'ASC')->orderBy('razonsocial', 'ASC')->get();
-        $cboSucursal      = Sucursal::where('empresa_id', '=', $empresa_id)->pluck('nombre', 'id')->all();
-        $cboTipoDocumento = Tipodocumento::pluck('descripcion', 'id')->all();
-        $anonimo = Persona::where('empresa_id', '=', $empresa_id)
-                          ->where('personamaestro_id','=',2)->first();
-        $servicios = Servicio::where('empresa_id',$empresa_id)->where('frecuente',1)->orderBy('descripcion', 'ASC')->get();
+        $type = 'T';
+        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
+        // TRABAJADORES EN TURNO
+        $empleados = array();
+        foreach ($turnos_iniciados as $key => $value) {
+            $trabajador = Person::find($value->trabajador_id);
+            array_push($empleados, $trabajador);
+        }
+        $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
+        $cboTipoDocumento = Tipodocumento::where('tipomovimiento_id','2')->pluck('descripcion', 'id')->all();
+        $anonimo = Person::where('id','=',1)->first();
+        $productos = Producto::where('frecuente',1)->orderBy('descripcion', 'ASC')->get();
         
-        return view($this->folderview.'.admin')->with(compact('servicios', 'empleados', 'cboTipoDocumento','anonimo' , 'cboSucursal' ,'entidad', 'title', 'titulo_cliente', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('productos', 'empleados', 'cboTipoDocumento','anonimo' , 'cboSucursal' ,'entidad', 'title', 'titulo_cliente', 'ruta'));
     }
 
     public function clienteautocompletar($searching)
@@ -106,60 +110,6 @@ class VentaController extends Controller
         return json_encode($data);
     }
 
-    public function servicioautocompletar($searching)
-    {
-        $user = Auth::user();
-        $empresa_id = $user->empresa_id;
-
-        $resultado =DB::table('servicio')
-        ->where('descripcion', 'LIKE', '%'.strtoupper($searching).'%')
-        ->where('empresa_id', '=', $empresa_id)
-        ->whereNull('deleted_at')
-        ->orderBy('descripcion', 'ASC')
-        ->take(5);
-
-        $list      = $resultado->get();
-        $data = array();
-        foreach ($list as $key => $value) {
-            $data[] = array(
-                'id'    => $value->id,
-                'nombre' => $value->descripcion,
-                'descripcion' => $value->descripcion ." - S/.". $value->precio ,
-                'precio' => $value->precio,
-                'tipo' => 'S',
-                'editable' => $value->editable,
-            );
-        }
-        return json_encode($data);
-    }
-
-    public function productoautocompletar($searching)
-    {
-        $user = Auth::user();
-        $empresa_id = $user->empresa_id;
-
-        $resultado =DB::table('producto')
-        ->where('descripcion', 'LIKE', '%'.strtoupper($searching).'%')
-        ->where('empresa_id', '=', $empresa_id)
-        ->whereNull('deleted_at')
-        ->orderBy('descripcion', 'ASC')
-        ->take(5);
-
-        $list      = $resultado->get();
-        $data = array();
-        foreach ($list as $key => $value) {
-            $data[] = array(
-                'id'    => $value->id,
-                'nombre' => $value->descripcion,
-                'descripcion' => $value->descripcion ." - S/.". $value->precioventa ,
-                'precio' => $value->precioventa,
-                'tipo' => 'P',
-                'editable' => 0,
-            );
-        }
-        return json_encode($data);
-    }
-
     public function guardarventa(Request $request){
         $reglas     = array('empleado_id' => 'required',
                             'serieventa' => 'required',
@@ -179,7 +129,6 @@ class VentaController extends Controller
                                     ->where('estado', "=", 1)
                                     ->max('num_caja');
             $num_caja = $num_caja + 1;
-
 
             $movimiento                       = new Movimiento();
             $movimiento->tipomovimiento_id    = 2;
@@ -207,6 +156,13 @@ class VentaController extends Controller
             }else{
                 $movimiento->montomaster        = 0.00;
             }
+
+            if($request->input('vuelto') != null){
+                $movimiento->vuelto        = $request->input('vuelto');
+            }else{
+                $movimiento->vuelto        = 0.00;
+            }
+
             $movimiento->estado               = 1;
             $movimiento->persona_id           = $request->input('cliente_id');
             $movimiento->trabajador_id        = $request->input('empleado_id');
@@ -214,6 +170,8 @@ class VentaController extends Controller
             $movimiento->usuario_id           = $user->id;
             $movimiento->sucursal_id          = $request->input('sucursal_id');
             $movimiento->save();
+
+            /*
 
             $movimientocaja                       = new Movimiento();
             $movimientocaja->tipomovimiento_id    = 1;
@@ -223,6 +181,7 @@ class VentaController extends Controller
             $movimientocaja->subtotal             = $request->input('total');
             $movimientocaja->estado               = 1;
             $movimientocaja->persona_id           = $request->input('cliente_id');
+            $movimientocaja->trabajador_id        = $request->input('empleado_id');
             $user           = Auth::user();
             $movimientocaja->usuario_id           = $user->id;
             $movimientocaja->sucursal_id          = $request->input('sucursal_id');
@@ -236,7 +195,23 @@ class VentaController extends Controller
                 $movimientocaja->comentario           = "Pago de: T".$request->input('serieventa');  
             }
             
-            $movimientocaja->save();
+            $movimientocaja->save();*/
+
+            // GUARDAR DETALLE TURNO PEDIDO
+
+            $trabajador =$request->input('empleado_id');
+
+            $max_turno_apertura = Turnorepartidor::where('trabajador_id', $trabajador)
+                                ->max('apertura_id');
+
+            $turno_maximo = Turnorepartidor::where('apertura_id',$max_turno_apertura)
+                                ->first();
+
+            $detalle_turno_pedido =  new Detalleturnopedido();
+            $detalle_turno_pedido->pedido_id = $movimiento->id;
+            $detalle_turno_pedido->turno_id = $turno_maximo->id;
+            $detalle_turno_pedido->save();
+
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -254,46 +229,7 @@ class VentaController extends Controller
                 $detalleventa            = new Detalleventa();
                 $cantidad                = $detalle->{"cantidad"};
                 $detalleventa->cantidad  = $cantidad;
-                $tipo                    = $detalle->{"tipo"};
-                if($tipo == "S"){
-                    $detalleventa->servicio_id  = $detalle->{"id"};
-                    //comision
-                    $comision = 0;
-                    $servicio = Servicio::find($detalle->{"id"});
-
-                    $user           = Auth::user();
-                    $empresa = Empresa::find($user->empresa_id);
-
-                    $venta = Movimiento::find($venta_id);
-
-                    if($empresa->recargo == 0){ //recargo lo hace la empresa
-                        $totalrecargo = (( $venta->montovisa * ( $empresa->visa / 100) ) + ( $venta->montomaster * ( $empresa->master / 100))) / $cantidad_servicios;
-                        if($servicio->tipo_comision == 0 ){ //porcentaje
-                            $comision = (( $cantidad * $detalle->{"precio"} ) * ( $servicio->comision / 100 )) - $totalrecargo; 
-                        }elseif($servicio->tipo_comision == 1 ){ //monto
-                            $comision = (($servicio->comision * $cantidad)) - $totalrecargo;
-                        }
-                    }else{
-                        if($servicio->tipo_comision == 0 ){ //porcentaje
-                            $comision = ( $cantidad * $detalle->{"precio"} ) * ( $servicio->comision / 100 ); 
-                        }elseif($servicio->tipo_comision == 1 ){ //monto
-                            $comision = ($servicio->comision * $cantidad);
-                        }
-                    }
-
-                    $comision = round($comision , 1);
-                    $detalleventa->comision  = $comision;
-                    $persona = Persona::find($venta->trabajador_id);
-                    if($persona->comision == 1){
-                        $comision_acum = $persona->comision_acum + $comision;
-                        $persona->comision_acum = $comision_acum;
-                        $persona->save();
-                    }
-                    //fin comision
-                }
-                if($tipo == "P"){
-                    $detalleventa->producto_id  = $detalle->{"id"};
-                }
+                $detalleventa->producto_id  = $detalle->{"id"};
                 $detalleventa->venta_id  = $venta_id;
                 $detalleventa->precio  = $detalle->{"precio"};
                 $detalleventa->save();
@@ -341,8 +277,8 @@ class VentaController extends Controller
             }
         }
 
-        $serieventa = Serieventa::where('sucursal_id', $sucursal_id)->first();
-        $num_venta = $serieventa->serie .'-'. $num_venta;
+        $serieventa = "0001";
+        $num_venta = $serieventa.'-'. $num_venta;
         return $num_venta;
     }
 

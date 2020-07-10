@@ -17,18 +17,18 @@ if(!is_null($cliente)){
 	@if(is_null($cliente))
 		<div class="col-lg-8 col-md-8 col-sm-8">
 			{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
-			{!! Form::hidden('cant', null, array('id' => 'cant')) !!}
+			{!! Form::hidden('cantc', null, array('id' => 'cantc')) !!}
 		</div>
 	@else
 		@if(!is_null($cliente->dni))
 			<div class="col-lg-8 col-md-8 col-sm-8">
 				{!! Form::text('dni', $dni, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
-				{!! Form::hidden('cant', null, array('id' => 'cant')) !!}
+				{!! Form::hidden('cantc', '8' , array('id' => 'cantc')) !!}
 			</div>
 		@elseif(!is_null($cliente->ruc))
 			<div class="col-lg-8 col-md-8 col-sm-8">
 				{!! Form::text('dni', $ruc, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
-				{!! Form::hidden('cant', null, array('id' => 'cant')) !!}
+				{!! Form::hidden('cantc', '11' , array('id' => 'cantc')) !!}
 			</div>
 		@endif
 	@endif
@@ -69,12 +69,12 @@ if(!is_null($cliente)){
 <script type="text/javascript">
 	$(document).ready(function() {
 		$(".ruc").css("display","none");
-		var cant = $("#dni").val();
-		if(cant.length == 8){
+		var cantc = $("#dni").val();
+		if(cantc.length == 8){
 			$(".dni").css("display","");
 			$(".ruc").css("display","none");
 
-		}else if(cant.length == 11){
+		}else if(cantc.length == 11){
 			$(".ruc").css("display","");
 			$(".dni").css("display","none");
 		}
@@ -108,17 +108,17 @@ if(!is_null($cliente)){
 
 		$("#dni").keyup(function(){
 			//hacer que aparezcan los inputs seguna la cantidad de largo del string 8 dni 11 ruc
-			var cant = $("#dni").val();
-			mostrarinputs(cant.length);
-			$("#cant").val(cant.length);
+			var cantc = $("#dni").val();
+			mostrarinputs(cantc.length);
+			$("#cantc").val(cantc.length);
 		}); 
 
-		function mostrarinputs(cant){
-			if(cant == 8){
+		function mostrarinputs(cantc){
+			if(cantc == 8){
 				$(".dni").css("display","");
 				$(".ruc").css("display","none");
 
-			}else if(cant == 11){
+			}else if(cantc == 11){
 				$(".ruc").css("display","");
 				$(".dni").css("display","none");
 			}

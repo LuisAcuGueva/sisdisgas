@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Movimiento;
 use App\Sucursal;
+use App\Turnorepartidor;
 use App\Concepto;
 use App\Person;
 use App\Librerias\Libreria;
@@ -22,6 +23,7 @@ class CajaController extends Controller
     protected $tituloRegistrar = 'Registrar Movimiento de Caja';
     protected $tituloEliminar  = 'Anular Movimiento de Caja';
     protected $tituloApertura  = 'Apertura de Caja';
+    protected $tituloTurnoRepartidor  = 'Iniciar Turno de Repartidor';
     protected $tituloCierre    = 'Cierre de Caja';
     protected $tituloPersona   = 'Registrar Nueva Persona';
     protected $rutas           = array('create' => 'caja.create', 
@@ -31,6 +33,7 @@ class CajaController extends Controller
             'search'   => 'caja.buscar',
             'index'    => 'caja.index',
             'apertura' => 'caja.apertura',
+            'turnoRepartidor' => 'caja.turnoRepartidor',
             'cierre'   => 'caja.cierre',
             'repetido' => 'caja.repetido',
             'aperturaycierre' => 'caja.aperturaycierre',
@@ -432,6 +435,7 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'USUARIO', 'numero' => '1');
         
+        $tituloTurnoRepartidor = $this->tituloTurnoRepartidor;
         $titulo_eliminar  = $this->tituloEliminar;
         $titulo_registrar = $this->tituloRegistrar;
         $titulo_apertura  = $this->tituloApertura;
@@ -447,9 +451,9 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('montoapertura', 'lista', 'ingresos_efectivo', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo',  'aperturas' , 'cierres' , 'ruta', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'aperturaycierre', 'titulo_eliminar', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('montoapertura', 'lista', 'ingresos_efectivo', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo',  'aperturas' , 'cierres' , 'ruta', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'aperturaycierre', 'tituloTurnoRepartidor', 'titulo_eliminar', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'ruta'));
         }
-        return view($this->folderview.'.list')->with(compact('montoapertura', 'lista', 'ingresos_efectivo', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo', 'aperturas' , 'cierres' , 'ruta', 'aperturaycierre', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'entidad'));
+        return view($this->folderview.'.list')->with(compact('montoapertura', 'lista', 'ingresos_efectivo', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo', 'aperturas' , 'cierres' , 'ruta', 'aperturaycierre', 'titulo_registrar', 'tituloTurnoRepartidor', 'titulo_apertura', 'titulo_cierre', 'entidad'));
     }
 
     /**
@@ -519,6 +523,58 @@ class CajaController extends Controller
         return view($this->folderview.'.apertura')->with(compact('persona_id' , 'num_caja', 'movimiento', 'cierre_ultimo', 'formData', 'entidad', 'boton', 'listar'));
     }
 
+    public function turnoRepartidor(Request $request)
+    {
+        $listar       = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad      = 'Caja';
+        $movimiento   = null;
+        $formData     = array('caja.store');
+        $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        
+        $sucursal_id  = $request->input('sucursal_id');
+        $user = Auth::user();
+        $persona_id = $user->person_id;
+        $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
+
+        $maxcierre = Movimiento::where('concepto_id', 2)
+                ->where('sucursal_id', "=", $sucursal_id)
+                ->where('estado', "=", 1)
+                ->max('num_caja');
+        $cierre_ultimo = Movimiento::where('concepto_id', 2)
+                    ->where('sucursal_id', "=", $sucursal_id)
+                    ->where('estado', "=", 1)
+                    ->where('num_caja',"=", $maxcierre)
+                    ->first();
+
+        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
+        // TRABAJADORES EN TURNO
+        $trabajadores_iniciados = array();
+        foreach ($turnos_iniciados as $key => $value) {
+            $trabajador = Person::find($value->trabajador_id);
+            array_push($trabajadores_iniciados, $trabajador);
+        }
+        // TODOS TRABAJADORES
+        $todos = Person::where('tipo_persona','T')->get();
+        $todos_trabajadores = array();
+        foreach ($todos as $key => $value) {
+            $trabajador = Person::find($value->id);
+            array_push($todos_trabajadores, $trabajador);
+        }
+
+        // TRABAJADORES POR INICIAR TURNO
+        $trabajadores_sinturno = array_diff($todos_trabajadores, $trabajadores_iniciados);
+
+        /*foreach ($trabajadores_iniciados as $value) {
+            foreach ($todos_trabajadores as $key ) {
+                if($value->id != $key->id){
+                    array_push($trabajadores_sinturno, $key);
+                }
+            }
+        }*/
+        $boton        = 'Registrar'; 
+        return view($this->folderview.'.turnoRepartidor')->with(compact('persona_id' , 'trabajadores_sinturno' ,'num_caja', 'movimiento', 'cierre_ultimo', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
     public function cierre(Request $request)
     {
         $listar       = Libreria::getParam($request->input('listar'), 'NO');
@@ -532,8 +588,23 @@ class CajaController extends Controller
         $persona_id = $user->person_id;
         $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
         
+
+        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
+        // TRABAJADORES EN TURNO
+        $trabajadores_iniciados = array();
+        foreach ($turnos_iniciados as $key => $value) {
+            $trabajador = Person::find($value->trabajador_id);
+            array_push($trabajadores_iniciados, $trabajador);
+        }
+
+        if(!empty($trabajadores_iniciados)){
+            $turnos_cerrados = "NO";
+        }else{
+            $turnos_cerrados = "SI";
+        }
+
         $boton        = 'Registrar';
-        return view($this->folderview.'.cierre')->with(compact('persona_id' , 'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.cierre')->with(compact('persona_id' , 'num_caja', 'sucursal_id','movimiento', 'turnos_cerrados' ,'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -545,7 +616,7 @@ class CajaController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        if($request->input('concepto_id') == 1){
+        if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 12){
             $reglas     = array('num_caja' => 'required|numeric',
                                 'fecha'      => 'required',
                                 'concepto_id'   => 'required',
@@ -570,7 +641,7 @@ class CajaController extends Controller
             $movimiento->tipomovimiento_id = 1;
             $movimiento->concepto_id    = $request->input('concepto_id');
             $movimiento->num_caja   = $request->input('num_caja');
-            if($request->input('concepto_id') == 1){
+            if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 12 ){
                 $movimiento->total          = $request->input('monto');
                 $movimiento->subtotal          = $request->input('monto');
             }else{
@@ -579,7 +650,7 @@ class CajaController extends Controller
                 $movimiento->montoefectivo    = $request->input('total');
             }
             $movimiento->estado         = 1;
-            if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 2){
+            if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 2 || $request->input('concepto_id') == 12){
                 $movimiento->trabajador_id     = $request->input('persona_id');
             }else{
                 $movimiento->persona_id     = $request->input('persona_id');
@@ -589,6 +660,23 @@ class CajaController extends Controller
             $movimiento->sucursal_id   = $request->input('sucursal');
             $movimiento->comentario     = strtoupper($request->input('comentario'));
             $movimiento->save();
+            if($request->input('concepto_id') == 12){
+                $sucursal_id = $request->input('sucursal');
+                $maxapertura = Movimiento::where('concepto_id', 1)
+                ->where('sucursal_id', "=", $sucursal_id)
+                ->where('estado', "=", 1)
+                ->max('num_caja');
+                $apertura = Movimiento::where('concepto_id', 1)
+                        ->where('sucursal_id', "=", $sucursal_id)
+                        ->where('estado', "=", 1)
+                        ->where('num_caja',$maxapertura)->first();
+                $turno_repartidor = new Turnorepartidor();
+                $turno_repartidor->estado    = "I";
+                $turno_repartidor->apertura_id = $apertura->id;
+                $turno_repartidor->vuelto_id = $movimiento->id;
+                $turno_repartidor->trabajador_id = $request->input('persona_id');
+                $turno_repartidor->save();
+            }
         });
         return is_null($error) ? "OK" : $error;
     }

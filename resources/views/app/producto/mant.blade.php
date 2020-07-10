@@ -18,7 +18,7 @@
 		</div>
 	</div>
 	<div class="form-group">
-		{!! Form::label('frecuente', 'Frecuente:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
+		{!! Form::label('frecuente', 'Activo:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 		<div class="col-sm-8 col-xs-12">
 		
 		@if($producto == null)
