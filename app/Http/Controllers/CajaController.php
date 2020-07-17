@@ -10,6 +10,7 @@ use App\Sucursal;
 use App\Turnorepartidor;
 use App\Concepto;
 use App\Person;
+use App\Detalleturnopedido;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -81,12 +82,14 @@ class CajaController extends Controller
                 ->max('num_caja');
 
                 $montoapertura = 0.00;
+                $monto_vuelto = 0.00;
                 $ingresos_efectivo = 0.00;
                 $ingresos_visa = 0.00;
                 $ingresos_master = 0.00;
                 $ingresos_total = 0.00;
                 $egresos = 0.00;
                 $saldo = 0.00;
+                $monto_caja = 0.00;
         
                 if (!is_null($maxapertura) && !is_null($maxcierre)) { // Ya existe una apertura y un cierre
                     $apertura = Movimiento::where('concepto_id', 1)
@@ -113,13 +116,28 @@ class CajaController extends Controller
                                                     ->where('tipomovimiento_id',1)
                                                     ->where('estado', "=", 1)
                                                     ->where('sucursal_id', "=", $sucursal_id)
+                                                    ->where('concepto_id', "!=", 12)
                                                     ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                                     ->where('concepto.tipo', "=", 0) //ingreso
                                                     ->sum('montoefectivo');
         
                         round($ingresos_efectivo,2);
+
+
+
+                         //montos vuelto
+                         $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
+                         ->where('num_caja','<', $maxcierre)
+                         ->where('tipomovimiento_id',1)
+                         ->where('estado', "=", 1)
+                         ->where('sucursal_id', "=", $sucursal_id)
+                         ->where('concepto_id', "=", 12) // montovuelto
+                         ->sum('total');
+
+                        round($monto_vuelto,2);
         
                         /*
+
         
                         SELECT SUM(montovisa)
                         FROM movimiento as mov
@@ -174,6 +192,7 @@ class CajaController extends Controller
                                                     ->where('tipomovimiento_id',1)
                                                     ->where('estado', "=", 1)
                                                     ->where('sucursal_id', "=", $sucursal_id)
+                                                    ->where('concepto_id', "!=", 12)
                                                     ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                                     ->where('concepto.tipo', "=", 0) //ingreso
                                                     ->sum('total');
@@ -203,6 +222,8 @@ class CajaController extends Controller
         
                         //saldo
                         $saldo = round($ingresos_total - $egresos, 2);
+
+                        $monto_caja = round($montoapertura + $ingresos_total - $egresos, 2);
         
                     }else if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura hasta ultimo movimiento
                         /*
@@ -222,10 +243,24 @@ class CajaController extends Controller
                                                     ->where('tipomovimiento_id',1)
                                                     ->where('estado', "=", 1)
                                                     ->where('sucursal_id', "=", $sucursal_id)
+                                                    ->where('concepto_id', "!=", 12)
                                                     ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                                     ->where('concepto.tipo', "=", 0) //ingreso
                                                     ->sum('montoefectivo');
                         round($ingresos_efectivo,2);
+
+
+                        //montos vuelto
+                        $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
+                        ->where('tipomovimiento_id',1)
+                        ->where('estado', "=", 1)
+                        ->where('sucursal_id', "=", $sucursal_id)
+                        ->where('concepto_id', "=", 12) // montovuelto
+                        ->sum('total');
+
+                       round($monto_vuelto,2);
+
+
                         /*
         
                         SELECT SUM(montovisa)
@@ -277,6 +312,7 @@ class CajaController extends Controller
                                                     ->where('tipomovimiento_id',1)
                                                     ->where('estado', "=", 1)
                                                     ->where('sucursal_id', "=", $sucursal_id)
+                                                    ->where('concepto_id', "!=", 12)
                                                     ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                                     ->where('concepto.tipo', "=", 0) //ingreso
                                                     ->sum('total');
@@ -304,8 +340,10 @@ class CajaController extends Controller
                         round($egresos,2);
                         //saldo
                         $saldo = round($ingresos_total - $egresos, 2);
+
+                        $monto_caja = round($montoapertura + $ingresos_total - $egresos, 2);
                     }
-                    $saldo += $montoapertura;
+                    $saldo += $montoapertura +$monto_vuelto;// + $monto_vuelto;
                 }else if(!is_null($maxapertura) && is_null($maxcierre)) { //existe apertura pero no existe cierre
                     $apertura = Movimiento::where('concepto_id', 1)
                         ->where('sucursal_id', "=", $sucursal_id)
@@ -330,10 +368,22 @@ class CajaController extends Controller
                                                     ->where('tipomovimiento_id',1)
                                                     ->where('estado', "=", 1)
                                                     ->where('sucursal_id', "=", $sucursal_id)
+                                                    ->where('concepto_id', "!=", 12)
                                                     ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                                     ->where('concepto.tipo', "=", 0) //ingreso
                                                     ->sum('montoefectivo');
                         round($ingresos_efectivo,2);
+
+
+                        //montos vuelto
+                        $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
+                        ->where('tipomovimiento_id',1)
+                        ->where('estado', "=", 1)
+                        ->where('sucursal_id', "=", $sucursal_id)
+                        ->where('concepto_id', "=", 12) // montovuelto
+                        ->sum('total');
+
+                       round($monto_vuelto,2);
                         /*
         
                         SELECT SUM(montovisa)
@@ -384,6 +434,7 @@ class CajaController extends Controller
                                                     ->where('tipomovimiento_id',1)
                                                     ->where('estado', "=", 1)
                                                     ->where('sucursal_id', "=", $sucursal_id)
+                                                    ->where('concepto_id', "!=", 12)
                                                     ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                                     ->where('concepto.tipo', "=", 0) //ingreso
                                                     ->sum('total');
@@ -411,8 +462,10 @@ class CajaController extends Controller
                         round($egresos,2);
                         //saldo
                         $saldo = round($ingresos_total - $egresos, 2);
+
+                        $monto_caja = round($montoapertura + $ingresos_total - $egresos, 2);
                     }
-                    $saldo += $montoapertura;
+                    $saldo += $montoapertura +$monto_vuelto; // + $monto_vuelto;
                 }
 
         $pagina           = $request->input('page');
@@ -451,9 +504,9 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('montoapertura', 'lista', 'ingresos_efectivo', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo',  'aperturas' , 'cierres' , 'ruta', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'aperturaycierre', 'tituloTurnoRepartidor', 'titulo_eliminar', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('montoapertura','monto_vuelto', 'lista', 'ingresos_efectivo', 'monto_caja', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo',  'aperturas' , 'cierres' , 'ruta', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'aperturaycierre', 'tituloTurnoRepartidor', 'titulo_eliminar', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'ruta'));
         }
-        return view($this->folderview.'.list')->with(compact('montoapertura', 'lista', 'ingresos_efectivo', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo', 'aperturas' , 'cierres' , 'ruta', 'aperturaycierre', 'titulo_registrar', 'tituloTurnoRepartidor', 'titulo_apertura', 'titulo_cierre', 'entidad'));
+        return view($this->folderview.'.list')->with(compact('montoapertura', 'monto_vuelto', 'lista', 'ingresos_efectivo', 'monto_caja', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo', 'aperturas' , 'cierres' , 'ruta', 'aperturaycierre', 'titulo_registrar', 'tituloTurnoRepartidor', 'titulo_apertura', 'titulo_cierre', 'entidad'));
     }
 
     /**
@@ -616,7 +669,7 @@ class CajaController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 12){
+        if($request->input('concepto_id') == 1 ){
             $reglas     = array('num_caja' => 'required|numeric',
                                 'fecha'      => 'required',
                                 'concepto_id'   => 'required',
@@ -641,7 +694,7 @@ class CajaController extends Controller
             $movimiento->tipomovimiento_id = 1;
             $movimiento->concepto_id    = $request->input('concepto_id');
             $movimiento->num_caja   = $request->input('num_caja');
-            if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 12 ){
+            if($request->input('concepto_id') == 1){
                 $movimiento->total          = $request->input('monto');
                 $movimiento->subtotal          = $request->input('monto');
             }else{
@@ -650,8 +703,11 @@ class CajaController extends Controller
                 $movimiento->montoefectivo    = $request->input('total');
             }
             $movimiento->estado         = 1;
+            $trabajador = Person::find($request->input('persona_id'));
             if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 2 || $request->input('concepto_id') == 12){
-                $movimiento->trabajador_id     = $request->input('persona_id');
+                if($trabajador->tipo_persona == "T"){
+                    $movimiento->trabajador_id     = $request->input('persona_id');
+                }
             }else{
                 $movimiento->persona_id     = $request->input('persona_id');
             }
@@ -670,12 +726,20 @@ class CajaController extends Controller
                         ->where('sucursal_id', "=", $sucursal_id)
                         ->where('estado', "=", 1)
                         ->where('num_caja',$maxapertura)->first();
-                $turno_repartidor = new Turnorepartidor();
-                $turno_repartidor->estado    = "I";
-                $turno_repartidor->apertura_id = $apertura->id;
-                $turno_repartidor->vuelto_id = $movimiento->id;
-                $turno_repartidor->trabajador_id = $request->input('persona_id');
-                $turno_repartidor->save();
+                $turno_repartidor = Turnorepartidor::where('trabajador_id', $request->input('persona_id'))->first();
+                if(is_null($turno_repartidor)){
+                    $turno_repartidor = new Turnorepartidor();
+                    $turno_repartidor->estado    = "I";
+                    $turno_repartidor->apertura_id = $apertura->id;
+                    //$turno_repartidor->vuelto_id = $movimiento->id;
+                    $turno_repartidor->trabajador_id = $request->input('persona_id');
+                    $turno_repartidor->save();
+                }
+
+                $detalle_turno_pedido =  new Detalleturnopedido();
+                $detalle_turno_pedido->pedido_id = $movimiento->id;
+                $detalle_turno_pedido->turno_id = $turno_repartidor->id;
+                $detalle_turno_pedido->save();
             }
         });
         return is_null($error) ? "OK" : $error;
@@ -752,40 +816,40 @@ class CajaController extends Controller
 
     public function clienteautocompletar($searching)
     {
-        $type = 'C';
-        $user = Auth::user();
-        $empresa_id = $user->empresa_id;
-        $resultado = DB::table('personamaestro')
-            ->where(function($subquery) use($searching)
-            {
-                $subquery->where(DB::raw('CONCAT(apellidos," ",nombres)'), 'LIKE','%'.strtoupper($searching).'%')->orWhere('razonsocial','LIKE','%'.strtoupper($searching).'%');
-            })
-            ->where(function($subquery) use($type)
-            {
-                if (!is_null($type)) {
-                   
-                    $subquery->where('type', '=', $type)->orwhere('secondtype','=', $type)->orwhere('type','=', 'T');
-                   
-                }		            		
-            })
-            ->leftJoin('persona', 'personamaestro.id', '=', 'persona.personamaestro_id')
-            ->where('persona.empresa_id', '=', $empresa_id)
-            ->whereNull('personamaestro.deleted_at')
-            ->orderBy('apellidos', 'ASC')->orderBy('nombres', 'ASC')->orderBy('razonsocial', 'ASC')
-            ->take(5);
+        $resultado = Person::where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
+        ->where('tipo_persona','C')
+        ->whereNull('person.deleted_at')
+        ->orderBy('apellido_pat', 'ASC')
+        ->orderBy('apellido_mat', 'ASC')
+        ->orderBy('nombres', 'ASC');
         $list      = $resultado->get();
         $data = array();
         foreach ($list as $key => $value) {
-            $name = '';
-            if ($value->razonsocial != null) {
-                $name = $value->razonsocial;
-            }else{
-                $name = $value->apellidos." ".$value->nombres;
-            }
             $data[] = array(
-                            'label' => trim($name),
+                            'label' => $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat,
                             'id'    => $value->id,
-                            'value' => trim($name),
+                            'value' => $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat,
+                        );
+        }
+        return json_encode($data);
+    }
+
+    public function empleadoautocompletar($searching)
+    {
+        $entidad    = 'Cliente';
+        $resultado = Person::where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
+        ->where('tipo_persona','T')
+        ->whereNull('person.deleted_at')
+        ->orderBy('apellido_pat', 'ASC')
+        ->orderBy('apellido_mat', 'ASC')
+        ->orderBy('nombres', 'ASC');
+        $list      = $resultado->get();
+        $data = array();
+        foreach ($list as $key => $value) {
+            $data[] = array(
+                            'label' => $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat,
+                            'id'    => $value->id,
+                            'value' => $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat,
                         );
         }
         return json_encode($data);
@@ -805,5 +869,69 @@ class CajaController extends Controller
             $html = $html . '<option value="'. $value->id .'">'. $value->concepto .'</option>';
         }
         return $html;
+    }
+
+    public function persona(Request $request)
+    {
+        $listar         = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad        = 'Persona'; //es personamaestro
+        $persona        = null;
+        $formData       = array('caja.guardarpersona');
+        $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton          = 'Registrar'; 
+        $ruta             = $this->rutas;
+        $accion = 0;
+        $tipo_persona     = array('T' => 'Trabajador',
+            'C'      => 'Cliente',
+            'P'   => 'Proveedor',
+        );
+        return view($this->folderview.'.persona')->with(compact( 'accion' , 'ruta', 'persona', 'tipo_persona', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
+    public function guardarpersona(Request $request)
+    {
+        $listar     = Libreria::getParam($request->input('listar'), 'NO');
+        $cant = $request->input('cantc');
+        $reglas = array(
+            );
+        if($cant == 8){
+            $reglas = array(
+                'dni'       => 'required|max:11',
+                'nombres'    => 'required|max:100',
+                'apellido_pat'    => 'required|max:100',
+                'apellido_mat'    => 'required|max:100',
+                );
+        }else if($cant == 11){
+            $reglas = array(
+                'dni'       => 'required|max:11',
+                'razon_social'    => 'required|max:200',
+                );
+        }
+        $validacion = Validator::make($request->all(),$reglas);
+        if ($validacion->fails()) {
+            return $validacion->messages()->toJson();
+        }
+        $error = DB::transaction(function() use($request){
+            $cliente                = new Person();
+            $cant = $request->input('cantc');
+            if($cant == 8){
+                $cliente->dni           = $request->input('dni');
+                $cliente->nombres       = strtoupper($request->input('nombres'));
+                $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
+                $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
+                $cliente->ruc           = null;
+                $cliente->razon_social  = null;
+            }else{
+                $cliente->dni           = null;
+                $cliente->nombres       = null;
+                $cliente->apellido_pat  = null;
+                $cliente->apellido_mat  = null;
+                $cliente->ruc           = $request->input('dni');
+                $cliente->razon_social  = strtoupper($request->input('razon_social'));
+            }
+            $cliente->tipo_persona  = $request->input('tipo_persona');
+            $cliente->save();
+        });
+        return is_null($error) ? "OK" : $error;
     }
 }

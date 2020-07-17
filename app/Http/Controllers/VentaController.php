@@ -52,7 +52,6 @@ class VentaController extends Controller
         $title            = $this->tituloAdmin;
         $titulo_cliente   = $this->tituloCliente;
         $ruta             = $this->rutas;
-        $type = 'T';
         $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
         // TRABAJADORES EN TURNO
         $empleados = array();

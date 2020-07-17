@@ -48,8 +48,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('profile', 'ProfileController', array('except' => array('show')));
 
     Route::get('venta/clienteautocompletar/{searching}', 'VentaController@clienteautocompletar')->name('venta.clienteautocompletar');
-    Route::get('venta/servicioautocompletar/{searching}', 'VentaController@servicioautocompletar')->name('venta.servicioautocompletar');
-    Route::get('venta/productoautocompletar/{searching}', 'VentaController@productoautocompletar')->name('venta.productoautocompletar');
+    //Route::get('venta/servicioautocompletar/{searching}', 'VentaController@servicioautocompletar')->name('venta.servicioautocompletar');
+    //Route::get('venta/productoautocompletar/{searching}', 'VentaController@productoautocompletar')->name('venta.productoautocompletar');
     Route::post('venta/guardarventa', 'VentaController@guardarventa')->name('venta.guardarventa');
     Route::post('venta/guardardetalle', 'VentaController@guardardetalle')->name('venta.guardardetalle');
     Route::post('venta/serieventa', 'VentaController@serieventa')->name('venta.serieventa');
@@ -58,7 +58,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('caja/pdfDetalleCierre', 'CajaController@pdfDetalleCierre')->name('caja.pdfDetalleCierre');
     Route::get('caja/clienteautocompletar/{searching}', 'CajaController@clienteautocompletar')->name('caja.clienteautocompletar');
-    Route::get('caja/proveedorautocompletar/{searching}', 'CajaController@proveedorautocompletar')->name('caja.proveedorautocompletar');
+    //Route::get('caja/proveedorautocompletar/{searching}', 'CajaController@proveedorautocompletar')->name('caja.proveedorautocompletar');
     Route::get('caja/empleadoautocompletar/{searching}', 'CajaController@empleadoautocompletar')->name('caja.empleadoautocompletar');
     Route::get('caja/generarConcepto','CajaController@generarConcepto')->name('caja.generarConcepto');
     Route::post('caja/buscar','CajaController@buscar')->name('caja.buscar');
@@ -70,12 +70,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('caja/guardarpersona', 'CajaController@guardarpersona')->name('caja.guardarpersona');
     //Route::get('caja/repetido/{id}/{listarluego}','CajaController@repetido')->name('caja.repetido');
     //Route::post('caja/guardarrepetido','CajaController@guardarrepetido')->name('caja.guardarrepetido');
-    Route::get('caja/aperturaycierre', 'CajaController@aperturaycierre')->name('caja.aperturaycierre');
+    //Route::get('caja/aperturaycierre', 'CajaController@aperturaycierre')->name('caja.aperturaycierre');
     Route::resource('caja', 'CajaController', array('except' => array('show')));
 
     Route::post('producto/buscar','ProductoController@buscar')->name('producto.buscar');
     Route::get('producto/eliminar/{id}/{listarluego}','ProductoController@eliminar')->name('producto.eliminar');
     Route::resource('producto', 'ProductoController', array('except' => array('show')));
+
+    Route::post('turno/buscar','TurnoController@buscar')->name('turno.buscar');
+    Route::get('turno/eliminar/{id}/{listarluego}','TurnoController@eliminar')->name('turno.eliminar');
+    Route::resource('turno', 'TurnoController', array('except' => array('show')));
 
     Route::post('trabajador/buscar','TrabajadorController@buscar')->name('trabajador.buscar');
     Route::get('trabajador/eliminar/{id}/{listarluego}','TrabajadorController@eliminar')->name('trabajador.eliminar');
@@ -120,10 +124,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('subirdata', 'ExcelController', array('except' => array('show')));
 });
 
+/*
 Route::get('provincia/cboprovincia/{id?}', array('as' => 'provincia.cboprovincia', 'uses' => 'ProvinciaController@cboprovincia'));
 Route::get('distrito/cbodistrito/{id?}', array('as' => 'distrito.cbodistrito', 'uses' => 'DistritoController@cbodistrito'));
 
-/*Route::get('provincias/{id}', function($id)
+Route::get('provincias/{id}', function($id)
 {
 	$departamento_id = $id;
 
@@ -131,7 +136,9 @@ Route::get('distrito/cbodistrito/{id?}', array('as' => 'distrito.cbodistrito', '
 
     return Response::json($provincias);
 });
-*/
+
 
 Route::get('provincias/{id}','ProvinciaController@getProvincias');
 Route::get('distritos/{id}','DistritoController@getDistritos');
+
+*/

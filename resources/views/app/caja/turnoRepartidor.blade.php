@@ -4,7 +4,6 @@
 		{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 		{!! Form::hidden('sucursal',null,array('id'=>'sucursal')) !!}
 		{!! Form::hidden('tipopago',null,array('id'=>'tipopago')) !!}
-		{!! Form::hidden('total',null,array('id'=>'total')) !!}
 	</div>
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
@@ -63,14 +62,10 @@
 	@endif
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
-			{!! Form::label('monto', 'Monto:')!!}<div class="" style="display: inline-block;color: red;">*</div>
+			{!! Form::label('total', 'Monto:')!!}<div class="" style="display: inline-block;color: red;">*</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
-			@if($cierre_ultimo == null)
-				{!! Form::text('monto', '' , array('class' => 'form-control input-xs', 'id' => 'monto')) !!}
-			@else
-				{!! Form::text('monto', $cierre_ultimo->total , array('class' => 'form-control input-xs', 'id' => 'monto')) !!}
-			@endif
+			{!! Form::text('total', '' , array('class' => 'form-control input-xs', 'id' => 'total')) !!}
 		</div>
 	</div>
 	<div class="form-group">
@@ -129,7 +124,7 @@ $(document).ready(function() {
 	//TOTAL
 	$('#total').val(0);
 
-	$('#monto').focus();
+	$('#total').focus();
 
 	mueveReloj();
 

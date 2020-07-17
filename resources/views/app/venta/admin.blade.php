@@ -113,7 +113,6 @@ operaciones
 
 				<div class="col-lg-6 col-md-6 col-sm-6">
 					<div class="col-lg-12 col-md-12 col-sm-12">
-						<h4 align="center" class="col-lg-12 col-md-12 col-sm-12" style="margin-bottom: -10px; margin-top: 0px; color: #2a3f54; font-weight: 600;">PRODUCTOS</h4>
 						<div id="servicios_frecuentes" class="col-lg-12 col-md-12 col-sm-12" style="margin: 10px; border-style: groove; width: 100%; height: 180px; overflow-y: scroll;">
 							@foreach($productos  as $key => $value)
 								<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="{{ $value->id}}"  precio="{{ $value->precio }}" descripcion="{{ $value->descripcion }}" editable="{{ $value->editable }}" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >

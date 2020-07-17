@@ -296,7 +296,6 @@ class ClienteController extends Controller
     public function clienteautocompleting($searching)
     {
         $entidad    = 'Cliente';
-        $mdlPerson = new Person();
         $resultado = Person::where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
         ->where('tipo_persona','C')
         ->whereNull('person.deleted_at')

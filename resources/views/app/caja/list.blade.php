@@ -45,13 +45,14 @@ $container = "'container'";
 
 @endif
 <input id="monto_apertura" name="monto_apertura" type="hidden" value="{{$montoapertura}}">
+<input id="monto_vuelto" name="monto_vuelto" type="hidden" value="{{$monto_vuelto}}">
 <input id="ingresos_efectivo" name="ingresos_efectivo" type="hidden" value="{{$ingresos_efectivo}}">
 <input id="ingresos_visa" name="ingresos_visa" type="hidden" value="{{$ingresos_visa}}">
 <input id="ingresos_master" name="ingresos_master" type="hidden" value="{{$ingresos_master}}">
 <input id="ingresos_total" name="ingresos_total" type="hidden" value="{{$ingresos_total}}">
 <input id="egresos" name="egresos" type="hidden" value="{{$egresos}}">
 <input id="saldo" name="saldo" type="hidden" value="{{$saldo}}">
-<input id="caja_efectivo" name="caja_efectivo" type="hidden" value="{{$ingresos_efectivo}}">
+<input id="caja_efectivo" name="caja_efectivo" type="hidden" value="{{$monto_caja}}">
 
 </div>
 
@@ -87,8 +88,6 @@ $container = "'container'";
 				@if($concepto->id == 1)
 					-
 				@elseif ($concepto->id == 2)
-					-
-				@elseif ($concepto->id == 12)
 					-
 				@else
 					{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar' ,'activo' => 'si')) !!}
@@ -174,6 +173,10 @@ $container = "'container'";
             <th>MONTO APERTURA :</th>
             <th class="text-right"><div id ="montoapertura"></div></th>
         </tr>
+		<tr>
+            <th>MONTO VUELTO :</th>
+            <th class="text-right"><div id ="montovuelto"></div></th>
+        </tr>
         <tr>
             <th>INGRESOS :</th>
             <th class="text-right"><div id ="ingresostotal"></div></th>
@@ -216,12 +219,16 @@ $container = "'container'";
 	var egresos = {{$egresos}};
 	var saldo = {{$saldo}};
 	var montoapertura = {{$montoapertura}};
+	var monto_vuelto = {{$monto_vuelto}};
+	var monto_caja = {{$monto_caja}}
 	
 	$(document).ready(function () {
 
 		if($(".btnEliminar").attr('activo')=== 'no'){
 			$('.btnEliminar').attr("disabled", true);
 		}
+
+		console.log("monto vuelto = " + monto_vuelto );
 
 		$('#ingresostotal').html(ingresos_total.toFixed(2));
 		$('#ingresosefectivo').html(ingresos_efectivo.toFixed(2));
@@ -230,7 +237,8 @@ $container = "'container'";
 		$('#egreso').html(egresos.toFixed(2));
 		$('#saldoo').html(saldo.toFixed(2));
 		$('#montoapertura').html(montoapertura.toFixed(2));
-		$('#caja_efectivo2').html(ingresos_efectivo.toFixed(2));
+		$('#montovuelto').html(monto_vuelto.toFixed(2));
+		$('#caja_efectivo2').html(monto_caja.toFixed(2));
 	});
 
 </script>

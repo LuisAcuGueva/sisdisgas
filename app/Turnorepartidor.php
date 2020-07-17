@@ -14,5 +14,9 @@ class Turnorepartidor extends Model
    use SoftDeletes;
    protected $table = 'turno_repartidor';   
    protected $date = 'delete_at';
-	
+   
+   public function person(){
+      return $this->belongsTo('App\Person', 'trabajador_id');
+  }
+
 }

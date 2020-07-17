@@ -160,7 +160,7 @@ var clientes = new Bloodhound({
 	}
 });
 clientes.initialize();
-
+/*
 var proveedores = new Bloodhound({
 	datumTokenizer: function (d) {
 		return Bloodhound.tokenizers.whitespace(d.value);
@@ -180,7 +180,7 @@ var proveedores = new Bloodhound({
 	}
 });
 proveedores.initialize();
-
+*/
 var empleados = new Bloodhound({
 	datumTokenizer: function (d) {
 		return Bloodhound.tokenizers.whitespace(d.value);
@@ -213,7 +213,7 @@ $('#persona').typeahead({
 	templates: {
 		header: '<h4 style="margin-left: 10px">CLIENTES</h4>'
 	}
-},
+},/*
 {
 	name: 'proveedores',
 	displayKey: 'value',
@@ -221,7 +221,7 @@ $('#persona').typeahead({
 	templates: {
 		header: '<h4 style="margin-left: 10px">PROVEEDORES</h4>'
 	}
-},
+},*/
 {
 	name: 'empleados',
 	displayKey: 'value',
