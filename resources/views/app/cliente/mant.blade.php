@@ -15,18 +15,18 @@ if(!is_null($cliente)){
 <div class="form-group">
 	{!! Form::label('dni', 'DNI / RUC:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 	@if(is_null($cliente))
-		<div class="col-lg-8 col-md-8 col-sm-8">
+		<div class="col-lg-6 col-md-6 col-sm-6">
 			{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
 			{!! Form::hidden('cantc', null, array('id' => 'cantc')) !!}
 		</div>
 	@else
 		@if(!is_null($cliente->dni))
-			<div class="col-lg-8 col-md-8 col-sm-8">
+			<div class="col-lg-6 col-md-6 col-sm-6">
 				{!! Form::text('dni', $dni, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
 				{!! Form::hidden('cantc', '8' , array('id' => 'cantc')) !!}
 			</div>
 		@elseif(!is_null($cliente->ruc))
-			<div class="col-lg-8 col-md-8 col-sm-8">
+			<div class="col-lg-6 col-md-6 col-sm-6">
 				{!! Form::text('dni', $ruc, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
 				{!! Form::hidden('cantc', '11' , array('id' => 'cantc')) !!}
 			</div>
@@ -35,19 +35,19 @@ if(!is_null($cliente)){
 </div>
 <div class="form-group dni">
 	{!! Form::label('nombres', 'Nombre:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
-	<div class="col-lg-8 col-md-8 col-sm-8">
+	<div class="col-lg-6 col-md-6 col-sm-6">
 		{!! Form::text('nombres', null, array('class' => 'form-control input-xs', 'id' => 'nombres', 'placeholder' => 'Ingrese nombres')) !!}
 	</div>
 </div>
 <div class="form-group dni">
 	{!! Form::label('apellido_pat', 'Ap. Paterno:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
-	<div class="col-lg-8 col-md-8 col-sm-8">
+	<div class="col-lg-6 col-md-6 col-sm-6">
 		{!! Form::text('apellido_pat', null, array('class' => 'form-control input-xs', 'id' => 'apellido_pat', 'placeholder' => 'Ingrese apellido paterno')) !!}
 	</div>
 </div>
 <div class="form-group dni">
 	{!! Form::label('apellido_mat', 'Ap. Materno:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
-	<div class="col-lg-8 col-md-8 col-sm-8">
+	<div class="col-lg-6 col-md-6 col-sm-6">
 		{!! Form::text('apellido_mat', null, array('class' => 'form-control input-xs', 'id' => 'apellido_mat', 'placeholder' => 'Ingrese apellido materno')) !!}
 	</div>
 </div>
@@ -56,6 +56,13 @@ if(!is_null($cliente)){
 	{!! Form::label('razon_social', 'Razón Social:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 	<div class="col-lg-8 col-md-8 col-sm-8">
 		{!! Form::text('razon_social', null, array('class' => 'form-control input-xs', 'id' => 'razon_social', 'placeholder' => 'Ingrese razón social')) !!}
+	</div>
+</div>
+
+<div class="form-group">
+	{!! Form::label('celular', 'Celular:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
+	<div class="col-lg-6 col-md-6 col-sm-6">
+		{!! Form::text('celular', null, array('class' => 'form-control input-xs', 'rows' => '3','id' => 'celular', 'placeholder' => 'Ingrese número de celular')) !!}
 	</div>
 </div>
 

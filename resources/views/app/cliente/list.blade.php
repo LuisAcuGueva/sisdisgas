@@ -28,6 +28,7 @@
 			<td>{{ $value->razon_social  }}</td>
 			@endif
 			<td>{{ $value->direccion  }}</td>
+			<td>{{ $value->celular  }}</td>
 		</tr>
 		<?php
 		$contador = $contador + 1;

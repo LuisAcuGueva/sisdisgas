@@ -61,6 +61,7 @@ class ClienteController extends Controller
         $cabecera[]       = array('valor' => 'DNI / RUC', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NOMBRE COMPLETO / RAZÓN SOCIAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'CELULAR', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -125,6 +126,7 @@ class ClienteController extends Controller
                 'dni'       => 'required|max:11',
                 'razon_social'    => 'required|max:200',
                 'direccion'    => 'required|max:400',
+                'celular'       => 'required|max:9',
                 );
         }else{
             $reglas = array(
@@ -133,6 +135,7 @@ class ClienteController extends Controller
                 'apellido_pat'    => 'required|max:100',
                 'apellido_mat'    => 'required|max:100',
                 'direccion'    => 'required|max:400',
+                'celular'       => 'required|max:9',
                 );
         }
         $validacion = Validator::make($request->all(),$reglas);
@@ -159,6 +162,7 @@ class ClienteController extends Controller
             }
             $cliente->tipo_persona  = "C";
             $cliente->direccion  = $request->input('direccion');
+            $cliente->celular  = $request->input('celular');
             $cliente->save();
         });
         return is_null($error) ? "OK" : $error;
@@ -217,6 +221,7 @@ class ClienteController extends Controller
                 'dni'       => 'required|max:11',
                 'razon_social'    => 'required|max:200',
                 'direccion'    => 'required|max:400',
+                'celular'       => 'required|max:9',
                 );
         }else{
             $reglas = array(
@@ -225,6 +230,7 @@ class ClienteController extends Controller
                 'apellido_pat'    => 'required|max:100',
                 'apellido_mat'    => 'required|max:100',
                 'direccion'    => 'required|max:400',
+                'celular'       => 'required|max:9',
                 );
         }
         $validacion = Validator::make($request->all(),$reglas);
@@ -251,6 +257,7 @@ class ClienteController extends Controller
             }
             $cliente->tipo_persona  = "C";
             $cliente->direccion  = $request->input('direccion');
+            $cliente->celular  = $request->input('celular');
             $cliente->save();
         });
         return is_null($error) ? "OK" : $error;
