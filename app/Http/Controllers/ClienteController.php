@@ -120,20 +120,18 @@ class ClienteController extends Controller
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $cant = $request->input('cantc');
-        $reglas = array(
-            );
-        if($cant == 8){
-            $reglas = array(
-                'dni'       => 'required|max:11',
-                'nombres'    => 'required|max:100',
-                'apellido_pat'    => 'required|max:100',
-                'apellido_mat'    => 'required|max:100',
-                'direccion'    => 'required|max:400',
-                );
-        }else if($cant == 11){
+        if($cant == 11){
             $reglas = array(
                 'dni'       => 'required|max:11',
                 'razon_social'    => 'required|max:200',
+                'direccion'    => 'required|max:400',
+                );
+        }else{
+            $reglas = array(
+                'dni'       => 'required|max:8',
+                'nombres'    => 'required|max:100',
+                'apellido_pat'    => 'required|max:100',
+                'apellido_mat'    => 'required|max:100',
                 'direccion'    => 'required|max:400',
                 );
         }
@@ -214,18 +212,18 @@ class ClienteController extends Controller
         }
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $cant = $request->input('cantc');
-        if($cant == 8){
-            $reglas = array(
-                'dni'       => 'required|max:11',
-                'nombres'    => 'required|max:100',
-                'apellido_pat'    => 'required|max:100',
-                'apellido_mat'    => 'required|max:100',
-                'direccion'    => 'required|max:400',
-                );
-        }else if($cant == 11){
+        if($cant == 11){
             $reglas = array(
                 'dni'       => 'required|max:11',
                 'razon_social'    => 'required|max:200',
+                'direccion'    => 'required|max:400',
+                );
+        }else{
+            $reglas = array(
+                'dni'       => 'required|max:8',
+                'nombres'    => 'required|max:100',
+                'apellido_pat'    => 'required|max:100',
+                'apellido_mat'    => 'required|max:100',
                 'direccion'    => 'required|max:400',
                 );
         }
