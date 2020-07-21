@@ -27,6 +27,7 @@
 			<td>{{ $value->ruc }}</td>
 			<td>{{ $value->razon_social  }}</td>
 			@endif
+			<td>{{ $value->direccion  }}</td>
 		</tr>
 		<?php
 		$contador = $contador + 1;
