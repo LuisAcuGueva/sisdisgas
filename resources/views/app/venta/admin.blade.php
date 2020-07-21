@@ -51,32 +51,54 @@ operaciones
 			<div class="x_content">
 
 			{!! Form::open(['route' => $ruta["guardarventa"], 'method' => 'POST' ,'onsubmit' => 'return false;', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'IDFORMMANTENIMIENTO'.$entidad]) !!}
-			
-			<div style="    border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54;">
-			<h4 class="page-venta" style ="margin-top: 8px;  font-weight: 600;">SELECCIONE EMPLEADO</h4><div style="width: 100%; text-align: right; margin-top: -31px;"><a type="button" id="btnMostrarEmpleados" class="btn btn-warning btn-xs glyphicon glyphicon-chevron-up" style="width: 25px; height: 23px;" value="0"></div></a>
+			<div class="col-lg-6 col-md-6 col-sm-6">
+				<div style="    border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54;">
+					<h4 class="page-venta" style ="margin-top: 8px;  font-weight: 600;">SELECCIONE EMPLEADO</h4>
+				</div>
+
+				@if(!empty($empleados))
+				<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
+					@foreach($empleados  as $key => $value)
+						<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 100px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
+							<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
+							<label style="font-size: 11px;  color: #2a3f54;">{{ $value->razon_social ? $value->razon_social : $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat}}</label>
+						</div>
+					@endforeach
+					{!! Form::hidden('empleado_id',null,array('id'=>'empleado_id')) !!}
+					{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
+				</div>
+				@else
+				<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES EN TURNO</h4>
+				@endif
 			</div>
 
-			@if(!empty($empleados))
-			<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
-				@foreach($empleados  as $key => $value)
-					<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 100px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
-						<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
-						<label style="font-size: 11px;  color: #2a3f54;">{{ $value->razon_social ? $value->razon_social : $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat}}</label>
-					</div>
-				@endforeach
-				{!! Form::hidden('empleado_id',null,array('id'=>'empleado_id')) !!}
-				{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
-			</div>
-			@else
-			<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES EN TURNO</h4>
-			@endif
-
-			<div style="    border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
-				<h4 id="tituloDetalle" class="page-venta" style="padding-top: 1px;  font-weight: 600;"><div class="col-lg-3 col-md-3 col-sm-3">DATOS DEL DOCUMENTO</div><div class="col-lg-6 col-md-6 col-sm-6">SELECCIONE PRODUCTOS</div><div class="col-lg-3 col-md-3 col-sm-3">PAGO</div></h4>
+			<div class="col-lg-6 col-md-6 col-sm-6">
+				<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
+					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS ADICIONALES DEL PEDIDO</h4>
+				</div>
+				<!--div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+					{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+					{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'generarNumeroSerie(); permisoRegistrar();')) !!}		
+				</div>
+				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+					{!! Form::label('tipodocumento_id', 'Tipo de Documento:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+					{!! Form::select('tipodocumento_id', $cboTipoDocumento, null, array('class' => 'form-control input-sm', 'id' => 'tipodocumento_id', 'onchange' => 'generarNumeroSerie();')) !!}		
+				</div>
+				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+					{!! Form::label('serieventa2', 'Número:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+					{!! Form::text('serieventa2', '', array('class' => 'form-control input-sm', 'id' => 'serieventa2', 'data-inputmask' => "'mask': '9999-9999999'")) !!}
+				</div>
+				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+					{!! Form::label('fecha2', 'Fecha:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+					{!! Form::text('fecha2', '', array('class' => 'form-control input-sm', 'id' => 'fecha2', 'readOnly')) !!}
+				</div-->
 			</div>
 
 			<div class="col-lg-12 col-md-12 col-sm-12">
 				<div class="col-lg-3 col-md-3 col-sm-3" id="divDatosDocumento1">
+					<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
+						<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS DEL DOCUMENTO</h4>
+					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 						{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
 						{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'generarNumeroSerie(); permisoRegistrar();')) !!}		
@@ -112,6 +134,9 @@ operaciones
 				</div>
 
 				<div class="col-lg-6 col-md-6 col-sm-6">
+					<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
+						<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">SELECCIONE PRODUCTOS</h4>
+					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<div id="servicios_frecuentes" class="col-lg-12 col-md-12 col-sm-12" style="margin: 10px; border-style: groove; width: 100%; height: 180px; overflow-y: scroll;">
 							@foreach($productos  as $key => $value)
@@ -134,6 +159,9 @@ operaciones
 				</div>
 
 			<div class="col-lg-3 col-md-3 col-sm-3">
+				<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
+					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">PAGO</h4>
+				</div>
 				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 					<div  class="col-lg-4 col-md-4 col-sm-4">
 						<img src="assets/images/efectivo.png" style="width: 60px; height: 60px">
@@ -233,22 +261,6 @@ $(document).ready(function(){
 	generarNumeroSerie();
 
 	permisoRegistrar();
-
-	$('#btnMostrarEmpleados').on('click',function(){
-		if($('#btnMostrarEmpleados').attr('value')=='0'){
-			$('#btnMostrarEmpleados').attr('value','1');
-			$('#empleados').css('display','none');
-			$('#btnMostrarEmpleados').removeClass('glyphicon-chevron-up');
-			$('#btnMostrarEmpleados').addClass('glyphicon-chevron-down');
-			$('#tituloDetalle').css('margin-top','5px');
-		}else if($('#btnMostrarEmpleados').attr('value')=='1'){
-			$('#btnMostrarEmpleados').attr('value','0');
-			$('#empleados').css('display','-webkit-inline-box');
-			$('#btnMostrarEmpleados').removeClass('glyphicon-chevron-down');
-			$('#btnMostrarEmpleados').addClass('glyphicon-chevron-up');
-			$('#tituloDetalle').css('margin-botton','0px');
-		}
-	});
 
 	$(".montos").blur(function() {
 		if($('#montoefectivo').val() != ""){
@@ -541,7 +553,6 @@ function permisoRegistrar(){
 				$('#empleado_id').attr('value',idempleado);
 				$("#empleado_nombre").val($(this).children('label').html());
 
-				setTimeout ("ocultarEmpleados();", 500); 
 				$('#divMensajeErrorVenta').html("");
 			});
 
@@ -551,13 +562,6 @@ function permisoRegistrar(){
 	});
 
 	return aperturaycierre;
-}
-function ocultarEmpleados(){
-	$('#btnMostrarEmpleados').attr('value','1');
-	$('#empleados').css('display','none');
-	$('#btnMostrarEmpleados').removeClass('glyphicon-chevron-up');
-	$('#btnMostrarEmpleados').addClass('glyphicon-chevron-down');
-	$('#tituloDetalle').css('margin-top','5px');
 }
 
 </script>

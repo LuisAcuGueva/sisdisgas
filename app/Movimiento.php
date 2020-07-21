@@ -47,5 +47,17 @@ class Movimiento extends Model
 					->where('tipomovimiento_id', "=", $tipomovimiento_id)
         			->orderBy('num_caja','DESC')->orderBy('fecha', 'DESC');
 	}
+
+	public function trabajador(){
+		return $this->belongsTo('App\Person', 'trabajador_id');
+	}
+
+	public function persona(){
+		return $this->belongsTo('App\Person', 'persona_id');
+	}
+
+	public function sucursal(){
+		return $this->belongsTo('App\Sucursal', 'sucursal_id');
+	}
 	
 }

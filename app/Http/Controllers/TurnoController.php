@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\Concepto;
 use App\Turnorepartidor;
 use App\Person;
+use App\Detalleturnopedido;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -18,9 +19,9 @@ class TurnoController extends Controller
 
     protected $folderview      = 'app.turno';
     protected $tituloAdmin     = 'Turno de Repartidor ';
-    protected $tituloRegistrar = 'Registrar concepto';
-    protected $tituloModificar = 'Modificar concepto';
-    protected $tituloEliminar  = 'Eliminar concepto';
+    protected $tituloRegistrar = 'Registrar turno';
+    protected $tituloModificar = 'Modificar turno';
+    protected $tituloEliminar  = 'Eliminar turno';
     protected $rutas           = array('create' => 'turno.create', 
             'edit'     => 'turno.edit', 
             'delete'   => 'turno.eliminar',
@@ -37,16 +38,21 @@ class TurnoController extends Controller
     {
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
-        $entidad          = 'Concepto';
-        $persona_id       = Libreria::getParam($request->input('persona_id'));
-        $resultado        = Concepto::listar($persona_id);
-        $lista            = $resultado->get();
+        $entidad          = 'Turno';
+        $turno_id         = Libreria::getParam($request->input('turno_id'));
+        $lista            = array();
+        if($turno_id != null){
+            $resultado        = Detalleturnopedido::where('turno_id', '=', $turno_id);
+            $lista            = $resultado->get();
+        }
         $cabecera         = array();
-        $cabecera[]       = array('valor' => 'EDIT', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'ELIM', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'TIPO', 'numero' => '2');
-        
+        $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'TIPO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
+
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
         $ruta             = $this->rutas;

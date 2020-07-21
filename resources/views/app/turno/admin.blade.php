@@ -21,15 +21,20 @@
 								<label style="font-size: 11px;  color: #2a3f54;">{{ $nombre_completo }}</label>
 							</div>
 						@endforeach
-						{!! Form::hidden('persona_id',null,array('id'=>'persona_id')) !!}
+						{!! Form::hidden('turno_id',null,array('id'=>'turno_id')) !!}
 						{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 					</div>
 					@else
 					<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES EN TURNO</h4>
 					@endif
 				</div>
-				{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
-				{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo', array('class' => 'btn btn-primary waves-effect waves-light m-l-10 btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
+				<div class="form-group">
+					{!! Form::label('filas', 'Filas a mostrar:')!!}
+					{!! Form::selectRange('filas', 1, 30, 15, array('class' => 'form-control input-sm', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+				</div>
+				{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Dar monto para vuelto', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
+				{!! Form::button('<i class="glyphicon glyphicon-download-alt"></i> Descargar dinero', array('class' => 'btn btn-warning waves-effect waves-light m-l-10 btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
+				{!! Form::button('<i class="glyphicon glyphicon-remove"></i> Cerrar turno', array('class' => 'btn btn-danger waves-effect waves-light m-l-10 btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
 				{!! Form::close() !!}
 				
 				<div id="listado{{ $entidad }}"></div>
@@ -56,8 +61,9 @@
 			var idempleado = $(this).attr('id');
 			$(".empleado").css('background', 'rgb(255,255,255)');
 			$(this).css('background', 'rgb(179,188,237)');
-			$('#persona_id').attr('value',idempleado);
+			$('#turno_id').attr('value',idempleado);
 			$("#empleado_nombre").val($(this).children('label').html());
+			buscar('{{ $entidad }}');
 		});
 	});
 </script>

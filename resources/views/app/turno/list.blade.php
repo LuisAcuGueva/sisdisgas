@@ -1,5 +1,5 @@
 @if(count($lista) == 0)
-<h3 class="text-warning">No se encontraron resultados.</h3>
+<h3 class="text-warning">Seleccione repartidor en turno.</h3>
 @else
 {!! $paginacion or '' !!}
 <div class="table-responsive">
@@ -17,14 +17,29 @@
 		?>
 		@foreach ($lista as $key => $value)
 		<tr>
-			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-sm btn-warning glyphicon glyphicon-pencil')) !!}</td>
-			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
-			<td>{{ $value->concepto }}</td>
-			@if($value->tipo == 0)
-				<td>INGRESO</td>
-			@else
-				<td>EGRESO</td>
+			@if($value->pedido->tipomovimiento_id == 2)
+				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
+				@elseif($value->pedido->tipomovimiento_id == 1)
+				<td align="center"> - </td>
+			@endif	
+			<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->pedido->fecha )) }}</td>
+			@if($value->pedido->tipomovimiento_id == 2)
+				<td> PEDIDO </td>
+			@elseif($value->pedido->tipomovimiento_id == 1)
+				<td> MONTO VUELTO </td>
 			@endif
+
+			@if (!is_null($value->pedido->persona))
+				@if(!is_null($value->pedido->persona->dni))
+				<td>{{ $value->pedido->persona->apellido_pat.' '.$value->pedido->persona->apellido_mat.' '.$value->pedido->persona->nombres  }}</td>
+				@else
+				<td>{{ $value->pedido->persona->razon_social  }}</td>
+				@endif
+			@else
+				<td align="center"> - </td>
+			@endif
+			<td> {{ $value->pedido->sucursal->nombre }} </td>
+			<td align="center"> {{ $value->pedido->total }} </td>
 		</tr>
 		<?php
 		$contador = $contador + 1;
