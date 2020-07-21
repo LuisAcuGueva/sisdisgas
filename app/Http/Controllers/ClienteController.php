@@ -320,4 +320,10 @@ class ClienteController extends Controller
         return json_encode($data);
     }
 
+    public function ultimocliente(){
+        $ultimo = Person::where('tipo_persona' , 'C')->max('id');
+        $ultimocliente = Person::find($ultimo);
+        return $ultimocliente;
+    }
+
 }

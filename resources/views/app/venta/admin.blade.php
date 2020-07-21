@@ -320,9 +320,9 @@ $(document).ready(function(){
 						cantidadfila++;
 						$(this).attr('cantidad',cantidadfila);
 						if(editable == 0){
-							var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;">'+ cantidadfila +'</td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;">'+ (precio*cantidadfila).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precio*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+							var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;">'+ (precio*cantidadfila).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precio*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
 						}else if(editable == 1){
-							var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;">'+ cantidadfila +'</td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precioactual).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precioactual*cantidadfila).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precioactual*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+							var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precioactual).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precioactual*cantidadfila).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precioactual*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
 						}
 						$(this).html(nuevafila);
 						existe = true;
@@ -334,9 +334,9 @@ $(document).ready(function(){
 
 		if(!existe){
 			if(editable == 0){
-				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;">'+ 1 +'</td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
 			}else if(editable == 1){
-				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;">'+ 1 +'</td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precio).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precio).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
 			}
 			$("#detalle").append(fila);
 			cant++;
@@ -368,7 +368,34 @@ $(document).ready(function(){
 				$('#divMensajeErrorVenta').html(cadenaError);
 				$('#btnGuardar').prop('disabled', true);
 			}
-
+		});
+		
+		$(".cantidadeditable").blur(function() {
+			var elemento = this;
+			var cantidadnueva = parseInt($(this).val());
+			console.log("cantidadnueva :" + cantidadnueva);
+			if(cantidadnueva >= 0){
+				var tr = $(this).parent().parent();
+				var precioactual = $(tr).attr('precio');
+				//var cantidad = $(tr).attr('cantidad');
+				$(tr).attr('precio',precioactual);
+				$(tr).attr('cantidad',cantidadnueva);
+				var trprecioacumulado = $(tr).find('.precioacumulado');
+				$(trprecioacumulado).html((precioactual*cantidadnueva).toFixed(2));
+				var btneliminar = $(tr).find('.btnEliminar');
+				$(btneliminar).attr('precio',(precioactual*cantidadnueva).toFixed(2));
+				calcularTotal();
+				$("#montoefectivo").val("");
+				$("#montovisa").val("");
+				$("#montomaster").val("");
+				$("#vuelto").val((0).toFixed(2));
+				//$('#btnGuardar').prop('disabled', false);
+			}else{
+				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+				cadenaError += '<li>Los campos de precios editables no deben ser negativos.</li></ul></div>';
+				$('#divMensajeErrorVenta').html(cadenaError);
+				$('#btnGuardar').prop('disabled', true);
+			}
 		});
 	
 		
@@ -464,7 +491,7 @@ $(document).ready(function(){
 						if (result.value) {
 							guardarventa();
 							setTimeout(function(){
-								cargarRutaMenu('caja', 'container', '15');
+								cargarRutaMenu('turno', 'container', '15');
 							},3000);
 						}
 					})
@@ -648,19 +675,13 @@ function detalleventa(){
 	var data = [];
 	$("#detalle tr").each(function(){
 		var element = $(this); // <-- en la variable element tienes tu elemento
-		var tipo = element.attr('class');
-		if(tipo === "DetalleServicio"){
-			tipo = "S";
-		}
-		if(tipo === "DetalleProducto"){
-			tipo = "P";
-		}
+		
 		var id = element.attr('id');
 		var cantidad = element.attr('cantidad');
 		var precio = element.attr('precio');
 	
 		data.push(
-			{"tipo": tipo , "id": id , "cantidad": cantidad, "precio": precio }
+			{"id": id , "cantidad": cantidad, "precio": precio }
 		);
 
 	});

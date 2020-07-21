@@ -56,7 +56,7 @@
 				</div>
 
 				<div class="col-lg-4 col-md-4 col-sm-4">
-					{!! Form::button('<i class="glyphicon glyphicon-plus"></i>', array( 'id' => 'btnpersonanuevo' , 'class' => 'btn btn-success waves-effect waves-light btn-sm btnCliente', 'onclick' => 'modalCaja (\''.URL::route($ruta["persona"], array('listar'=>'SI')).'\', \''.$titulo_persona.'\', this);', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'NUEVO')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-plus"></i>', array( 'id' => 'btnpersonanuevo' , 'class' => 'btn btn-success waves-effect waves-light btn-sm btnCliente', 'onclick' => 'modalCaja (\''.URL::route($ruta["persona"], array('listar'=>'SI')).'\', \''.$titulo_persona.'\', this);', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'NUEVO', 'style' => 'display:none;')) !!}
 					{!! Form::button('<i class="glyphicon glyphicon-user"></i>', array('id' => 'btnpersonavarios' , 'class' => 'btn btn-primary waves-effect waves-light btn-sm btnDefecto', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'VARIOS')) !!}
 					{!! Form::button('<i class="glyphicon glyphicon-trash"></i>', array('id' => 'btnpersonaborrar' , 'class' => 'btn btn-danger waves-effect waves-light btn-sm btnBorrar' , 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'BORRAR')) !!}
 					{!! Form::hidden('persona_id',null,array('id'=>'persona_id')) !!}

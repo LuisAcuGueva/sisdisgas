@@ -13,7 +13,7 @@ if(!is_null($cliente)){
 {!! Form::model($cliente, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 <div class="form-group">
-	{!! Form::label('dni', 'DNI:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
+	{!! Form::label('dni', 'DNI / RUC:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 	@if(is_null($cliente))
 		<div class="col-lg-8 col-md-8 col-sm-8">
 			{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
@@ -67,7 +67,7 @@ if(!is_null($cliente)){
 </div>
 <div class="form-group">
 	<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="glyphicon glyphicon-floppy-disk"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+		{!! Form::button('<i class="glyphicon glyphicon-floppy-disk"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardarCliente')) !!}
 		&nbsp;
 		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 	</div>
@@ -107,5 +107,37 @@ if(!is_null($cliente)){
 			}
 		}
 
-	}); 
+		$('#btnGuardarCliente').on('click', function(){
+
+			guardar( '{{ $entidad }}', this);
+
+			setTimeout(function(){
+				mostrarultimo();
+			},1000);
+
+		});
+
+}); 
+
+
+function mostrarultimo(){
+	var cliente = null;
+	var ajax = $.ajax({
+		"method": "POST",
+		"url": "{{ url('/cliente/ultimocliente') }}",
+		"data": {
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		cliente = info;
+	}).always(function(){
+		//$('#serieventa').val(serieventa);
+		console.log("id cliente : " + cliente.id);
+		console.log("nombre cliente : " + cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
+		$('#cliente').val(cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
+		$('#cliente_id').val(cliente.id);
+		$("#cliente").prop('disabled',true);
+	});
+}
 </script>
+

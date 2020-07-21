@@ -90,6 +90,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('cliente/eliminar/{id}/{listarluego}','ClienteController@eliminar')->name('cliente.eliminar');
     Route::resource('cliente', 'ClienteController', array('except' => array('show')));
     Route::get('cliente/clienteautocompleting/{searching}', 'ClienteController@clienteautocompleting')->name('cliente.clienteautocompleting');
+    Route::post('cliente/ultimocliente','ClienteController@ultimocliente')->name('cliente.ultimocliente');
 
     Route::post('concepto/buscar','ConceptoController@buscar')->name('concepto.buscar');
     Route::get('concepto/eliminar/{id}/{listarluego}','ConceptoController@eliminar')->name('concepto.eliminar');
