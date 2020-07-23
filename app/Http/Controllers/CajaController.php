@@ -131,7 +131,10 @@ class CajaController extends Controller
                          ->where('tipomovimiento_id',1)
                          ->where('estado', "=", 1)
                          ->where('sucursal_id', "=", $sucursal_id)
-                         ->where('concepto_id', "=", 12) // montovuelto
+                         ->where(function($subquery)
+                            {
+                                $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
+                            })
                          ->sum('total');
 
                         round($monto_vuelto,2);
@@ -255,7 +258,10 @@ class CajaController extends Controller
                         ->where('tipomovimiento_id',1)
                         ->where('estado', "=", 1)
                         ->where('sucursal_id', "=", $sucursal_id)
-                        ->where('concepto_id', "=", 12) // montovuelto
+                        ->where(function($subquery)
+                            {
+                                $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
+                            })
                         ->sum('total');
 
                        round($monto_vuelto,2);
@@ -380,7 +386,12 @@ class CajaController extends Controller
                         ->where('tipomovimiento_id',1)
                         ->where('estado', "=", 1)
                         ->where('sucursal_id', "=", $sucursal_id)
-                        ->where('concepto_id', "=", 12) // montovuelto
+                        /*->where('concepto_id', "=", 12) // montovuelto
+                        ->orwhere('concepto_id', "=", 15)*/
+                        ->where(function($subquery)
+                            {
+                                $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
+                            })
                         ->sum('total');
 
                        round($monto_vuelto,2);
@@ -704,7 +715,7 @@ class CajaController extends Controller
             }
             $movimiento->estado         = 1;
             $trabajador = Person::find($request->input('persona_id'));
-            if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 2 || $request->input('concepto_id') == 12){
+            if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 2 || $request->input('concepto_id') == 12 || $request->input('concepto_id') == 14 || $request->input('concepto_id') == 13 || $request->input('concepto_id') == 15){
                 if($trabajador->tipo_persona == "T"){
                     $movimiento->trabajador_id     = $request->input('persona_id');
                 }
@@ -716,7 +727,7 @@ class CajaController extends Controller
             $movimiento->sucursal_id   = $request->input('sucursal');
             $movimiento->comentario     = strtoupper($request->input('comentario'));
             $movimiento->save();
-            if($request->input('concepto_id') == 12){
+            if($request->input('concepto_id') == 12  || $request->input('concepto_id') == 14 || $request->input('concepto_id') == 13 || $request->input('concepto_id') == 15){
                 $sucursal_id = $request->input('sucursal');
                 $maxapertura = Movimiento::where('concepto_id', 1)
                 ->where('sucursal_id', "=", $sucursal_id)
@@ -863,6 +874,10 @@ class CajaController extends Controller
                                 ->where('id','!=',1)
                                 ->where('id','!=',2)
                                 ->where('id','!=',3)
+                                ->where('id','!=',12)
+                                ->where('id','!=',13)
+                                ->where('id','!=',14)
+                                ->where('id','!=',15)
                                 ->orderBy('id','ASC')->get();
         $html = "";
         foreach($conceptos as $key => $value){

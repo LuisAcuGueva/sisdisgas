@@ -123,16 +123,16 @@ class VentaController extends Controller
         
         $error = DB::transaction(function() use($request){
 
-            $num_caja = Movimiento::where('tipomovimiento_id', 1)
+            /*$num_caja = Movimiento::where('tipomovimiento_id', 1)
                                     ->where('sucursal_id', $request->input('sucursal_id'))
                                     ->where('estado', "=", 1)
                                     ->max('num_caja');
-            $num_caja = $num_caja + 1;
+            $num_caja = $num_caja + 1;*/
 
             $movimiento                       = new Movimiento();
             $movimiento->tipomovimiento_id    = 2;
             $movimiento->tipodocumento_id     = $request->input('tipodocumento_id');
-            $movimiento->num_caja             = $num_caja;  
+            //$movimiento->num_caja             = $num_caja;  
             $movimiento->concepto_id          = 3;
             $movimiento->num_venta            = $request->input('serieventa');  
             $total                            = $request->input('total');

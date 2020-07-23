@@ -58,7 +58,7 @@ class TipousuarioController extends Controller
         $cabecera[]       = array('valor' => 'EDIT', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ELIM', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NOMBRE', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'PERMISOS', 'numero' => '2');
+        $cabecera[]       = array('valor' => 'PERMISOS', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;

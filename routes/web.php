@@ -78,6 +78,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('producto', 'ProductoController', array('except' => array('show')));
 
     Route::post('turno/buscar','TurnoController@buscar')->name('turno.buscar');
+    Route::get('turno/vuelto', 'TurnoController@vuelto')->name('turno.vuelto');
+    Route::get('turno/descargadinero', 'TurnoController@descargadinero')->name('turno.descargadinero');
+    Route::get('turno/cierre', 'TurnoController@cierre')->name('turno.cierre');
+    Route::get('turno/detalle', 'TurnoController@detalle')->name('turno.detalle');
+    Route::post('turno/cargarnumerocaja', 'TurnoController@cargarnumerocaja')->name('turno.cargarnumerocaja');
+    Route::post('turno/generarSaldoRepartidor', 'TurnoController@generarSaldoRepartidor')->name('turno.generarSaldoRepartidor');
     Route::get('turno/eliminar/{id}/{listarluego}','TurnoController@eliminar')->name('turno.eliminar');
     Route::resource('turno', 'TurnoController', array('except' => array('show')));
 

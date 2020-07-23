@@ -24,10 +24,7 @@ class Movimiento extends Model
 	 */
 	public function scopelistar($query, $fechainicio, $fechafin, $num_caja, $sucursal_id, $aperturaycierre, $maxapertura, $maxcierre, $tipomovimiento_id)
     {
-		$user = Auth::user();
-		$empresa_id = $user->empresa_id;
-
-		return $query->where(function($subquery) use($fechainicio, $fechafin, $num_caja, $empresa_id, $aperturaycierre, $maxapertura, $maxcierre)
+		return $query->where(function($subquery) use($fechainicio, $fechafin, $num_caja, $aperturaycierre, $maxapertura, $maxcierre)
 		            {
 						if (!is_null($maxapertura) && !is_null($maxcierre)) {
 							if($aperturaycierre == 0){ //apertura y cierre iguales ---- no mostrar nada
@@ -50,6 +47,10 @@ class Movimiento extends Model
 
 	public function trabajador(){
 		return $this->belongsTo('App\Person', 'trabajador_id');
+	}
+
+	public function concepto(){
+		return $this->belongsTo('App\Concepto', 'concepto_id');
 	}
 
 	public function persona(){

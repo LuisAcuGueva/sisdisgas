@@ -7,6 +7,14 @@
 	</div>
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
+			{!! Form::label('sucursal_id', 'Sucursal:')!!}
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-4">
+			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id', 'onchange' => 'generarNumeroCaja();')) !!}		
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('fecha', 'Fecha:')!!}
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
@@ -21,11 +29,11 @@
 			{!! Form::text('hora', '', array('class' => 'form-control input-xs', 'id' => 'hora', 'readOnly')) !!}
 		</div>
 	</div>
-	<div class="form-group" style="display:none;">	
+	<div class="form-group">	
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
-			{!! Form::label('num_caja', 'Nro:')!!}
+			{!! Form::label('num_caja', 'Nro caja:')!!}
 		</div>
-		<div class="col-lg-6 col-md-6 col-sm-6">
+		<div class="col-lg-4 col-md-4 col-sm-4">
 			{!! Form::text('num_caja', '', array('class' => 'form-control input-xs', 'id' => 'num_caja', 'readOnly')) !!}
 		</div>
 	</div>
@@ -45,13 +53,13 @@
 			{!! Form::text('nombrepersona', null, array('class' => 'form-control input-xs', 'id' => 'nombrepersona', 'placeholder' => 'Seleccione persona')) !!}
 		</div>
 	</div-->
-	@if(empty($trabajadores_sinturno))
+	@if(empty($trabajadores_iniciados))
 	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">TODOS LOS REPARTIDORES EN TURNO</h4>
 	@else
 	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center;">SELECCIONE REPARTIDOR</h4>
 	<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
-		@foreach($trabajadores_sinturno  as $key => $value)
-			<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 100px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
+		@foreach($trabajadores_iniciados  as $key => $value)
+			<div class="empleadomv" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 100px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
 				<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
 				<label style="font-size: 11px;  color: #2a3f54;">{{ $value->razon_social ? $value->razon_social : $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat}}</label>
 			</div>
@@ -62,10 +70,10 @@
 	@endif
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
-			{!! Form::label('total', 'Monto:')!!}<div class="" style="display: inline-block;color: red;">*</div>
+			{!! Form::label('monto', 'Monto:')!!}<div class="" style="display: inline-block;color: red;">*</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
-			{!! Form::text('total', '' , array('class' => 'form-control input-xs', 'id' => 'total')) !!}
+			{!! Form::text('monto', '' , array('class' => 'form-control input-xs', 'id' => 'monto')) !!}
 		</div>
 	</div>
 	<div class="form-group">
@@ -78,7 +86,7 @@
 	</div>
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-			@if(empty($trabajadores_sinturno))
+			@if(empty($trabajadores_iniciados))
 			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'disabled' => 'true', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
 			@else
 			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
@@ -112,8 +120,8 @@ $(document).ready(function() {
 	$('#fecha').val(fecha);
 
 	//CONCEPTO
-	$('#concepto').val('VUELTO AL INICIAR TURNO DEL REPARTIDOR');
-	$('#concepto_id').val(15);
+	$('#concepto').val('VUELTO PARA TURNO DEL REPARTIDOR');
+	$('#concepto_id').val(12);
 
 	//NRO MOVIMIENTO
 	$('#num_caja').val({{$num_caja}});
@@ -122,9 +130,11 @@ $(document).ready(function() {
 	$('#tipopago').val(1);
 
 	//TOTAL
-	$('#total').val(0);
+	//$('#monto').val(0);
 
-	$('#total').focus();
+	$('#monto').focus();
+
+	generarNumeroCaja();
 
 	mueveReloj();
 
@@ -158,21 +168,35 @@ $(document).ready(function() {
 		$('#persona_id').val(datum.id);
 	});
 
-	$(".empleado").on('click', function(){
+	$(".empleadomv").on('click', function(){
 		var idempleado = $(this).attr('id');
-		$(".empleado").css('background', 'rgb(255,255,255)');
+		$(".empleadomv").css('background', 'rgb(255,255,255)');
 		$(this).css('background', 'rgb(179,188,237)');
 		$('#persona_id').attr('value',idempleado);
 		$("#empleado_nombre").val($(this).children('label').html());
 	});
-
-	$("#dni").keyup(function(){
-		//hacer que aparezcan los inputs seguna la cantidad de largo del string 8 dni 11 ruc
-		var cantc = $("#dni").val();
-		mostrarinputs(cantc.length);
-		$("#cantc").val(cantc.length);
-	}); 
 }); 
+
+function generarNumeroCaja(){
+
+	var num_caja = null;
+
+	var sucursal_id = $('#sucursal_id').val();
+
+	$.ajax({
+		"method": "POST",
+		"url": "{{ url('/turno/cargarnumerocaja') }}",
+		"data": {
+			"sucursal_id" : sucursal_id, 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		num_caja = info;
+	}).always(function(){
+		$('#num_caja').val(num_caja);
+	});
+
+}
 
 	
 /*Script del Reloj */

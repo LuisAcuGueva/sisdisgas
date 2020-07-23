@@ -8,6 +8,8 @@ use App\Http\Requests;
 use App\Concepto;
 use App\Turnorepartidor;
 use App\Person;
+use App\Sucursal;
+use App\Movimiento;
 use App\Detalleturnopedido;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -18,13 +20,15 @@ class TurnoController extends Controller
 {
 
     protected $folderview      = 'app.turno';
-    protected $tituloAdmin     = 'Turno de Repartidor ';
-    protected $tituloRegistrar = 'Registrar turno';
-    protected $tituloModificar = 'Modificar turno';
-    protected $tituloEliminar  = 'Eliminar turno';
-    protected $rutas           = array('create' => 'turno.create', 
-            'edit'     => 'turno.edit', 
-            'delete'   => 'turno.eliminar',
+    protected $tituloAdmin     = 'Repartidores en turno';
+    protected $tituloMontoVuelto = 'Dar monto vuelto a repartidor';
+    protected $tituloDescargaDinero = 'Ingreso de dinero a caja';
+    protected $tituloCierreTurno = 'Cerrar turno de repartidor';
+    protected $tituloDetalle  = 'Detalle de pedido';
+    protected $rutas           = array('detalle' => 'turno.detalle', 
+            'vuelto'     => 'turno.vuelto', 
+            'descargadinero'     => 'turno.descargadinero', 
+            'cierre'   => 'turno.cierre',
             'search'   => 'turno.buscar',
             'index'    => 'turno.index',
         );
@@ -38,12 +42,55 @@ class TurnoController extends Controller
     {
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
-        $entidad          = 'Turno';
+        $entidad          = 'Turnorepartidor';
         $turno_id         = Libreria::getParam($request->input('turno_id'));
         $lista            = array();
+        $ingresos_repartidor = 0.00;
+        $vueltos_repartidor = 0.00;
+        $total_ingresos = 0.00;
+        $egresos_repartidor = 0.00;
+        $saldo_repartidor = 0.00;
         if($turno_id != null){
             $resultado        = Detalleturnopedido::where('turno_id', '=', $turno_id);
             $lista            = $resultado->get();
+
+            $ingresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where(function($subquery)
+                                                            {
+                                                                $subquery->where('concepto.id','=', 3);
+                                                            })
+                                                        ->sum('total');
+
+            $vueltos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where(function($subquery)
+                                                            {
+                                                                $subquery->where('concepto.id','=', 12)->orwhere('concepto.id','=', 15);
+                                                            })
+                                                        ->sum('total');
+
+            $egresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where(function($subquery)
+                                                            {
+                                                                $subquery->where('concepto.id','=', 13)->orwhere('concepto.id','=', 14);
+                                                            })
+                                                        ->sum('total');
+
+            round($ingresos_repartidor,2);
+            round($vueltos_repartidor,2);
+            round($egresos_repartidor,2);
+
+            $total_ingresos = $ingresos_repartidor + $vueltos_repartidor;
+
+            $saldo_repartidor = $ingresos_repartidor + $vueltos_repartidor - $egresos_repartidor;
+
+            round($saldo_repartidor,2);
+
         }
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
@@ -53,8 +100,7 @@ class TurnoController extends Controller
         $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
 
-        $titulo_modificar = $this->tituloModificar;
-        $titulo_eliminar  = $this->tituloEliminar;
+        $tituloDetalle = $this->tituloDetalle;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -65,7 +111,7 @@ class TurnoController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'titulo_modificar', 'titulo_eliminar', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloDetalle', 'ruta'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -77,9 +123,11 @@ class TurnoController extends Controller
      */
     public function index()
     {
-        $entidad          = 'Concepto';
+        $entidad          = 'Turnorepartidor';
         $title            = $this->tituloAdmin;
-        $titulo_registrar = $this->tituloRegistrar;
+        $tituloMontoVuelto = $this->tituloMontoVuelto;
+        $tituloDescargaDinero = $this->tituloDescargaDinero;
+        $tituloCierreTurno = $this->tituloCierreTurno;
         $ruta             = $this->rutas;
         $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
         // TRABAJADORES EN TURNO
@@ -88,7 +136,8 @@ class TurnoController extends Controller
             $trabajador = Person::find($value->trabajador_id);
             array_push($empleados, $trabajador);
         }
-        return view($this->folderview.'.admin')->with(compact('entidad', 'turnos_iniciados', 'title', 'titulo_registrar', 'ruta'));
+        $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
+        return view($this->folderview.'.admin')->with(compact('entidad', 'turnos_iniciados', 'cboSucursal','title', 'tituloCierreTurno', 'tituloMontoVuelto', 'tituloDescargaDinero','ruta'));
     }
 
     /**
@@ -96,15 +145,70 @@ class TurnoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function vuelto(Request $request)
     {
         $listar       = Libreria::getParam($request->input('listar'), 'NO');
-        $entidad      = 'Concepto';
-        $concepto  = null;
-        $formData     = array('concepto.store');
+        $entidad      = 'Turnorepartidor';
+        $movimiento   = null;
+        $formData     = array('turno.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton        = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('concepto', 'formData', 'entidad', 'boton', 'listar'));
+
+        $num_caja   = null;
+
+        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
+        // TRABAJADORES EN TURNO
+        $trabajadores_iniciados = array();
+        foreach ($turnos_iniciados as $key => $value) {
+            $trabajador = Person::find($value->trabajador_id);
+            array_push($trabajadores_iniciados, $trabajador);
+        }
+        $boton        = 'Guardar';
+        $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
+        return view($this->folderview.'.montovuelto')->with(compact('persona_id' , 'cboSucursal', 'trabajadores_iniciados' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
+    public function descargadinero(Request $request)
+    {
+        $listar       = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad      = 'Turnorepartidor';
+        $movimiento   = null;
+        $formData     = array('turno.store');
+        $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+
+        $num_caja   = null;
+        
+        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
+        // TRABAJADORES EN TURNO
+        $trabajadores_iniciados = array();
+        foreach ($turnos_iniciados as $key => $value) {
+            $trabajador = Person::find($value->trabajador_id);
+            array_push($trabajadores_iniciados, $trabajador);
+        }
+        $boton        = 'Guardar';
+        $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
+        return view($this->folderview.'.descargadinero')->with(compact('persona_id' , 'cboSucursal', 'trabajadores_iniciados' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
+    public function cierre(Request $request)
+    {
+        $listar       = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad      = 'Turnorepartidor';
+        $movimiento   = null;
+        $formData     = array('turno.store');
+        $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+
+        $num_caja   = null;
+
+        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
+        // TRABAJADORES EN TURNO
+        $trabajadores_iniciados = array();
+        foreach ($turnos_iniciados as $key => $value) {
+            $trabajador = Person::find($value->trabajador_id);
+            array_push($trabajadores_iniciados, $trabajador);
+        }
+        $boton        = 'Guardar';
+        $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
+        return view($this->folderview.'.cerrarturno')->with(compact('persona_id' , 'cboSucursal', 'trabajadores_iniciados' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -116,17 +220,68 @@ class TurnoController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $reglas     = array('concepto' => 'required|max:120');
+            $reglas     = array('num_caja' => 'required|numeric',
+                                'fecha'      => 'required',
+                                'concepto_id'   => 'required',
+                                'persona_id' => 'required',
+                                'monto'      => 'required|numeric',
+                            );
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request){
-            $concepto       = new Concepto();
-            $concepto->concepto = strtoupper($request->input('concepto'));
-            $concepto->tipo = $request->input('tipom');
-            $concepto->save();
+            $movimiento       = new Movimiento();
+            $movimiento->tipomovimiento_id = 1;
+            $movimiento->concepto_id    = $request->input('concepto_id');
+            $movimiento->num_caja   = $request->input('num_caja');
+            $movimiento->total             = $request->input('monto');
+            $movimiento->subtotal          = $request->input('monto');
+            $movimiento->estado         = 1;
+            $trabajador = Person::find($request->input('persona_id'));
+            if($request->input('concepto_id') == 13 || $request->input('concepto_id') == 14 || $request->input('concepto_id') == 12){
+                if($trabajador->tipo_persona == "T"){
+                    $movimiento->trabajador_id     = $request->input('persona_id');
+                }
+            }else{
+                $movimiento->persona_id     = $request->input('persona_id');
+            }
+            $user           = Auth::user();
+            $movimiento->usuario_id     = $user->id;
+            $movimiento->sucursal_id   = $request->input('sucursal_id');
+            $movimiento->comentario     = strtoupper($request->input('comentario'));
+            $movimiento->save();
+            if($request->input('concepto_id') == 13 || $request->input('concepto_id') == 14  || $request->input('concepto_id') == 12){
+                $sucursal_id = $request->input('sucursal_id');
+                $maxapertura = Movimiento::where('concepto_id', 1)
+                ->where('sucursal_id', "=", $sucursal_id)
+                ->where('estado', "=", 1)
+                ->max('num_caja');
+                $apertura = Movimiento::where('concepto_id', 1)
+                        ->where('sucursal_id', "=", $sucursal_id)
+                        ->where('estado', "=", 1)
+                        ->where('num_caja',$maxapertura)->first();
+                $turno_repartidor = Turnorepartidor::where('trabajador_id', $request->input('persona_id'))->first();
+                if(is_null($turno_repartidor)){
+                    $turno_repartidor = new Turnorepartidor();
+                    $turno_repartidor->estado    = "I";
+                    $turno_repartidor->apertura_id = $apertura->id;
+                    //$turno_repartidor->vuelto_id = $movimiento->id;
+                    $turno_repartidor->trabajador_id = $request->input('persona_id');
+                    $turno_repartidor->save();
+                }else{
+                    if($request->input('concepto_id') == 14 ){
+                        $turno_repartidor->estado    = "C";
+                        $turno_repartidor->save();
+                    }
+                }
+
+                $detalle_turno_pedido =  new Detalleturnopedido();
+                $detalle_turno_pedido->pedido_id = $movimiento->id;
+                $detalle_turno_pedido->turno_id = $turno_repartidor->id;
+                $detalle_turno_pedido->save();
+            }
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -148,7 +303,7 @@ class TurnoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, $id)
+    public function detalle(Request $request, $id)
     {
         $existe = Libreria::verificarExistencia($id, 'concepto');
         if ($existe !== true) {
@@ -156,80 +311,51 @@ class TurnoController extends Controller
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $concepto = Concepto::find($id);
-        $entidad  = 'Concepto';
+        $entidad  = 'Turnorepartidor';
         $formData = array('concepto.update', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
         return view($this->folderview.'.mant')->with(compact('concepto', 'formData', 'entidad', 'boton', 'listar'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $existe = Libreria::verificarExistencia($id, 'concepto');
-        if ($existe !== true) {
-            return $existe;
-        }
-        $reglas     = array('concepto' => 'required|max:100');
-        $mensajes   = array();
-        $validacion = Validator::make($request->all(), $reglas, $mensajes);
-        if ($validacion->fails()) {
-            return $validacion->messages()->toJson();
-        } 
-        $error = DB::transaction(function() use($request, $id){
-            $concepto       = Concepto::find($id);
-            $concepto->concepto = strtoupper($request->input('concepto'));
-            $concepto->tipo = $request->input('tipom');
-            $concepto->save();
-        });
-        return is_null($error) ? "OK" : $error;
+    public function cargarnumerocaja(Request $request){
+        $sucursal_id  = $request->input('sucursal_id');
+        $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
+        return $num_caja;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        $existe = Libreria::verificarExistencia($id, 'concepto');
-        if ($existe !== true) {
-            return $existe;
+    public function generarSaldoRepartidor(Request $request){
+        $persona_id         = Libreria::getParam($request->input('persona_id'));
+        $ingresos_repartidor = 0.00;
+        $egresos_repartidor = 0.00;
+        $saldo_repartidor = 0.00;
+        $turno_repartidor = Turnorepartidor::where('trabajador_id', $persona_id)->first();
+        if($turno_repartidor != null){
+            $resultado        = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id);
+            $lista            = $resultado->get();
+
+            $ingresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where(function($subquery)
+                                                            {
+                                                                $subquery->where('concepto.id','=', 3)->orwhere('concepto.id','=', 12)->orwhere('concepto.id','=', 15);
+                                                            })
+                                                        ->sum('total');
+
+            $egresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where(function($subquery)
+                                                            {
+                                                                $subquery->where('concepto.id','=', 13)->orwhere('concepto.id','=', 14);
+                                                            })
+                                                        ->sum('total');
+
+            $saldo_repartidor = $ingresos_repartidor - $egresos_repartidor;
+
         }
-        $error = DB::transaction(function() use($id){
-            $concepto = Concepto::find($id);
-            $concepto->delete();
-        });
-        return is_null($error) ? "OK" : $error;
+        return $saldo_repartidor;
     }
 
-    /**
-     * Función para confirmar la eliminación de un registrlo
-     * @param  integer $id          id del registro a intentar eliminar
-     * @param  string $listarLuego consultar si luego de eliminar se listará
-     * @return html              se retorna html, con la ventana de confirmar eliminar
-     */
-    public function eliminar($id, $listarLuego)
-    {
-        $existe = Libreria::verificarExistencia($id, 'concepto');
-        if ($existe !== true) {
-            return $existe;
-        }
-        $listar = "NO";
-        if (!is_null(Libreria::obtenerParametro($listarLuego))) {
-            $listar = $listarLuego;
-        }
-        $modelo   = Concepto::find($id);
-        $entidad  = 'Concepto';
-        $formData = array('route' => array('concepto.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton    = 'Eliminar';
-        return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
-    }
 }
