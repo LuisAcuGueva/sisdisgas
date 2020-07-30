@@ -158,46 +158,46 @@ operaciones
 					</div>
 				</div>
 
-			<div class="col-lg-3 col-md-3 col-sm-3">
-				<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
-					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">PAGO</h4>
-				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
-					<div  class="col-lg-4 col-md-4 col-sm-4">
-						<img src="assets/images/efectivo.png" style="width: 60px; height: 60px">
+				<div class="col-lg-3 col-md-3 col-sm-3">
+					<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
+						<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">PAGO</h4>
 					</div>
-					<div  class="col-lg-8 col-md-8 col-sm-8">
-						{!! Form::text('montoefectivo', '', array('class' => 'form-control input-lg montos', 'id' => 'montoefectivo', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
+					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+						<div  class="col-lg-4 col-md-4 col-sm-4">
+							<img src="assets/images/efectivo.png" style="width: 60px; height: 60px">
+						</div>
+						<div  class="col-lg-8 col-md-8 col-sm-8">
+							{!! Form::text('montoefectivo', '', array('class' => 'form-control input-lg montos', 'id' => 'montoefectivo', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="display: none;">
+						<div  class="col-lg-4 col-md-4 col-sm-4">
+							<img src="assets/images/visa.png" style="width: 60px; height: 60px">
+						</div>
+						<div  class="col-lg-8 col-md-8 col-sm-8">
+							{!! Form::text('montovisa', '', array('class' => 'form-control input-lg montos', 'id' => 'montovisa', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="display: none;">
+						<div  class="col-lg-4 col-md-4 col-sm-4">
+							<img src="assets/images/master.png" style="width: 60px; height: 40px">
+						</div>
+						<div  class="col-lg-8 col-md-8 col-sm-8">
+							{!! Form::text('montomaster', '', array('class' => 'form-control input-lg montos', 'id' => 'montomaster', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="margin-top: 10px;">
+						{!! Form::label('total', 'Total:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
+						{!! Form::text('total', '', array('class' => 'form-control input-lg', 'id' => 'total', 'readOnly', 'style' => 'text-align: right; font-size: 30px; margin-top: 25px;')) !!}
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12" style="margin-top: 10px;">
+						{!! Form::label('vuelto', 'Vuelto:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
+						{!! Form::text('vuelto', '', array('class' => 'form-control input-lg', 'id' => 'vuelto', 'readOnly', 'style' => 'text-align: right; font-size: 30px; color: red;  margin-top: 25px;', 'placeholder' => '0.00')) !!}
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="text-align:right">
+						{!! Form::button('<i class="glyphicon glyphicon-floppy-disk"></i> Guardar', array( 'class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md btnGuardar', 'id' => 'btnGuardar' , 'style' => 'margin-top: 23px;' )) !!}
 					</div>
 				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="display: none;">
-					<div  class="col-lg-4 col-md-4 col-sm-4">
-						<img src="assets/images/visa.png" style="width: 60px; height: 60px">
-					</div>
-					<div  class="col-lg-8 col-md-8 col-sm-8">
-						{!! Form::text('montovisa', '', array('class' => 'form-control input-lg montos', 'id' => 'montovisa', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
-					</div>
-				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="display: none;">
-					<div  class="col-lg-4 col-md-4 col-sm-4">
-						<img src="assets/images/master.png" style="width: 60px; height: 40px">
-					</div>
-					<div  class="col-lg-8 col-md-8 col-sm-8">
-						{!! Form::text('montomaster', '', array('class' => 'form-control input-lg montos', 'id' => 'montomaster', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
-					</div>
-				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="margin-top: 10px;">
-					{!! Form::label('total', 'Total:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
-					{!! Form::text('total', '', array('class' => 'form-control input-lg', 'id' => 'total', 'readOnly', 'style' => 'text-align: right; font-size: 30px; margin-top: 25px;')) !!}
-				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12" style="margin-top: 10px;">
-					{!! Form::label('vuelto', 'Vuelto:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
-					{!! Form::text('vuelto', '', array('class' => 'form-control input-lg', 'id' => 'vuelto', 'readOnly', 'style' => 'text-align: right; font-size: 30px; color: red;  margin-top: 25px;', 'placeholder' => '0.00')) !!}
-				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="text-align:right">
-					{!! Form::button('<i class="glyphicon glyphicon-floppy-disk"></i> Guardar', array( 'class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md btnGuardar', 'id' => 'btnGuardar' , 'style' => 'margin-top: 23px;' )) !!}
-				</div>
-			</div>
 
 			{!! Form::close() !!}
 			<div class="col-lg-12 col-md-12 col-sm-12">

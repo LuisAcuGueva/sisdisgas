@@ -60,5 +60,9 @@ class Movimiento extends Model
 	public function sucursal(){
 		return $this->belongsTo('App\Sucursal', 'sucursal_id');
 	}
+
+	public function tipodocumento(){
+		return $this->belongsTo('App\Tipodocumento', 'tipodocumento_id');
+	}
 	
 }

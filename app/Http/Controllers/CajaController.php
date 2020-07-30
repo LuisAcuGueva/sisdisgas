@@ -490,7 +490,7 @@ class CajaController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'ANUL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NRO', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TRABAJADOR', 'numero' => '1');

@@ -11,6 +11,7 @@ use App\Person;
 use App\Sucursal;
 use App\Movimiento;
 use App\Detalleturnopedido;
+use App\Detalleventa;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -94,8 +95,8 @@ class TurnoController extends Controller
         }
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'TIPO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
@@ -305,17 +306,19 @@ class TurnoController extends Controller
      */
     public function detalle(Request $request, $id)
     {
-        $existe = Libreria::verificarExistencia($id, 'concepto');
+        $existe = Libreria::verificarExistencia($id, 'detalle_turno_pedido');
         if ($existe !== true) {
             return $existe;
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
-        $concepto = Concepto::find($id);
+        $detalle_turno_pedido = Detalleturnopedido::find($id);
+        $pedido = Movimiento::find($detalle_turno_pedido->pedido_id);
+        $detalles = Detalleventa::where('venta_id',$pedido->id)->get();
         $entidad  = 'Turnorepartidor';
-        $formData = array('concepto.update', $id);
+        $formData = array('turno.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('concepto', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.detalle')->with(compact('pedido', 'detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function cargarnumerocaja(Request $request){

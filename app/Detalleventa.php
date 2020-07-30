@@ -14,5 +14,9 @@ class Detalleventa extends Model
    use SoftDeletes;
    protected $table = 'detalle_venta';   
    protected $date = 'delete_at';
+
+   public function producto(){
+		return $this->belongsTo('App\Producto', 'producto_id');
+	}
 	
 }
