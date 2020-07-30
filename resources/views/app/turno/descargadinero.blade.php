@@ -197,6 +197,11 @@ $(document).ready(function() {
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
 			cadenaError += '<li>El monto a ingresar a caja no debe ser mayor al saldo actual del repartidor.</li></ul></div>';
 			$('#divMensajeErrorTurnorepartidor').html(cadenaError);
+		}else if( monto <= 0){
+			$('#btnGuardar').prop('disabled', true);
+			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+			cadenaError += '<li>El monto a ingresar debe ser mayor a 0.</li></ul></div>';
+			$('#divMensajeErrorTurnorepartidor').html(cadenaError);
 		}else{
 			$('#btnGuardar').prop('disabled', false);
 			$('#divMensajeErrorTurnorepartidor').html("");

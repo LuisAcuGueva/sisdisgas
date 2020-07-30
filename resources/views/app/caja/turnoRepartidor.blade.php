@@ -122,7 +122,6 @@ $(document).ready(function() {
 	$('#tipopago').val(1);
 
 	//TOTAL
-	$('#total').val(0);
 
 	$('#total').focus();
 
@@ -166,12 +165,21 @@ $(document).ready(function() {
 		$("#empleado_nombre").val($(this).children('label').html());
 	});
 
-	$("#dni").keyup(function(){
-		//hacer que aparezcan los inputs seguna la cantidad de largo del string 8 dni 11 ruc
-		var cantc = $("#dni").val();
-		mostrarinputs(cantc.length);
-		$("#cantc").val(cantc.length);
+	$("#total").keyup(function(){
+		var total = parseFloat($("#total").val());
+
+		if( total <= 0){
+			$('#btnGuardar').prop('disabled', true);
+			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+			cadenaError += '<li>El monto a ingresar debe ser mayor a 0.</li></ul></div>';
+			$('#divMensajeErrorCaja').html(cadenaError);
+		}else{
+			$('#btnGuardar').prop('disabled', false);
+			$('#divMensajeErrorCaja').html("");
+		}
+
 	}); 
+	
 }); 
 
 	

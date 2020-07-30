@@ -200,11 +200,10 @@ class VentaController extends Controller
 
             $trabajador =$request->input('empleado_id');
 
-            $max_turno_apertura = Turnorepartidor::where('trabajador_id', $trabajador)
-                                ->max('apertura_id');
+            $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
+                                ->max('id');
 
-            $turno_maximo = Turnorepartidor::where('apertura_id',$max_turno_apertura)
-                                ->first();
+            $turno_maximo = Turnorepartidor::find($max_turno);
 
             $detalle_turno_pedido =  new Detalleturnopedido();
             $detalle_turno_pedido->pedido_id = $movimiento->id;
