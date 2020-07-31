@@ -52,7 +52,7 @@
 			</div>
 			<div class="col-lg-10 col-md-10 col-sm-10">
 				<div class="col-lg-8 col-md-8 col-sm-8">
-					{!! Form::text('persona', '', array('class' => 'form-control input-xs', 'id' => 'persona' , 'placeholder' => 'Ingrese nombre o razón social')) !!}
+					{!! Form::text('persona', '', array('class' => 'form-control input-xs', 'id' => 'persona' , 'placeholder' => 'Ingrese nombre o razón social', 'style' => 'background-color: white;')) !!}
 				</div>
 
 				<div class="col-lg-4 col-md-4 col-sm-4">

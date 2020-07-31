@@ -142,13 +142,13 @@ operaciones
 						<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 20px;">
 							{!! Form::button('<i class="glyphicon glyphicon-plus"></i>', array( 'id' => 'btnclientenuevo' , 'class' => 'btn btn-success waves-effect waves-light btn-sm btnCliente', 'onclick' => 'modal (\''.URL::route($ruta["cliente"], array('listar'=>'SI')).'\', \''.$titulo_cliente.'\', this);', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'NUEVO')) !!}
 						</div>
-						<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 10px;">
+						<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 10px; display:none;">
 							{!! Form::button('<i class="glyphicon glyphicon-user"></i>', array('id' => 'btnclientevarios' , 'class' => 'btn btn-primary waves-effect waves-light btn-sm btnDefecto', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'VARIOS')) !!}
 						</div>
 						<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 10px;">
 							{!! Form::button('<i class="glyphicon glyphicon-trash"></i>', array('id' => 'btnclienteborrar' , 'class' => 'btn btn-danger waves-effect waves-light btn-sm btnBorrar' , 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'BORRAR')) !!}
 						</div>
-						{!! Form::text('cliente', '', array('class' => 'form-control input-sm', 'id' => 'cliente')) !!}
+						{!! Form::text('cliente', '', array('class' => 'form-control input-sm', 'id' => 'cliente', 'style' => 'background-color: white;')) !!}
 						{!! Form::hidden('cliente_id',null,array('id'=>'cliente_id')) !!}
 					</div>
 				</div>
@@ -261,16 +261,16 @@ $(document).ready(function(){
 	var fecha = ndia + "/" + mes + "/" + año
 	$('#fecha').val(fecha);
 
-	//CLIENTE ANÓNIMO
+	/*//CLIENTE ANÓNIMO
 		$('#cliente_id').val({{ $anonimo->id }});
 		$('#cliente').val('VARIOS');
-		$("#cliente").prop('disabled',true);
+		$("#cliente").prop('disabled',true);*/
 
-	$('.btnDefecto').on('click', function(){
+	/*$('.btnDefecto').on('click', function(){
 		$('#cliente_id').val({{ $anonimo->id }});
 		$('#cliente').val('VARIOS');
 		$("#cliente").prop('disabled',true);
-	});
+	});*/
 
 	$('.btnBorrar').on('click', function(){
 		$('#cliente_id').val("");
@@ -379,7 +379,7 @@ $(document).ready(function(){
 		$('#vuelto').val(vuelto.toFixed(2));
 		if(montoefectivo - vuelto  + montovisa + montomaster != total){
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-			cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual al TOTAL.</li></ul></div>';
+			cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
 			$('#divMensajeErrorVenta').html(cadenaError);
 			$('#btnGuardar').prop('disabled', true);
 		}else{
@@ -454,12 +454,16 @@ $(document).ready(function(){
 				$("#montovisa").val("");
 				$("#montomaster").val("");
 				$("#vuelto").val((0).toFixed(2));
+				$('#divMensajeErrorVenta').html("");
 				//$('#btnGuardar').prop('disabled', false);
 			}else{
 				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-				cadenaError += '<li>Los campos de precios editables no deben ser negativos.</li></ul></div>';
+				cadenaError += '<li>Los campos de precios editables deben ser montos positivos.</li></ul></div>';
 				$('#divMensajeErrorVenta').html(cadenaError);
-				$('#btnGuardar').prop('disabled', true);
+				//$('#btnGuardar').prop('disabled', true);
+				var tr = $(this).parent().parent();
+				var precioactual = $(tr).attr('precio');
+				$(this).val(precioactual);
 			}
 		});
 		
@@ -482,12 +486,16 @@ $(document).ready(function(){
 				$("#montovisa").val("");
 				$("#montomaster").val("");
 				$("#vuelto").val((0).toFixed(2));
+				$('#divMensajeErrorVenta').html("");
 				//$('#btnGuardar').prop('disabled', false);
 			}else{
 				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-				cadenaError += '<li>Los campos de precios editables no deben ser negativos.</li></ul></div>';
+				cadenaError += '<li>Los campos de cantidad deben ser números positivos.</li></ul></div>';
 				$('#divMensajeErrorVenta').html(cadenaError);
-				$('#btnGuardar').prop('disabled', true);
+				//$('#btnGuardar').prop('disabled', true);
+				var tr = $(this).parent().parent();
+				var cantidadactual = $(tr).attr('cantidad');
+				$(this).val(cantidadactual);
 			}
 		});
 	
@@ -522,7 +530,7 @@ $(document).ready(function(){
 		$('#vuelto').val(vuelto.toFixed(2));
 		if(montoefectivo - vuelto  + montovisa + montomaster != total){
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-			cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual al TOTAL.</li></ul></div>';
+			cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
 			$('#divMensajeErrorVenta').html(cadenaError);
 			$('#btnGuardar').prop('disabled', true);
 		}else{
@@ -568,7 +576,7 @@ $(document).ready(function(){
 					cadenaError += ' <li> El campo empleado es obligatorio.</li>';
 				}
 				if(cant ==0){
-					cadenaError += '<li>Debe agregar mínimo un servicio o producto.</li></ul></div>';
+					cadenaError += '<li>Debe agregar mínimo un producto.</li></ul></div>';
 				}
 				$('#divMensajeErrorVenta').html(cadenaError);
 			}else{
@@ -661,7 +669,7 @@ function permisoRegistrar(){
 		}else if(aperturaycierre == 1){
 			$('form').find('input, textarea, button').prop('disabled',false);
 			$("#tipodocumento_id").prop('disabled',false);
-			$("#cliente").prop('disabled',true);
+			//$("#cliente").prop('disabled',true);
 			
 
 			$(".empleado").css('background', 'rgb(255,255,255)');
@@ -755,7 +763,7 @@ function eliminarDetalle(comp){
 	$('#vuelto').val(vuelto.toFixed(2));
 	if(montoefectivo - vuelto  + montovisa + montomaster != total){
 		var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-		cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual al TOTAL.</li></ul></div>';
+		cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
 		$('#divMensajeErrorVenta').html(cadenaError);
 		$('#btnGuardar').prop('disabled', true);
 	}else{
@@ -831,8 +839,8 @@ function detalleventa(){
 
 			permisoRegistrar();
 
-			$('#cliente_id').val({{ $anonimo->id }});
-			$('#cliente').val('VARIOS');
+/*			$('#cliente_id').val({{ $anonimo->id }});
+			$('#cliente').val('VARIOS');*/
 
 			$('#empleado_id').val("");
 			$(".empleado").css('background', 'rgb(255,255,255)');

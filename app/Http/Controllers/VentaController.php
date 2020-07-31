@@ -113,7 +113,7 @@ class VentaController extends Controller
         $reglas     = array('empleado_id' => 'required',
                             'serieventa' => 'required',
                             'cliente_id' => 'required',
-                            'total' => 'required',
+                            'montoefectivo' => 'required',
                            );
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
@@ -163,6 +163,45 @@ class VentaController extends Controller
             }
 
             $movimiento->estado               = 1;
+
+            $balon_nuevo                = $request->input('balon_nuevo');
+            if($balon_nuevo == true){
+                $movimiento->balon_nuevo    = 1;
+            }else{
+                $movimiento->balon_nuevo    = 0;
+            }
+
+            $balon_a_cuenta                = $request->input('balon_a_cuenta');
+            if($balon_a_cuenta == true){
+                $movimiento->balon_a_cuenta    = 1;
+            }else{
+                $movimiento->balon_a_cuenta    = 0;
+            }
+
+            $vale_balon_lleno                = $request->input('vale_balon_lleno');
+            if($vale_balon_lleno == true){
+                $movimiento->vale_balon_lleno    = 1;
+            }else{
+                $movimiento->vale_balon_lleno    = 0;
+            }
+
+            $vale_balon_monto                = $request->input('vale_balon_monto');
+            if($vale_balon_monto == true){
+                $movimiento->vale_balon_monto    = 1;
+                $movimiento->monto_vale_balon        = $request->input('monto_vale_balon');
+            }else{
+                $movimiento->vale_balon_monto    = 0;
+            }
+
+            $vale_balon_sisfoh                = $request->input('vale_balon_sisfoh');
+            if($vale_balon_sisfoh == true){
+                $movimiento->vale_balon_sisfoh    = 1;
+                $movimiento->monto_vale_sisfoh        = $request->input('monto_vale_sisfoh');
+            }else{
+                $movimiento->vale_balon_sisfoh    = 0;
+            }
+
+
             $movimiento->persona_id           = $request->input('cliente_id');
             $movimiento->trabajador_id        = $request->input('empleado_id');
             $user           = Auth::user();
