@@ -76,22 +76,42 @@ operaciones
 				<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
 					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS ADICIONALES DEL PEDIDO</h4>
 				</div>
-				<!--div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
-					{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-					{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'generarNumeroSerie(); permisoRegistrar();')) !!}		
+				<div class="col-lg-4 col-md-4 col-sm-4 m-b-15">
+					<div class="col-lg-12 col-md-12 col-sm-12" style="margin-bottom: 15px;">
+						{!! Form::label('balon_nuevo', 'Balón nuevo:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+						<input name="balon_nuevo" type="checkbox" id="balon_nuevo">
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12">
+						{!! Form::label('balon_a_cuenta', 'Balón a cuenta:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+						<input name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
+					</div>
 				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
-					{!! Form::label('tipodocumento_id', 'Tipo de Documento:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-					{!! Form::select('tipodocumento_id', $cboTipoDocumento, null, array('class' => 'form-control input-sm', 'id' => 'tipodocumento_id', 'onchange' => 'generarNumeroSerie();')) !!}		
+				<div class="col-lg-8 col-md-8 col-sm-8 m-b-15 vales">
+					<div class="col-lg-12 col-md-12 col-sm-12">
+						<div class="col-lg-7 col-md-7 col-sm-7" style="margin-bottom: 15px;">
+							{!! Form::label('vale_balon_lleno', 'Vale Balón Lleno:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+							<input name="vale_balon_lleno" type="checkbox" id="vale_balon_lleno">
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12">
+						<div class="col-lg-7 col-md-7 col-sm-7" style="margin-bottom: 15px;">
+							{!! Form::label('vale_balon_monto', 'Vale Balón Monto:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+							<input name="vale_balon_monto" type="checkbox" id="vale_balon_monto">
+						</div>
+						<div class="col-lg-5 col-md-5 col-sm-5" style="margin-bottom: 15px;">
+							{!! Form::text('monto_vale_balon', '', array('class' => 'form-control input-lg montos', 'id' => 'monto_vale_balon', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00' , 'readOnly')) !!}
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12">
+						<div class="col-lg-7 col-md-7 col-sm-7" style="margin-bottom: 15px;">
+							{!! Form::label('vale_balon_sisfoh', 'Vale Balón SISFOH:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+							<input name="vale_balon_sisfoh" type="checkbox" id="vale_balon_sisfoh">
+						</div>
+						<div class="col-lg-5 col-md-5 col-sm-5" style="margin-bottom: 15px;">
+							{!! Form::text('monto_vale_sisfoh', '', array('class' => 'form-control input-lg montos', 'id' => 'monto_vale_sisfoh', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00', 'readOnly')) !!}
+						</div>
+					</div>
 				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
-					{!! Form::label('serieventa2', 'Número:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-					{!! Form::text('serieventa2', '', array('class' => 'form-control input-sm', 'id' => 'serieventa2', 'data-inputmask' => "'mask': '9999-9999999'")) !!}
-				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
-					{!! Form::label('fecha2', 'Fecha:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-					{!! Form::text('fecha2', '', array('class' => 'form-control input-sm', 'id' => 'fecha2', 'readOnly')) !!}
-				</div-->
 			</div>
 
 			<div class="col-lg-12 col-md-12 col-sm-12">
@@ -256,6 +276,75 @@ $(document).ready(function(){
 		$('#cliente_id').val("");
 		$('#cliente').val("");
 		$("#cliente").prop('disabled',false);
+	});
+
+	$('input').iCheck({
+		checkboxClass: 'icheckbox_flat-green',
+		radioClass: 'iradio_flat-green'
+	});
+
+	$('.vales .iCheck-helper').on('click', function(){
+		var divpadre = $(this).parent();
+		var input = divpadre.find('input');
+		if( input.attr('id') == 'vale_balon_monto' ){
+			if( divpadre.hasClass('checked')) { 
+				console.log('seleccionar balon monto');
+				//activar vale monto
+				$('#vale_balon_monto').prop('checked',true);
+				$('#monto_vale_balon').prop('readOnly',false);
+				//desactivar demas vales
+				$('#monto_vale_sisfoh').prop('readOnly',true);
+				$('#vale_balon_sisfoh').parent().removeClass('checked');
+				$('#vale_balon_sisfoh').prop('checked',false);
+				$('#vale_balon_lleno').parent().removeClass('checked');
+				$('#vale_balon_lleno').prop('checked',false);
+			}else {
+				$('#monto_vale_balon').prop('readOnly',true);
+				console.log('deseleccionar balon monto');
+				//divpadre.addClass('checked');
+				$('#vale_balon_sisfoh').parent().removeClass('checked');
+				$('#vale_balon_lleno').parent().removeClass('checked');
+			}
+		}else if( input.attr('id') == 'vale_balon_sisfoh'){
+			if( divpadre.hasClass('checked')) { 
+				console.log('seleccionar balon sisfoh');
+				//activar vale sisfoh
+				$('#vale_balon_sisfoh').prop('checked',true);
+				$('#monto_vale_sisfoh').prop('readOnly',false);
+				//desactivar demas vales
+				$('#monto_vale_balon').prop('readOnly',true);
+				$('#vale_balon_monto').parent().removeClass('checked');
+				$('#vale_balon_monto').prop('checked',false);
+				$('#vale_balon_lleno').parent().removeClass('checked');
+				$('#vale_balon_lleno').prop('checked',false);
+			}else {
+				$('#monto_vale_sisfoh').prop('readOnly',true);
+				console.log('deseleccionar balon sisfoh');
+				//divpadre.addClass('checked');
+				$('#vale_balon_monto').parent().removeClass('checked');
+				$('#vale_balon_monto').prop('checked',false);
+				$('#vale_balon_lleno').parent().removeClass('checked');
+				$('#vale_balon_lleno').prop('checked',false);
+			}
+		}else if( input.attr('id') == 'vale_balon_lleno'){
+			if( divpadre.hasClass('checked')) { 
+				console.log('secleccionar balon lleno');
+				$('#vale_balon_sisfoh').parent().removeClass('checked');
+				$('#vale_balon_sisfoh').prop('checked',false);
+				$('#vale_balon_monto').parent().removeClass('checked');
+				$('#vale_balon_monto').prop('checked',false);
+				$('#monto_vale_balon').prop('readOnly',true);
+				$('#monto_vale_sisfoh').prop('readOnly',true);
+				divpadre.addClass('checked');
+			}else {
+				$('#monto_vale_sisfoh').prop('readOnly',true);
+				console.log('deseleccionar balon lleno');
+				//divpadre.addClass('checked');
+				$('#vale_balon_monto').parent().removeClass('checked');
+				$('#vale_balon_monto').prop('checked',false);
+				$('#vale_balon_lleno').parent().removeClass('checked');
+			}
+		}
 	});
 
 	generarNumeroSerie();

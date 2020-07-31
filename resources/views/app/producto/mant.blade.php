@@ -102,5 +102,9 @@
 $(document).ready(function() {
 	configurarAnchoModal('500');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+	$('input').iCheck({
+		checkboxClass: 'icheckbox_flat-green',
+		radioClass: 'iradio_flat-green'
+	});
 }); 
 </script>
