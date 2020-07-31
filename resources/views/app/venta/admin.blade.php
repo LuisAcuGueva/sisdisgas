@@ -294,6 +294,7 @@ $(document).ready(function(){
 				$('#monto_vale_balon').prop('readOnly',false);
 				//desactivar demas vales
 				$('#monto_vale_sisfoh').prop('readOnly',true);
+				$('#monto_vale_sisfoh').val('');
 				$('#vale_balon_sisfoh').parent().removeClass('checked');
 				$('#vale_balon_sisfoh').prop('checked',false);
 				$('#vale_balon_lleno').parent().removeClass('checked');
@@ -313,6 +314,7 @@ $(document).ready(function(){
 				$('#monto_vale_sisfoh').prop('readOnly',false);
 				//desactivar demas vales
 				$('#monto_vale_balon').prop('readOnly',true);
+				$('#monto_vale_balon').val('');
 				$('#vale_balon_monto').parent().removeClass('checked');
 				$('#vale_balon_monto').prop('checked',false);
 				$('#vale_balon_lleno').parent().removeClass('checked');
@@ -336,6 +338,8 @@ $(document).ready(function(){
 				$('#monto_vale_balon').prop('readOnly',true);
 				$('#monto_vale_sisfoh').prop('readOnly',true);
 				divpadre.addClass('checked');
+				$('#monto_vale_balon').val('');
+				$('#monto_vale_sisfoh').val('');
 			}else {
 				$('#monto_vale_sisfoh').prop('readOnly',true);
 				console.log('deseleccionar balon lleno');
