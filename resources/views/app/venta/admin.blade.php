@@ -53,13 +53,13 @@ operaciones
 			{!! Form::open(['route' => $ruta["guardarventa"], 'method' => 'POST' ,'onsubmit' => 'return false;', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'IDFORMMANTENIMIENTO'.$entidad]) !!}
 			<div class="col-lg-6 col-md-6 col-sm-6">
 				<div style="    border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54;">
-					<h4 class="page-venta" style ="margin-top: 8px;  font-weight: 600;">SELECCIONE EMPLEADO</h4>
+					<h4 class="page-venta" style ="margin-top: 8px;  font-weight: 600;">SELECCIONE REPARTIDOR</h4>
 				</div>
 
 				@if(!empty($empleados))
 				<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
 					@foreach($empleados  as $key => $value)
-						<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 100px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
+						<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
 							<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
 							<label style="font-size: 11px;  color: #2a3f54;">{{ $value->razon_social ? $value->razon_social : $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat}}</label>
 						</div>
@@ -76,6 +76,7 @@ operaciones
 				<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
 					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS ADICIONALES DEL PEDIDO</h4>
 				</div>
+				{!! Form::hidden('activar_checkbox',false,array('id'=>'activar_checkbox')) !!}
 				<div class="col-lg-4 col-md-4 col-sm-4 m-b-15">
 					<div class="col-lg-12 col-md-12 col-sm-12" style="margin-bottom: 15px;">
 						{!! Form::label('balon_nuevo', 'Balón nuevo:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
@@ -296,6 +297,8 @@ $(document).ready(function(){
 		$("#cliente").prop('disabled',true);
 	});*/
 
+	$('#activar_checkbox').val(false);
+
 	$('.btnBorrar').on('click', function(){
 		$('#cliente_id').val("");
 		$('#cliente').val("");
@@ -374,6 +377,8 @@ $(document).ready(function(){
 					divpadre.addClass('checked');
 					$('#monto_vale_balon').val('');
 					$('#monto_vale_sisfoh').val('');
+					$('#codigo_vale_monto').val('');
+					$('#codigo_vale_sisfoh').val('');
 				}else {
 					$('#monto_vale_sisfoh').prop('readOnly',true);
 					$('#codigo_vale_sisfoh').prop('readOnly',true);
@@ -444,6 +449,7 @@ $(document).ready(function(){
 		var existe = false;
 
 		if(idservicio_frecuente == 4 || idservicio_frecuente == 5 ){
+			$('#activar_checkbox').val(true);
 			activar_checkbox = true; 
 			console.log(activar_checkbox);
 			$('#balon_nuevo').prop('disabled', false);
@@ -474,6 +480,10 @@ $(document).ready(function(){
 			$('#codigo_vale_sisfoh').prop('readOnly', true);
 			$('#monto_vale_balon').prop('readOnly', true);
 			$('#monto_vale_sisfoh').prop('readOnly', true);
+			$('#monto_vale_balon').val('');
+			$('#monto_vale_sisfoh').val('');
+			$('#codigo_vale_monto').val('');
+			$('#codigo_vale_sisfoh').val('');
 		}
 
 		if(cant != 0){
@@ -808,27 +818,41 @@ function eliminarDetalle(comp){
 	var precioeliminar = parseFloat($(comp).attr('precio'));
 	var idproducto = $(comp).attr('idproducto');
 	if(idproducto == 4 || idproducto == 5 ){
+			$('#activar_checkbox').val(false);
 			activar_checkbox = false; 
 			console.log(activar_checkbox);
-			$('#vale_balon_monto').prop('checked', false);
+			//desactibar checkbox
 			$('#vale_balon_lleno').prop('disabled', true);
-			$('#vale_balon_monto').prop('checked', false);
 			$('#vale_balon_monto').prop('disabled', true);
+			$('#vale_balon_sisfoh').prop('disabled', true);
+
+			$('#vale_balon_lleno').prop('checked', false);
+			$('#vale_balon_monto').prop('checked', false);
+			$('#vale_balon_sisfoh').prop('checked', false);
+
+			//desactivar inputs
 			$('#codigo_vale_monto').prop('disabled', true);
 			$('#monto_vale_balon').prop('disabled', true);
-			$('#vale_balon_sisfoh').prop('checked', false);
-			$('#vale_balon_sisfoh').prop('disabled', true);
 			$('#codigo_vale_sisfoh').prop('disabled', true);
 			$('#monto_vale_sisfoh').prop('disabled', true);
+
 			$('#vale_balon_lleno').parent().removeClass('checked');
 			$('#vale_balon_monto').parent().removeClass('checked');
 			$('#vale_balon_sisfoh').parent().removeClass('checked');
+
 			$('#balon_nuevo').prop('disabled', true);
 			$('#balon_a_cuenta').prop('disabled', true);
+
 			$('#balon_nuevo').parent().removeClass('checked');
 			$('#balon_a_cuenta').parent().removeClass('checked');
+
 			$('#balon_nuevo').prop('checked', false);
 			$('#balon_a_cuenta').prop('checked', false);
+
+			$('#monto_vale_balon').val('');
+			$('#monto_vale_sisfoh').val('');
+			$('#codigo_vale_monto').val('');
+			$('#codigo_vale_sisfoh').val('');
 		}
 	var cant = $("#cant"). val();
 	cant--;
@@ -848,6 +872,7 @@ function eliminarDetalle(comp){
 		var id = element.attr('id');
 
 		if(id == 4 || id == 5 ){
+			$('#activar_checkbox').val(true);
 			activar_checkbox = true; 
 			console.log(activar_checkbox);
 			$('#balon_nuevo').prop('disabled', false);
@@ -859,10 +884,14 @@ function eliminarDetalle(comp){
 			$('#vale_balon_sisfoh').prop('disabled', false);
 			$('#codigo_vale_sisfoh').prop('disabled', false);
 			$('#monto_vale_sisfoh').prop('disabled', false);
+
 			$('#codigo_vale_monto').prop('readOnly', true);
 			$('#codigo_vale_sisfoh').prop('readOnly', true);
 			$('#monto_vale_balon').prop('readOnly', true);
 			$('#monto_vale_sisfoh').prop('readOnly', true);
+			
+			$('#balon_nuevo').parent().removeClass('checked');
+			$('#balon_a_cuenta').parent().removeClass('checked');
 			$('#vale_balon_lleno').parent().removeClass('checked');
 			$('#vale_balon_monto').parent().removeClass('checked');
 			$('#vale_balon_sisfoh').parent().removeClass('checked');
