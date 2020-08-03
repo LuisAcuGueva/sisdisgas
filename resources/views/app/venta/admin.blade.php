@@ -79,36 +79,43 @@ operaciones
 				<div class="col-lg-4 col-md-4 col-sm-4 m-b-15">
 					<div class="col-lg-12 col-md-12 col-sm-12" style="margin-bottom: 15px;">
 						{!! Form::label('balon_nuevo', 'Balón nuevo:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
-						<input name="balon_nuevo" type="checkbox" id="balon_nuevo">
+						<input class="balon" name="balon_nuevo" type="checkbox" id="balon_nuevo">
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						{!! Form::label('balon_a_cuenta', 'Balón a cuenta:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
-						<input name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
+						<input class="balon" name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
 					</div>
 				</div>
 				<div class="col-lg-8 col-md-8 col-sm-8 m-b-15 vales">
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<div class="col-lg-7 col-md-7 col-sm-7" style="margin-bottom: 15px;">
-							{!! Form::label('vale_balon_lleno', 'Vale Balón Lleno:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
-							<input name="vale_balon_lleno" type="checkbox" id="vale_balon_lleno">
+							{!! Form::label('vale_balon_lleno', 'Vale Balón Lleno:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
+							<input class="balon" name="vale_balon_lleno" type="checkbox" id="vale_balon_lleno">
 						</div>
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12">
-						<div class="col-lg-7 col-md-7 col-sm-7" style="margin-bottom: 15px;">
-							{!! Form::label('vale_balon_monto', 'Vale Balón Monto:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
-							<input name="vale_balon_monto" type="checkbox" id="vale_balon_monto">
+						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px;">
+							{!! Form::label('vale_balon_monto', 'Vale Monto (S/.):' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
+							<input class="balon"  name="vale_balon_monto" type="checkbox" id="vale_balon_monto">
 						</div>
-						<div class="col-lg-5 col-md-5 col-sm-5" style="margin-bottom: 15px;">
-							{!! Form::text('monto_vale_balon', '', array('class' => 'form-control input-lg montos', 'id' => 'monto_vale_balon', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00' , 'readOnly')) !!}
+						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px;">
+							{!! Form::text('codigo_vale_monto', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_monto' ,'placeholder' => 'Código vale monto', 'readOnly')) !!}
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-bottom: 15px;">
+							{!! Form::text('monto_vale_balon', '', array('class' => 'form-control input-lg montos balon', 'id' => 'monto_vale_balon', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00' , 'readOnly')) !!}
 						</div>
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12">
-						<div class="col-lg-7 col-md-7 col-sm-7" style="margin-bottom: 15px;">
-							{!! Form::label('vale_balon_sisfoh', 'Vale Balón SISFOH:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
-							<input name="vale_balon_sisfoh" type="checkbox" id="vale_balon_sisfoh">
+						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px;">
+							{!! Form::label('vale_balon_sisfoh', 'Vale SISFOH:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
+							<input class="balon"  name="vale_balon_sisfoh" type="checkbox" id="vale_balon_sisfoh">
+							
 						</div>
-						<div class="col-lg-5 col-md-5 col-sm-5" style="margin-bottom: 15px;">
-							{!! Form::text('monto_vale_sisfoh', '', array('class' => 'form-control input-lg montos', 'id' => 'monto_vale_sisfoh', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00', 'readOnly')) !!}
+						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px;">
+							{!! Form::text('codigo_vale_sisfoh', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_sisfoh','placeholder' => 'Código vale SISFOH', 'readOnly')) !!}
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-bottom: 15px;">
+							{!! Form::text('monto_vale_sisfoh', '', array('class' => 'form-control input-lg montos balon', 'id' => 'monto_vale_sisfoh', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00', 'readOnly')) !!}
 						</div>
 					</div>
 				</div>
@@ -150,6 +157,10 @@ operaciones
 						</div>
 						{!! Form::text('cliente', '', array('class' => 'form-control input-sm', 'id' => 'cliente', 'style' => 'background-color: white;')) !!}
 						{!! Form::hidden('cliente_id',null,array('id'=>'cliente_id')) !!}
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+						{!! Form::label('fecha', 'Dirección:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+						{!! Form::textarea('cliente_direccion', null, array('class' => 'form-control input-xs', 'rows' => '2','id' => 'cliente_direccion', 'readOnly')) !!}
 					</div>
 				</div>
 
@@ -220,7 +231,7 @@ operaciones
 				</div>
 
 			{!! Form::close() !!}
-			<div class="col-lg-12 col-md-12 col-sm-12">
+			<div class="col-lg-12 col-md-12 col-sm-12" style="margin-top: 15px;">
 				<div id="divMensajeError{!! $entidad !!}"></div>
 			</div>
         </div>
@@ -228,6 +239,19 @@ operaciones
 </div>
 <script>
 $(document).ready(function(){
+
+	//$('#vale_balon_monto').prop('checked', false);
+	$('#vale_balon_lleno').prop('disabled', true);
+	//$('#vale_balon_monto').prop('checked', false);
+	$('#vale_balon_monto').prop('disabled', true);
+	$('#codigo_vale_monto').prop('disabled', true);
+	$('#monto_vale_balon').prop('disabled', true);
+	//$('#vale_balon_sisfoh').prop('checked', false);
+	$('#vale_balon_sisfoh').prop('disabled', true);
+	$('#codigo_vale_sisfoh').prop('disabled', true);
+	$('#monto_vale_sisfoh').prop('disabled', true);
+	$('#balon_nuevo').prop('disabled', true);
+	$('#balon_a_cuenta').prop('disabled', true);
 
 	$('[data-toggle="tooltip"]').tooltip({trigger: 'hover'}); 
 
@@ -275,6 +299,7 @@ $(document).ready(function(){
 	$('.btnBorrar').on('click', function(){
 		$('#cliente_id').val("");
 		$('#cliente').val("");
+		$('#cliente_direccion').val("");
 		$("#cliente").prop('disabled',false);
 	});
 
@@ -286,67 +311,79 @@ $(document).ready(function(){
 	$('.vales .iCheck-helper').on('click', function(){
 		var divpadre = $(this).parent();
 		var input = divpadre.find('input');
-		if( input.attr('id') == 'vale_balon_monto' ){
-			if( divpadre.hasClass('checked')) { 
-				console.log('seleccionar balon monto');
-				//activar vale monto
-				$('#vale_balon_monto').prop('checked',true);
-				$('#monto_vale_balon').prop('readOnly',false);
-				//desactivar demas vales
-				$('#monto_vale_sisfoh').prop('readOnly',true);
-				$('#monto_vale_sisfoh').val('');
-				$('#vale_balon_sisfoh').parent().removeClass('checked');
-				$('#vale_balon_sisfoh').prop('checked',false);
-				$('#vale_balon_lleno').parent().removeClass('checked');
-				$('#vale_balon_lleno').prop('checked',false);
-			}else {
-				$('#monto_vale_balon').prop('readOnly',true);
-				console.log('deseleccionar balon monto');
-				//divpadre.addClass('checked');
-				$('#vale_balon_sisfoh').parent().removeClass('checked');
-				$('#vale_balon_lleno').parent().removeClass('checked');
-			}
-		}else if( input.attr('id') == 'vale_balon_sisfoh'){
-			if( divpadre.hasClass('checked')) { 
-				console.log('seleccionar balon sisfoh');
-				//activar vale sisfoh
-				$('#vale_balon_sisfoh').prop('checked',true);
-				$('#monto_vale_sisfoh').prop('readOnly',false);
-				//desactivar demas vales
-				$('#monto_vale_balon').prop('readOnly',true);
-				$('#monto_vale_balon').val('');
-				$('#vale_balon_monto').parent().removeClass('checked');
-				$('#vale_balon_monto').prop('checked',false);
-				$('#vale_balon_lleno').parent().removeClass('checked');
-				$('#vale_balon_lleno').prop('checked',false);
-			}else {
-				$('#monto_vale_sisfoh').prop('readOnly',true);
-				console.log('deseleccionar balon sisfoh');
-				//divpadre.addClass('checked');
-				$('#vale_balon_monto').parent().removeClass('checked');
-				$('#vale_balon_monto').prop('checked',false);
-				$('#vale_balon_lleno').parent().removeClass('checked');
-				$('#vale_balon_lleno').prop('checked',false);
-			}
-		}else if( input.attr('id') == 'vale_balon_lleno'){
-			if( divpadre.hasClass('checked')) { 
-				console.log('secleccionar balon lleno');
-				$('#vale_balon_sisfoh').parent().removeClass('checked');
-				$('#vale_balon_sisfoh').prop('checked',false);
-				$('#vale_balon_monto').parent().removeClass('checked');
-				$('#vale_balon_monto').prop('checked',false);
-				$('#monto_vale_balon').prop('readOnly',true);
-				$('#monto_vale_sisfoh').prop('readOnly',true);
-				divpadre.addClass('checked');
-				$('#monto_vale_balon').val('');
-				$('#monto_vale_sisfoh').val('');
-			}else {
-				$('#monto_vale_sisfoh').prop('readOnly',true);
-				console.log('deseleccionar balon lleno');
-				//divpadre.addClass('checked');
-				$('#vale_balon_monto').parent().removeClass('checked');
-				$('#vale_balon_monto').prop('checked',false);
-				$('#vale_balon_lleno').parent().removeClass('checked');
+		if(activar_checkbox){
+			if( input.attr('id') == 'vale_balon_monto' ){
+				if( divpadre.hasClass('checked')) { 
+					console.log('seleccionar balon monto');
+					//activar vale monto
+					$('#vale_balon_monto').prop('checked',true);
+					$('#monto_vale_balon').prop('readOnly',false);
+					$('#codigo_vale_monto').prop('readOnly',false);
+					//desactivar demas vales
+					$('#monto_vale_sisfoh').prop('readOnly',true);
+					$('#codigo_vale_sisfoh').prop('readOnly',true);
+					$('#monto_vale_sisfoh').val('');
+					$('#vale_balon_sisfoh').parent().removeClass('checked');
+					$('#vale_balon_sisfoh').prop('checked',false);
+					$('#vale_balon_lleno').parent().removeClass('checked');
+					$('#vale_balon_lleno').prop('checked',false);
+				}else {
+					$('#monto_vale_balon').prop('readOnly',true);
+					$('#codigo_vale_monto').prop('readOnly',true);
+					console.log('deseleccionar balon monto');
+					//divpadre.addClass('checked');
+					$('#vale_balon_sisfoh').parent().removeClass('checked');
+					$('#vale_balon_lleno').parent().removeClass('checked');
+				}
+			}else if( input.attr('id') == 'vale_balon_sisfoh'){
+				if( divpadre.hasClass('checked')) { 
+					console.log('seleccionar balon sisfoh');
+					//activar vale sisfoh
+					$('#vale_balon_sisfoh').prop('checked',true);
+					$('#monto_vale_sisfoh').prop('readOnly',false);
+					$('#codigo_vale_sisfoh').prop('readOnly',false);
+					//desactivar demas vales
+					$('#monto_vale_balon').prop('readOnly',true);
+					$('#codigo_vale_monto').prop('readOnly',true);
+					$('#monto_vale_balon').val('');
+					$('#vale_balon_monto').parent().removeClass('checked');
+					$('#vale_balon_monto').prop('checked',false);
+					$('#vale_balon_lleno').parent().removeClass('checked');
+					$('#vale_balon_lleno').prop('checked',false);
+				}else {
+					$('#monto_vale_sisfoh').prop('readOnly',true);
+					$('#codigo_vale_sisfoh').prop('readOnly',true);
+					console.log('deseleccionar balon sisfoh');
+					//divpadre.addClass('checked');
+					$('#vale_balon_monto').parent().removeClass('checked');
+					$('#vale_balon_monto').prop('checked',false);
+					$('#vale_balon_lleno').parent().removeClass('checked');
+					$('#vale_balon_lleno').prop('checked',false);
+				}
+			}else if( input.attr('id') == 'vale_balon_lleno'){
+				if( divpadre.hasClass('checked')) { 
+					console.log('secleccionar balon lleno');
+					$('#codigo_vale_sisfoh').prop('readOnly',true);
+					$('#codigo_vale_monto').prop('readOnly',true);
+					$('#vale_balon_sisfoh').parent().removeClass('checked');
+					$('#vale_balon_sisfoh').prop('checked',false);
+					$('#vale_balon_monto').parent().removeClass('checked');
+					$('#vale_balon_monto').prop('checked',false);
+					$('#monto_vale_balon').prop('readOnly',true);
+					$('#monto_vale_sisfoh').prop('readOnly',true);
+					divpadre.addClass('checked');
+					$('#monto_vale_balon').val('');
+					$('#monto_vale_sisfoh').val('');
+				}else {
+					$('#monto_vale_sisfoh').prop('readOnly',true);
+					$('#codigo_vale_sisfoh').prop('readOnly',true);
+					$('#codigo_vale_monto').prop('readOnly',true);
+					console.log('deseleccionar balon lleno');
+					//divpadre.addClass('checked');
+					$('#vale_balon_monto').parent().removeClass('checked');
+					$('#vale_balon_monto').prop('checked',false);
+					$('#vale_balon_lleno').parent().removeClass('checked');
+				}
 			}
 		}
 	});
@@ -392,6 +429,8 @@ $(document).ready(function(){
 		$('.servicio_frecuente').css('background', 'rgb(255,255,255)');
 	});
 
+	var activar_checkbox = false;
+
 	$(".servicio_frecuente").on('click', function(){
 		var elemento = this;
 		var idservicio_frecuente = $(this).attr('id');
@@ -404,6 +443,39 @@ $(document).ready(function(){
 		
 		var existe = false;
 
+		if(idservicio_frecuente == 4 || idservicio_frecuente == 5 ){
+			activar_checkbox = true; 
+			console.log(activar_checkbox);
+			$('#balon_nuevo').prop('disabled', false);
+			$('#balon_a_cuenta').prop('disabled', false);
+			$('#vale_balon_lleno').prop('disabled', false);
+			$('#vale_balon_monto').prop('disabled', false);
+			$('#codigo_vale_monto').prop('disabled', false);
+			$('#monto_vale_balon').prop('disabled', false);
+			$('#vale_balon_sisfoh').prop('disabled', false);
+			$('#codigo_vale_sisfoh').prop('disabled', false);
+			$('#monto_vale_sisfoh').prop('disabled', false);
+			$('#vale_balon_lleno').prop('checked', false);
+			$('#vale_balon_monto').prop('checked', false);
+			$('#vale_balon_sisfoh').prop('checked', false)
+			$('#vale_balon_lleno').parent().removeClass('disabled');
+			$('#vale_balon_monto').parent().removeClass('disabled');
+			$('#vale_balon_sisfoh').parent().removeClass('disabled');
+			$('#vale_balon_lleno').parent().removeClass('checked');
+			$('#vale_balon_monto').parent().removeClass('checked');
+			$('#vale_balon_sisfoh').parent().removeClass('checked');
+			$('#balon_nuevo').parent().removeClass('disabled');
+			$('#balon_a_cuenta').parent().removeClass('disabled');
+			$('#balon_nuevo').parent().removeClass('checked');
+			$('#balon_a_cuenta').parent().removeClass('checked');
+			$('#balon_nuevo').prop('checked', false);
+			$('#balon_a_cuenta').prop('checked', false)
+			$('#codigo_vale_monto').prop('readOnly', true);
+			$('#codigo_vale_sisfoh').prop('readOnly', true);
+			$('#monto_vale_balon').prop('readOnly', true);
+			$('#monto_vale_sisfoh').prop('readOnly', true);
+		}
+
 		if(cant != 0){
 			$("#detalle tr").each(function(){
 				if(idservicio_frecuente == this.id){
@@ -413,9 +485,9 @@ $(document).ready(function(){
 						cantidadfila++;
 						$(this).attr('cantidad',cantidadfila);
 						if(editable == 0){
-							var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;">'+ (precio*cantidadfila).toFixed(2) +'</td><td class="precioacumulado" style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precio*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+							var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;">'+ (precio*cantidadfila).toFixed(2) +'</td><td class="precioacumulado" style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
 						}else if(editable == 1){
-							var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precioactual).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precioactual*cantidadfila).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precioactual*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+							var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precioactual).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precioactual*cantidadfila).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precioactual*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
 						}
 						$(this).html(nuevafila);
 						existe = true;
@@ -427,9 +499,9 @@ $(document).ready(function(){
 
 		if(!existe){
 			if(editable == 0){
-				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
 			}else if(editable == 1){
-				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precio).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precio).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
 			}
 			$("#detalle").append(fila);
 			cant++;
@@ -545,6 +617,7 @@ $(document).ready(function(){
 	$('#btnGuardar').on('click', function(){
 		var sucursal = document.getElementById("sucursal_id");
 		var empleado = $('#empleado_id').val();
+		var cliente = $('#cliente_id').val();
 		var cant = parseInt($("#cant"). val());
 		var tipo = $('#tipodocumento_id').val();
 		var total = parseFloat($("#total").val());
@@ -570,10 +643,13 @@ $(document).ready(function(){
 		console.log("hay negativos = " + negativo);
 
 		if(!negativo){
-			if(!empleado || cant==0){
+			if(!empleado || cant==0 || !cliente){
 				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
 				if(!empleado){
-					cadenaError += ' <li> El campo empleado es obligatorio.</li>';
+					cadenaError += ' <li> El campo Empleado es obligatorio.</li>';
+				}
+				if(!cliente){
+					cadenaError += ' <li> El campo Cliente es obligatorio.</li>';
 				}
 				if(cant ==0){
 					cadenaError += '<li>Debe agregar mínimo un producto.</li></ul></div>';
@@ -708,6 +784,7 @@ var clientes = new Bloodhound({
                     return {
                         value: cliente.value,
                         id: cliente.id,
+						direccion: cliente.direccion,
                     };
                 });
             }
@@ -720,6 +797,7 @@ var clientes = new Bloodhound({
     }).on('typeahead:selected', function (object, datum) {
         $('#cliente').val(datum.value);
 		$('#cliente_id').val(datum.id);
+		$('#cliente_direccion').val(datum.direccion);
 		$("#cliente").prop('disabled',true);
     }); 
 </script>
@@ -728,6 +806,30 @@ var clientes = new Bloodhound({
 
 function eliminarDetalle(comp){
 	var precioeliminar = parseFloat($(comp).attr('precio'));
+	var idproducto = $(comp).attr('idproducto');
+	if(idproducto == 4 || idproducto == 5 ){
+			activar_checkbox = false; 
+			console.log(activar_checkbox);
+			$('#vale_balon_monto').prop('checked', false);
+			$('#vale_balon_lleno').prop('disabled', true);
+			$('#vale_balon_monto').prop('checked', false);
+			$('#vale_balon_monto').prop('disabled', true);
+			$('#codigo_vale_monto').prop('disabled', true);
+			$('#monto_vale_balon').prop('disabled', true);
+			$('#vale_balon_sisfoh').prop('checked', false);
+			$('#vale_balon_sisfoh').prop('disabled', true);
+			$('#codigo_vale_sisfoh').prop('disabled', true);
+			$('#monto_vale_sisfoh').prop('disabled', true);
+			$('#vale_balon_lleno').parent().removeClass('checked');
+			$('#vale_balon_monto').parent().removeClass('checked');
+			$('#vale_balon_sisfoh').parent().removeClass('checked');
+			$('#balon_nuevo').prop('disabled', true);
+			$('#balon_a_cuenta').prop('disabled', true);
+			$('#balon_nuevo').parent().removeClass('checked');
+			$('#balon_a_cuenta').parent().removeClass('checked');
+			$('#balon_nuevo').prop('checked', false);
+			$('#balon_a_cuenta').prop('checked', false);
+		}
 	var cant = $("#cant"). val();
 	cant--;
 	$("#cant").val(cant);
@@ -738,7 +840,35 @@ function eliminarDetalle(comp){
 	$("#montovisa").val("");
 	$("#montomaster").val("");
 	$("#vuelto").val((0).toFixed(2));
+
 	(($(comp).parent()).parent()).remove();
+	
+	$("#detalle tr").each(function(){
+		var element = $(this); // <-- en la variable element tienes tu elemento
+		var id = element.attr('id');
+
+		if(id == 4 || id == 5 ){
+			activar_checkbox = true; 
+			console.log(activar_checkbox);
+			$('#balon_nuevo').prop('disabled', false);
+			$('#balon_a_cuenta').prop('disabled', false);
+			$('#vale_balon_lleno').prop('disabled', false);
+			$('#vale_balon_monto').prop('disabled', false);
+			$('#codigo_vale_monto').prop('disabled', false);
+			$('#monto_vale_balon').prop('disabled', false);
+			$('#vale_balon_sisfoh').prop('disabled', false);
+			$('#codigo_vale_sisfoh').prop('disabled', false);
+			$('#monto_vale_sisfoh').prop('disabled', false);
+			$('#codigo_vale_monto').prop('readOnly', true);
+			$('#codigo_vale_sisfoh').prop('readOnly', true);
+			$('#monto_vale_balon').prop('readOnly', true);
+			$('#monto_vale_sisfoh').prop('readOnly', true);
+			$('#vale_balon_lleno').parent().removeClass('checked');
+			$('#vale_balon_monto').parent().removeClass('checked');
+			$('#vale_balon_sisfoh').parent().removeClass('checked');
+		}
+
+	});
 
 	if($('#montoefectivo').val() != ""){
 		var montoefectivo = parseFloat($('#montoefectivo').val());

@@ -308,7 +308,14 @@ class ClienteController extends Controller
     public function clienteautocompleting($searching)
     {
         $entidad    = 'Cliente';
-        $resultado = Person::where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
+        $resultado = Person::where(function($subquery) use($searching)
+        {
+            if (!is_null($searching)) {
+               
+                $subquery->where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')->orwhere('razon_social', 'LIKE', '%'.strtoupper($searching).'%');
+               
+            }		            		
+        })
         ->where('tipo_persona','C')
         ->whereNull('person.deleted_at')
         ->orderBy('apellido_pat', 'ASC')
@@ -316,12 +323,18 @@ class ClienteController extends Controller
         ->orderBy('nombres', 'ASC');
         $list      = $resultado->get();
         $data = array();
+
         foreach ($list as $key => $value) {
+            $mostrar = null;
+            if($value->dni != null){
+                $mostrar = $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat;
+            }else{
+                $mostrar = $value->razon_social;
+            }
             $data[] = array(
-                            'label' => $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat,
                             'id'    => $value->id,
-                            'value' => $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat,
-                            'registro'    => $value->registro,
+                            'value' => $mostrar,
+                            'direccion'    => $value->direccion,
                         );
         }
         return json_encode($data);

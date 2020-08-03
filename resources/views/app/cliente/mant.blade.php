@@ -141,7 +141,11 @@ function mostrarultimo(){
 		//$('#serieventa').val(serieventa);
 		console.log("id cliente : " + cliente.id);
 		console.log("nombre cliente : " + cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
-		$('#cliente').val(cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
+		if(cliente.dni != null){
+			$('#cliente').val(cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
+		}else{
+			$('#cliente').val(cliente.razon_social);
+		}
 		$('#cliente_id').val(cliente.id);
 		$("#cliente").prop('disabled',true);
 	});

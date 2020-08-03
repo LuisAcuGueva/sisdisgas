@@ -67,48 +67,6 @@ class VentaController extends Controller
         return view($this->folderview.'.admin')->with(compact('productos', 'empleados', 'cboTipoDocumento','anonimo' , 'cboSucursal' ,'entidad', 'title', 'titulo_cliente', 'ruta'));
     }
 
-    public function clienteautocompletar($searching)
-    {
-        $type = 'C';
-        $user = Auth::user();
-        $empresa_id = $user->empresa_id;
-        $resultado = DB::table('personamaestro')
-            ->where(function($subquery) use($searching)
-            {
-                $subquery->where(DB::raw('CONCAT(apellidos," ",nombres)'), 'LIKE','%'.strtoupper($searching).'%')->orWhere('razonsocial','LIKE','%'.strtoupper($searching).'%');
-            })
-            ->where(function($subquery) use($type)
-            {
-                if (!is_null($type)) {
-                   
-                    $subquery->where('type', '=', $type)->orwhere('secondtype','=', $type)->orwhere('type','=', 'T');
-                   
-                }		            		
-            })
-            ->leftJoin('persona', 'personamaestro.id', '=', 'persona.personamaestro_id')
-            ->where('persona.empresa_id', '=', $empresa_id)
-            ->where('persona.personamaestro_id', '!=', 2)
-            ->whereNull('personamaestro.deleted_at')
-            ->orderBy('apellidos', 'ASC')->orderBy('nombres', 'ASC')->orderBy('razonsocial', 'ASC')
-            ->take(5);
-        $list      = $resultado->get();
-        $data = array();
-        foreach ($list as $key => $value) {
-            $name = '';
-            if ($value->razonsocial != null) {
-                $name = $value->razonsocial;
-            }else{
-                $name = $value->apellidos." ".$value->nombres;
-            }
-            $data[] = array(
-                            'label' => trim($name),
-                            'id'    => $value->id,
-                            'value' => trim($name),
-                        );
-        }
-        return json_encode($data);
-    }
-
     public function guardarventa(Request $request){
         $reglas     = array('empleado_id' => 'required',
                             'serieventa' => 'required',
