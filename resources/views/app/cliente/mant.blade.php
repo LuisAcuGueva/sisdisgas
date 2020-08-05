@@ -15,23 +15,24 @@ if(!is_null($cliente)){
 <div class="form-group">
 	{!! Form::label('dni', 'DNI / RUC:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 	@if(is_null($cliente))
-		<div class="col-lg-6 col-md-6 col-sm-6">
+		<div class="col-lg-4 col-md-4 col-sm-4">
 			{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
 			{!! Form::hidden('cantc', null, array('id' => 'cantc')) !!}
 		</div>
 	@else
 		@if(!is_null($cliente->dni))
-			<div class="col-lg-6 col-md-6 col-sm-6">
+			<div class="col-lg-4 col-md-4 col-sm-4">
 				{!! Form::text('dni', $dni, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
 				{!! Form::hidden('cantc', '8' , array('id' => 'cantc')) !!}
 			</div>
 		@elseif(!is_null($cliente->ruc))
-			<div class="col-lg-6 col-md-6 col-sm-6">
+			<div class="col-lg-4 col-md-4 col-sm-4">	
 				{!! Form::text('dni', $ruc, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI / RUC')) !!}
 				{!! Form::hidden('cantc', '11' , array('id' => 'cantc')) !!}
 			</div>
 		@endif
 	@endif
+	{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-primary waves-effect waves-light btn-sm', 'id' => 'btnConsultaDNI')) !!}
 </div>
 <div class="form-group dni">
 	{!! Form::label('nombres', 'Nombre:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
@@ -84,17 +85,17 @@ if(!is_null($cliente)){
 	$(document).ready(function() {
 		$(".ruc").css("display","none");
 		var cantc = $("#dni").val();
+		$('#btnConsultaDNI').prop('disabled',true);
 		if(cantc.length == 8){
 			$(".dni").css("display","");
 			$(".ruc").css("display","none");
-
 		}else if(cantc.length == 11){
 			$(".ruc").css("display","");
 			$(".dni").css("display","none");
 		}
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="usertype_id"]').focus();
-		configurarAnchoModal('600');
+		configurarAnchoModal('650');
 
 		$("#dni").keyup(function(){
 			//hacer que aparezcan los inputs seguna la cantidad de largo del string 8 dni 11 ruc
@@ -107,10 +108,13 @@ if(!is_null($cliente)){
 			if(cantc == 8){
 				$(".dni").css("display","");
 				$(".ruc").css("display","none");
-
+				$('#btnConsultaDNI').prop('disabled',false);
 			}else if(cantc == 11){
 				$(".ruc").css("display","");
 				$(".dni").css("display","none");
+				$('#btnConsultaDNI').prop('disabled',false);
+			}else{
+				$('#btnConsultaDNI').prop('disabled',true);
 			}
 		}
 
@@ -119,9 +123,46 @@ if(!is_null($cliente)){
 			guardar( '{{ $entidad }}', this);
 
 			setTimeout(function(){
-				mostrarultimo();
+				var cliente = mostrarultimo();
 			},1000);
 
+		});
+
+		$('#btnConsultaDNI').on('click', function(){
+			var cantc = $("#dni").val();
+			if(cantc.length == 8){
+				var dni = $('#dni').val();
+				var url = 'reniec/consulta_reniec.php';
+				$.ajax({
+					type:'POST',
+					url:url,
+					data:'dni='+dni,
+					beforeSend(){
+						alert("Consultando DNI...");
+			        },
+					success: function(datos_dni){
+						var datos = eval(datos_dni);
+						//$('#mostrar_dni').text(datos[0]);
+						$('#nombres').val(datos[1]);
+						$('#apellido_pat').val(datos[2]);
+						$('#apellido_mat').val(datos[3]);
+					}
+				});
+				return false;
+			}else if(cantc.length == 11){
+				var ruc = $("#dni").val();
+			    $.ajax({
+			        type: 'GET',
+			        url: "SunatPHP/demo.php",
+			        data: "ruc="+ruc,
+			        beforeSend(){
+						alert("Consultando RUC...");
+			        },
+			        success: function (data, textStatus, jqXHR) {
+			            $("#razon_social").val(data.RazonSocial);
+			        }
+			    });
+			}
 		});
 
 }); 
@@ -138,16 +179,27 @@ function mostrarultimo(){
 	}).done(function(info){
 		cliente = info;
 	}).always(function(){
-		//$('#serieventa').val(serieventa);
-		console.log("id cliente : " + cliente.id);
-		console.log("nombre cliente : " + cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
-		if(cliente.dni != null){
-			$('#cliente').val(cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
-		}else{
-			$('#cliente').val(cliente.razon_social);
+		console.log(cliente.id);
+		if( $("#ultimo_cliente").val() == ""){
+		console.log( "vacio" );
 		}
-		$('#cliente_id').val(cliente.id);
-		$("#cliente").prop('disabled',true);
+		if( $("#ultimo_cliente").val() == "" ){
+			$("#ultimo_cliente").val(cliente.id);
+		}else{
+			if( $("#ultimo_cliente").val() != cliente.id){
+				console.log("id cliente : " + cliente.id);
+				console.log("nombre cliente : " + cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
+				if(cliente.dni != null){
+					$('#cliente').val(cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
+				}else{
+					$('#cliente').val(cliente.razon_social);
+				}
+				$('#cliente_id').val(cliente.id);
+				$('#cliente_direccion').val(cliente.direccion);
+				$('#ultimo_cliente').val('');
+				$("#cliente").prop('disabled',true);
+			}
+		}
 	});
 }
 </script>

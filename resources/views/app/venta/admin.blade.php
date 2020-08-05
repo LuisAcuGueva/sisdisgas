@@ -99,24 +99,25 @@ operaciones
 							{!! Form::label('vale_balon_monto', 'Vale Monto (S/.):' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
 							<input class="balon"  name="vale_balon_monto" type="checkbox" id="vale_balon_monto">
 						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px;">
-							{!! Form::text('codigo_vale_monto', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_monto' ,'placeholder' => 'Código vale monto', 'readOnly')) !!}
+						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px; margin-bottom: 15px;">
+							{!! Form::text('codigo_vale_monto', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_monto' ,'placeholder' => 'Código vale monto', 'readOnly', 'data-inputmask' => "'mask': '99999'")) !!}
 						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-bottom: 15px;">
-							{!! Form::text('monto_vale_balon', '', array('class' => 'form-control input-lg montos balon', 'id' => 'monto_vale_balon', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00' , 'readOnly')) !!}
+						<div class="col-lg-1 col-md-1 col-sm-1"></div>
+						<div class="col-lg-3 col-md-3 col-sm-3" style="margin-top: 8px; ">
+							{!! Form::text('monto_vale_balon', '', array('class' => 'form-control input-sm montos balon', 'id' => 'monto_vale_balon', 'style' => 'text-align: right; font-size: 23px;', 'placeholder' => '0.00' , 'readOnly')) !!}
 						</div>
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12">
-						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px;">
+						<div class="col-lg-4 col-md-4 col-sm-2" style="margin-top: 8px;">
 							{!! Form::label('vale_balon_sisfoh', 'Vale SISFOH:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
 							<input class="balon"  name="vale_balon_sisfoh" type="checkbox" id="vale_balon_sisfoh">
 							
 						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px;">
-							{!! Form::text('codigo_vale_sisfoh', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_sisfoh','placeholder' => 'Código vale SISFOH', 'readOnly')) !!}
+						<div class="col-lg-5 col-md-5 col-sm-5" style="margin-top: 8px; margin-bottom: 15px;">
+							{!! Form::text('codigo_vale_sisfoh', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_sisfoh','placeholder' => 'Código vale SISFOH', 'readOnly', 'data-inputmask' => "'mask': '99999999*************'")) !!}
 						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-bottom: 15px;">
-							{!! Form::text('monto_vale_sisfoh', '', array('class' => 'form-control input-lg montos balon', 'id' => 'monto_vale_sisfoh', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00', 'readOnly')) !!}
+						<div class="col-lg-3 col-md-3 col-sm-3" style="margin-top: 8px; ">
+							{!! Form::text('monto_vale_sisfoh', '', array('class' => 'form-control input-sm montos balon', 'id' => 'monto_vale_sisfoh', 'style' => 'text-align: right; font-size: 23px;', 'placeholder' => '0.00', 'readOnly')) !!}
 						</div>
 					</div>
 				</div>
@@ -158,6 +159,7 @@ operaciones
 						</div>
 						{!! Form::text('cliente', '', array('class' => 'form-control input-sm', 'id' => 'cliente', 'style' => 'background-color: white;')) !!}
 						{!! Form::hidden('cliente_id',null,array('id'=>'cliente_id')) !!}
+						{!! Form::hidden('ultimo_cliente',null,array('id'=>'ultimo_cliente')) !!}
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 						{!! Form::label('fecha', 'Dirección:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
@@ -270,6 +272,38 @@ $(document).ready(function(){
 	$("#tipodocumento_id").val(3);
 
 	$("#serieventa").inputmask({"mask": "9999-9999999"});
+	$("#codigo_vale_monto").inputmask({"mask": "99999"});
+	$("#codigo_vale_sisfoh").inputmask({"mask": "99999999*************"});
+
+	$("#monto_vale_balon").keyup(function(){
+		calcularTotal();
+		if( $("#monto_vale_balon").val() == ""){
+			calcularTotal();
+		}else{ 
+			var monto_vale_balon = parseFloat($("#monto_vale_balon").val());
+			var total = parseFloat($("#total").val());
+			if(monto_vale_balon < 0 ||  monto_vale_balon > total){
+				$("#monto_vale_balon").val("");
+			}else{
+				$("#total").val(total - monto_vale_balon);
+			}
+		}
+	}); 
+
+	$("#monto_vale_sisfoh").keyup(function(){
+		calcularTotal();
+		if( $("#monto_vale_sisfoh").val() == ""){
+			calcularTotal();
+		}else{ 
+			var monto_vale_sisfoh = parseFloat($("#monto_vale_sisfoh").val());
+			var total = parseFloat($("#total").val());
+			if(monto_vale_sisfoh < 0 ||  monto_vale_sisfoh > total){
+				$("#monto_vale_sisfoh").val("");
+			}else{
+				$("#total").val(total - monto_vale_sisfoh);
+			}
+		}
+	}); 
 
 	// a continuacion creamos la fecha en la variable date
 	var date = new Date()
@@ -298,6 +332,8 @@ $(document).ready(function(){
 	});*/
 
 	$('#activar_checkbox').val(false);
+
+	mostrarultimo();
 
 	$('.btnBorrar').on('click', function(){
 		$('#cliente_id').val("");
@@ -692,6 +728,41 @@ $(document).ready(function(){
 	});
 
 });
+
+function mostrarultimo(){
+	var cliente = null;
+	var ajax = $.ajax({
+		"method": "POST",
+		"url": "{{ url('/cliente/ultimocliente') }}",
+		"data": {
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		cliente = info;
+	}).always(function(){
+		console.log(cliente.id);
+		if( $("#ultimo_cliente").val() == ""){
+		console.log( "vacio" );
+		}
+		if( $("#ultimo_cliente").val() == "" ){
+			$("#ultimo_cliente").val(cliente.id);
+		}else{
+			if( $("#ultimo_cliente").val() != cliente.id){
+				console.log("id cliente : " + cliente.id);
+				console.log("nombre cliente : " + cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
+				if(cliente.dni != null){
+					$('#cliente').val(cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
+				}else{
+					$('#cliente').val(cliente.razon_social);
+				}
+				$('#cliente_id').val(cliente.id);
+				$('#cliente_direccion').val(cliente.direccion);
+				$('#ultimo_cliente').val('');
+				$("#cliente").prop('disabled',true);
+			}
+		}
+	});
+}
 
 function generarNumeroSerie(){
 	var serieventa = null;

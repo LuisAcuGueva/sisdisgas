@@ -146,6 +146,7 @@ class VentaController extends Controller
             $vale_balon_monto                = $request->input('vale_balon_monto');
             if($vale_balon_monto == true){
                 $movimiento->vale_balon_monto    = 1;
+                $movimiento->codigo_vale_monto        = $request->input('codigo_vale_monto');
                 $movimiento->monto_vale_balon        = $request->input('monto_vale_balon');
             }else{
                 $movimiento->vale_balon_monto    = 0;
@@ -154,6 +155,7 @@ class VentaController extends Controller
             $vale_balon_sisfoh                = $request->input('vale_balon_sisfoh');
             if($vale_balon_sisfoh == true){
                 $movimiento->vale_balon_sisfoh    = 1;
+                $movimiento->codigo_vale_sisfoh        = $request->input('codigo_vale_sisfoh');
                 $movimiento->monto_vale_sisfoh        = $request->input('monto_vale_sisfoh');
             }else{
                 $movimiento->vale_balon_sisfoh    = 0;

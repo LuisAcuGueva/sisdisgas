@@ -13,7 +13,7 @@
 					@if(!empty($turnos_iniciados))
 					<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
 						@foreach($turnos_iniciados  as $key => $value)
-							<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 100px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
+							<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
 								<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
 								<?php
 									$nombre_completo = $value->person->nombres.' '.$value->person->apellido_pat.' '.$value->person->apellido_mat;
