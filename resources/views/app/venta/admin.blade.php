@@ -89,35 +89,37 @@ operaciones
 				</div>
 				<div class="col-lg-8 col-md-8 col-sm-8 m-b-15 vales">
 					<div class="col-lg-12 col-md-12 col-sm-12">
-						<div class="col-lg-7 col-md-7 col-sm-7" style="margin-bottom: 15px;">
-							{!! Form::label('vale_balon_lleno', 'Vale Balón Lleno:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
-							<input class="balon" name="vale_balon_lleno" type="checkbox" id="vale_balon_lleno">
+						<div class="col-lg-4 col-md-4 col-sm-2" style="margin-top: 10px;">
+							{!! Form::label('', 'Vale FISE:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
+							<input class="balon"  name="vale_balon_fise" type="checkbox" id="vale_balon_fise">
+						</div>
+						<div class="col-lg-5 col-md-5 col-sm-5" style="margin-top: 10px; margin-bottom: 15px;">
+							{!! Form::text('codigo_vale_fise', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_fise','placeholder' => 'Código FISE', 'readOnly', 'data-inputmask' => "'mask': '99999999*************'")) !!}
+						</div>
+						<div class="col-lg-3 col-md-3 col-sm-3" style="margin-top: 10px; ">
+							{!! Form::text('monto_vale_fise', '', array('class' => 'form-control input-sm montos balon', 'id' => 'monto_vale_fise', 'style' => 'text-align: right; font-size: 23px;', 'placeholder' => '0.00', 'readOnly')) !!}
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12">
+						<div class="col-lg-5 col-md-5 col-sm-5" style="margin-top: 10px;">
+							{!! Form::label('', 'Vale SUBCAFAE:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
+							<input class="balon" name="vale_balon_subcafae" type="checkbox" id="vale_balon_subcafae">
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 10px; margin-bottom: 15px;">
+							{!! Form::text('codigo_vale_subcafae', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_subcafae' ,'placeholder' => 'Código SUBCAFAE', 'readOnly', 'data-inputmask' => "'mask': '99999'")) !!}
 						</div>
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px;">
-							{!! Form::label('vale_balon_monto', 'Vale Monto (S/.):' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
+							{!! Form::label('', 'Vale Monto (S/.):' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
 							<input class="balon"  name="vale_balon_monto" type="checkbox" id="vale_balon_monto">
 						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px; margin-bottom: 15px;">
-							{!! Form::text('codigo_vale_monto', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_monto' ,'placeholder' => 'Código vale monto', 'readOnly', 'data-inputmask' => "'mask': '99999'")) !!}
-						</div>
 						<div class="col-lg-1 col-md-1 col-sm-1"></div>
+						<div class="col-lg-4 col-md-4 col-sm-4" style="margin-top: 8px; margin-bottom: 15px;">
+							{!! Form::text('codigo_vale_monto', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_monto' ,'placeholder' => 'Código vale monto', 'readOnly')) !!}
+						</div>
 						<div class="col-lg-3 col-md-3 col-sm-3" style="margin-top: 8px; ">
 							{!! Form::text('monto_vale_balon', '', array('class' => 'form-control input-sm montos balon', 'id' => 'monto_vale_balon', 'style' => 'text-align: right; font-size: 23px;', 'placeholder' => '0.00' , 'readOnly')) !!}
-						</div>
-					</div>
-					<div class="col-lg-12 col-md-12 col-sm-12">
-						<div class="col-lg-4 col-md-4 col-sm-2" style="margin-top: 8px;">
-							{!! Form::label('vale_balon_sisfoh', 'Vale SISFOH:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
-							<input class="balon"  name="vale_balon_sisfoh" type="checkbox" id="vale_balon_sisfoh">
-							
-						</div>
-						<div class="col-lg-5 col-md-5 col-sm-5" style="margin-top: 8px; margin-bottom: 15px;">
-							{!! Form::text('codigo_vale_sisfoh', '', array('class' => 'form-control input-sm montos balon', 'id' => 'codigo_vale_sisfoh','placeholder' => 'Código vale SISFOH', 'readOnly', 'data-inputmask' => "'mask': '99999999*************'")) !!}
-						</div>
-						<div class="col-lg-3 col-md-3 col-sm-3" style="margin-top: 8px; ">
-							{!! Form::text('monto_vale_sisfoh', '', array('class' => 'form-control input-sm montos balon', 'id' => 'monto_vale_sisfoh', 'style' => 'text-align: right; font-size: 23px;', 'placeholder' => '0.00', 'readOnly')) !!}
 						</div>
 					</div>
 				</div>
@@ -130,7 +132,7 @@ operaciones
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 						{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-						{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'generarNumeroSerie(); permisoRegistrar();')) !!}		
+						{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'generarNumeroSerie(); permisoRegistrar(); actualizarPreciosVales();')) !!}		
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 						{!! Form::label('tipodocumento_id', 'Tipo de Documento:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
@@ -244,15 +246,15 @@ operaciones
 $(document).ready(function(){
 
 	//$('#vale_balon_monto').prop('checked', false);
-	$('#vale_balon_lleno').prop('disabled', true);
+	$('#vale_balon_subcafae').prop('disabled', true);
 	//$('#vale_balon_monto').prop('checked', false);
 	$('#vale_balon_monto').prop('disabled', true);
 	$('#codigo_vale_monto').prop('disabled', true);
 	$('#monto_vale_balon').prop('disabled', true);
 	//$('#vale_balon_sisfoh').prop('checked', false);
-	$('#vale_balon_sisfoh').prop('disabled', true);
-	$('#codigo_vale_sisfoh').prop('disabled', true);
-	$('#monto_vale_sisfoh').prop('disabled', true);
+	$('#vale_balon_fise').prop('disabled', true);
+	$('#codigo_vale_fise').prop('disabled', true);
+	$('#monto_vale_fise').prop('disabled', true);
 	$('#balon_nuevo').prop('disabled', true);
 	$('#balon_a_cuenta').prop('disabled', true);
 
@@ -272,8 +274,8 @@ $(document).ready(function(){
 	$("#tipodocumento_id").val(3);
 
 	$("#serieventa").inputmask({"mask": "9999-9999999"});
-	$("#codigo_vale_monto").inputmask({"mask": "99999"});
-	$("#codigo_vale_sisfoh").inputmask({"mask": "99999999*************"});
+	$("#codigo_vale_subcafae").inputmask({"mask": "99999"});
+	$("#codigo_vale_fise").inputmask({"mask": "99999999*************"});
 
 	$("#monto_vale_balon").keyup(function(){
 		calcularTotal();
@@ -285,22 +287,22 @@ $(document).ready(function(){
 			if(monto_vale_balon < 0 ||  monto_vale_balon > total){
 				$("#monto_vale_balon").val("");
 			}else{
-				$("#total").val(total - monto_vale_balon);
+				$("#total").val((total - monto_vale_balon).toFixed(2));
 			}
 		}
 	}); 
 
-	$("#monto_vale_sisfoh").keyup(function(){
+	$("#monto_vale_fise").keyup(function(){
 		calcularTotal();
-		if( $("#monto_vale_sisfoh").val() == ""){
+		if( $("#monto_vale_fise").val() == ""){
 			calcularTotal();
 		}else{ 
-			var monto_vale_sisfoh = parseFloat($("#monto_vale_sisfoh").val());
+			var monto_vale_fise = parseFloat($("#monto_vale_fise").val());
 			var total = parseFloat($("#total").val());
-			if(monto_vale_sisfoh < 0 ||  monto_vale_sisfoh > total){
-				$("#monto_vale_sisfoh").val("");
+			if(monto_vale_fise < 0 ||  monto_vale_fise > total){
+				$("#monto_vale_fise").val("");
 			}else{
-				$("#total").val(total - monto_vale_sisfoh);
+				$("#total").val((total - monto_vale_fise).toFixed(2));
 			}
 		}
 	}); 
@@ -354,76 +356,240 @@ $(document).ready(function(){
 			if( input.attr('id') == 'vale_balon_monto' ){
 				if( divpadre.hasClass('checked')) { 
 					console.log('seleccionar balon monto');
+					$("#detalle tr").each(function(){
+						var id = parseInt($(this).attr('id'));
+						var cantidad = $(this).attr('cantidad');
+						if( id == "5" ){
+							$(this).attr('precio', (37).toFixed(2));
+							var trprecio = $(this).find('.precioeditable');
+							$(trprecio).val((37).toFixed(2));
+							var trprecioacumulado = $(this).find('.precioacumulado');
+							$(trprecioacumulado).html((37*cantidad).toFixed(2));
+							var btneliminar = $(this).find('.btnEliminar');
+							$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
+							calcularTotal();
+						}else if( id == "4" ){
+							$(this).attr('precio', (36).toFixed(2));
+							var trprecio = $(this).find('.precioeditable');
+							$(trprecio).val((36).toFixed(2));
+							var trprecioacumulado = $(this).find('.precioacumulado');
+							$(trprecioacumulado).html((36*cantidad).toFixed(2));
+							var btneliminar = $(this).find('.btnEliminar');
+							$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+							calcularTotal();
+						}
+					});
 					//activar vale monto
 					$('#vale_balon_monto').prop('checked',true);
 					$('#monto_vale_balon').prop('readOnly',false);
 					$('#codigo_vale_monto').prop('readOnly',false);
 					//desactivar demas vales
-					$('#monto_vale_sisfoh').prop('readOnly',true);
-					$('#codigo_vale_sisfoh').prop('readOnly',true);
-					$('#monto_vale_sisfoh').val('');
-					$('#vale_balon_sisfoh').parent().removeClass('checked');
-					$('#vale_balon_sisfoh').prop('checked',false);
-					$('#vale_balon_lleno').parent().removeClass('checked');
-					$('#vale_balon_lleno').prop('checked',false);
+					$('#monto_vale_fise').prop('readOnly',true);
+					$('#codigo_vale_fise').prop('readOnly',true);
+					$('#codigo_vale_subcafae').prop('readOnly',true);
+					$('#monto_vale_fise').val('');
+					$('#vale_balon_fise').parent().removeClass('checked');
+					$('#vale_balon_fise').prop('checked',false);
+					$('#vale_balon_subcafae').parent().removeClass('checked');
+					$('#vale_balon_subcafae').prop('checked',false);
 				}else {
-					$('#monto_vale_balon').prop('readOnly',true);
-					$('#codigo_vale_monto').prop('readOnly',true);
-					console.log('deseleccionar balon monto');
-					//divpadre.addClass('checked');
-					$('#vale_balon_sisfoh').parent().removeClass('checked');
-					$('#vale_balon_lleno').parent().removeClass('checked');
-				}
-			}else if( input.attr('id') == 'vale_balon_sisfoh'){
-				if( divpadre.hasClass('checked')) { 
-					console.log('seleccionar balon sisfoh');
-					//activar vale sisfoh
-					$('#vale_balon_sisfoh').prop('checked',true);
-					$('#monto_vale_sisfoh').prop('readOnly',false);
-					$('#codigo_vale_sisfoh').prop('readOnly',false);
-					//desactivar demas vales
+					$("#detalle tr").each(function(){
+						var id = parseInt($(this).attr('id'));
+						var cantidad = $(this).attr('cantidad');
+						if( id == "5" ){
+							$(this).attr('precio', (37).toFixed(2));
+							var trprecio = $(this).find('.precioeditable');
+							$(trprecio).val((37).toFixed(2));
+							var trprecioacumulado = $(this).find('.precioacumulado');
+							$(trprecioacumulado).html((37*cantidad).toFixed(2));
+							var btneliminar = $(this).find('.btnEliminar');
+							$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
+							calcularTotal();
+						}else if( id == "4" ){
+							$(this).attr('precio', (36).toFixed(2));
+							var trprecio = $(this).find('.precioeditable');
+							$(trprecio).val((36).toFixed(2));
+							var trprecioacumulado = $(this).find('.precioacumulado');
+							$(trprecioacumulado).html((36*cantidad).toFixed(2));
+							var btneliminar = $(this).find('.btnEliminar');
+							$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+							calcularTotal();
+						}
+					});
 					$('#monto_vale_balon').prop('readOnly',true);
 					$('#codigo_vale_monto').prop('readOnly',true);
 					$('#monto_vale_balon').val('');
+					console.log('deseleccionar balon monto');
+					//divpadre.addClass('checked');
+					$('#vale_balon_fise').parent().removeClass('checked');
+					$('#vale_balon_subcafae').parent().removeClass('checked');
+				}
+			}else if( input.attr('id') == 'vale_balon_fise'){
+				if( divpadre.hasClass('checked')) { 
+					console.log('seleccionar balon sisfoh');
+					//modificar precio del balon normal
+					var sucursal_id = $("#sucursal_id").val();
+					var primero = true;
+					$("#detalle tr").each(function(){
+						var id = parseInt($(this).attr('id'));
+						var cantidad = $(this).attr('cantidad');
+						if( id == "4" || id == "5"){
+							if( sucursal_id == 1 && primero == true){
+								$(this).attr('precio', (36).toFixed(2));
+								var trprecio = $(this).find('.precioeditable');
+								$(trprecio).val((36).toFixed(2));
+								var trprecioacumulado = $(this).find('.precioacumulado');
+								$(trprecioacumulado).html((36*cantidad).toFixed(2));
+								var btneliminar = $(this).find('.btnEliminar');
+								$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+								primero = false;
+								calcularTotal();
+								var total = $("#total").val();
+								$("#total").val( (total - 16).toFixed(2) );
+							}else if( sucursal_id == 2 && primero == true){
+								$(this).attr('precio', (35).toFixed(2));
+								var trprecio = $(this).find('.precioeditable');
+								$(trprecio).val((35).toFixed(2));
+								var trprecioacumulado = $(this).find('.precioacumulado');
+								$(trprecioacumulado).html((35*cantidad).toFixed(2));
+								var btneliminar = $(this).find('.btnEliminar');
+								$(btneliminar).attr('precio',(35*cantidad).toFixed(2));
+								primero = false;
+								calcularTotal();
+								var total = $("#total").val();
+								$("#total").val( (total - 16).toFixed(2) );
+							}
+						}
+					});
+					//activar vale sisfoh
+					$('#vale_balon_fise').prop('checked',true);
+					$('#monto_vale_fise').prop('readOnly',false);
+					$('#codigo_vale_fise').prop('readOnly',false);
+					//desactivar demas vales
+					$('#monto_vale_balon').prop('readOnly',true);
+					$('#monto_vale_fise').prop('readOnly',true);
+					$('#codigo_vale_monto').prop('readOnly',true);
+					$('#codigo_vale_subcafae').prop('readOnly',true);
+					$('#monto_vale_balon').val('');
+					$('#monto_vale_fise').val((16).toFixed(2));
 					$('#vale_balon_monto').parent().removeClass('checked');
 					$('#vale_balon_monto').prop('checked',false);
-					$('#vale_balon_lleno').parent().removeClass('checked');
-					$('#vale_balon_lleno').prop('checked',false);
+					$('#vale_balon_subcafae').parent().removeClass('checked');
+					$('#vale_balon_subcafae').prop('checked',false);
 				}else {
-					$('#monto_vale_sisfoh').prop('readOnly',true);
-					$('#codigo_vale_sisfoh').prop('readOnly',true);
+					$("#detalle tr").each(function(){
+						var id = parseInt($(this).attr('id'));
+						var cantidad = $(this).attr('cantidad');
+						if( id == "5" ){
+							$(this).attr('precio', (37).toFixed(2));
+							var trprecio = $(this).find('.precioeditable');
+							$(trprecio).val((37).toFixed(2));
+							var trprecioacumulado = $(this).find('.precioacumulado');
+							$(trprecioacumulado).html((37*cantidad).toFixed(2));
+							var btneliminar = $(this).find('.btnEliminar');
+							$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
+							calcularTotal();
+						}else if( id == "4" ){
+							$(this).attr('precio', (36).toFixed(2));
+							var trprecio = $(this).find('.precioeditable');
+							$(trprecio).val((36).toFixed(2));
+							var trprecioacumulado = $(this).find('.precioacumulado');
+							$(trprecioacumulado).html((36*cantidad).toFixed(2));
+							var btneliminar = $(this).find('.btnEliminar');
+							$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+							calcularTotal();
+						}
+					});
+					$('#monto_vale_fise').prop('readOnly',true);
+					$('#codigo_vale_fise').prop('readOnly',true);
+					$('#monto_vale_fise').val('');
 					console.log('deseleccionar balon sisfoh');
 					//divpadre.addClass('checked');
 					$('#vale_balon_monto').parent().removeClass('checked');
 					$('#vale_balon_monto').prop('checked',false);
-					$('#vale_balon_lleno').parent().removeClass('checked');
-					$('#vale_balon_lleno').prop('checked',false);
+					$('#vale_balon_subcafae').parent().removeClass('checked');
+					$('#vale_balon_subcafae').prop('checked',false);
 				}
-			}else if( input.attr('id') == 'vale_balon_lleno'){
+			}else if( input.attr('id') == 'vale_balon_subcafae'){ //codigo_vale_subcafae
 				if( divpadre.hasClass('checked')) { 
 					console.log('secleccionar balon lleno');
-					$('#codigo_vale_sisfoh').prop('readOnly',true);
+					var primero = true;
+					$("#detalle tr").each(function(){
+						var id = parseInt($(this).attr('id'));
+						var cantidad = $(this).attr('cantidad');
+						if( id == "5"  && primero == true){
+							$(this).attr('precio', (36).toFixed(2));
+							var trprecio = $(this).find('.precioeditable');
+							$(trprecio).val((36).toFixed(2));
+							var trprecioacumulado = $(this).find('.precioacumulado');
+							$(trprecioacumulado).html((36*cantidad).toFixed(2));
+							var btneliminar = $(this).find('.btnEliminar');
+							$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+							primero = false;
+							calcularTotal();
+							var total = $("#total").val();
+							$("#total").val( (total - 36).toFixed(2) );
+						}else if( id == "4"  && primero == true ){
+							$(this).attr('precio', (37).toFixed(2));
+							var trprecio = $(this).find('.precioeditable');
+							$(trprecio).val((37).toFixed(2));
+							var trprecioacumulado = $(this).find('.precioacumulado');
+							$(trprecioacumulado).html((37*cantidad).toFixed(2));
+							var btneliminar = $(this).find('.btnEliminar');
+							$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
+							primero = false;
+							calcularTotal();
+							var total = $("#total").val();
+							$("#total").val( (total - 37).toFixed(2) );
+						}
+					});
+					$('#codigo_vale_subcafae').prop('readOnly',false);
+					$('#codigo_vale_fise').prop('readOnly',true);
 					$('#codigo_vale_monto').prop('readOnly',true);
-					$('#vale_balon_sisfoh').parent().removeClass('checked');
-					$('#vale_balon_sisfoh').prop('checked',false);
+					$('#vale_balon_fise').parent().removeClass('checked');
+					$('#vale_balon_fise').prop('checked',false);
 					$('#vale_balon_monto').parent().removeClass('checked');
 					$('#vale_balon_monto').prop('checked',false);
 					$('#monto_vale_balon').prop('readOnly',true);
-					$('#monto_vale_sisfoh').prop('readOnly',true);
+					$('#monto_vale_fise').prop('readOnly',true);
 					divpadre.addClass('checked');
 					$('#monto_vale_balon').val('');
-					$('#monto_vale_sisfoh').val('');
+					$('#monto_vale_fise').val('');
 					$('#codigo_vale_monto').val('');
-					$('#codigo_vale_sisfoh').val('');
+					$('#codigo_vale_fise').val('');
 				}else {
-					$('#monto_vale_sisfoh').prop('readOnly',true);
-					$('#codigo_vale_sisfoh').prop('readOnly',true);
+					$("#detalle tr").each(function(){
+						var id = parseInt($(this).attr('id'));
+						var cantidad = $(this).attr('cantidad');
+						if( id == "5" ){
+							$(this).attr('precio', (37).toFixed(2));
+							var trprecio = $(this).find('.precioeditable');
+							$(trprecio).val((37).toFixed(2));
+							var trprecioacumulado = $(this).find('.precioacumulado');
+							$(trprecioacumulado).html((37*cantidad).toFixed(2));
+							var btneliminar = $(this).find('.btnEliminar');
+							$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
+							calcularTotal();
+						}else if( id == "4" ){
+							$(this).attr('precio', (36).toFixed(2));
+							var trprecio = $(this).find('.precioeditable');
+							$(trprecio).val((36).toFixed(2));
+							var trprecioacumulado = $(this).find('.precioacumulado');
+							$(trprecioacumulado).html((36*cantidad).toFixed(2));
+							var btneliminar = $(this).find('.btnEliminar');
+							$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+							calcularTotal();
+						}
+					});
+					$('#monto_vale_fise').prop('readOnly',true);
+					$('#codigo_vale_fise').prop('readOnly',true);
 					$('#codigo_vale_monto').prop('readOnly',true);
+					$('#codigo_vale_subcafae').prop('readOnly',true);
 					console.log('deseleccionar balon lleno');
 					//divpadre.addClass('checked');
 					$('#vale_balon_monto').parent().removeClass('checked');
 					$('#vale_balon_monto').prop('checked',false);
-					$('#vale_balon_lleno').parent().removeClass('checked');
+					$('#vale_balon_subcafae').parent().removeClass('checked');
 				}
 			}
 		}
@@ -486,26 +652,49 @@ $(document).ready(function(){
 
 		if(idservicio_frecuente == 4 || idservicio_frecuente == 5 ){
 			$('#activar_checkbox').val(true);
+			$("#detalle tr").each(function(){
+				var id = parseInt($(this).attr('id'));
+				var cantidad = $(this).attr('cantidad');
+				if( id == "5" ){
+					$(this).attr('precio', (37).toFixed(2));
+					var trprecio = $(this).find('.precioeditable');
+					$(trprecio).val((37).toFixed(2));
+					var trprecioacumulado = $(this).find('.precioacumulado');
+					$(trprecioacumulado).html((37*cantidad).toFixed(2));
+					var btneliminar = $(this).find('.btnEliminar');
+					$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
+					calcularTotal();
+				}else if( id == "4" ){
+					$(this).attr('precio', (36).toFixed(2));
+					var trprecio = $(this).find('.precioeditable');
+					$(trprecio).val((36).toFixed(2));
+					var trprecioacumulado = $(this).find('.precioacumulado');
+					$(trprecioacumulado).html((36*cantidad).toFixed(2));
+					var btneliminar = $(this).find('.btnEliminar');
+					$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+					calcularTotal();
+				}
+			});
 			activar_checkbox = true; 
 			console.log(activar_checkbox);
 			$('#balon_nuevo').prop('disabled', false);
 			$('#balon_a_cuenta').prop('disabled', false);
-			$('#vale_balon_lleno').prop('disabled', false);
+			$('#vale_balon_subcafae').prop('disabled', false);
 			$('#vale_balon_monto').prop('disabled', false);
 			$('#codigo_vale_monto').prop('disabled', false);
 			$('#monto_vale_balon').prop('disabled', false);
-			$('#vale_balon_sisfoh').prop('disabled', false);
-			$('#codigo_vale_sisfoh').prop('disabled', false);
-			$('#monto_vale_sisfoh').prop('disabled', false);
-			$('#vale_balon_lleno').prop('checked', false);
+			$('#vale_balon_fise').prop('disabled', false);
+			$('#codigo_vale_fise').prop('disabled', false);
+			$('#monto_vale_fise').prop('disabled', false);
+			$('#vale_balon_subcafae').prop('checked', false);
 			$('#vale_balon_monto').prop('checked', false);
-			$('#vale_balon_sisfoh').prop('checked', false)
-			$('#vale_balon_lleno').parent().removeClass('disabled');
+			$('#vale_balon_fise').prop('checked', false)
+			$('#vale_balon_subcafae').parent().removeClass('disabled');
 			$('#vale_balon_monto').parent().removeClass('disabled');
-			$('#vale_balon_sisfoh').parent().removeClass('disabled');
-			$('#vale_balon_lleno').parent().removeClass('checked');
+			$('#vale_balon_fise').parent().removeClass('disabled');
+			$('#vale_balon_subcafae').parent().removeClass('checked');
 			$('#vale_balon_monto').parent().removeClass('checked');
-			$('#vale_balon_sisfoh').parent().removeClass('checked');
+			$('#vale_balon_fise').parent().removeClass('checked');
 			$('#balon_nuevo').parent().removeClass('disabled');
 			$('#balon_a_cuenta').parent().removeClass('disabled');
 			$('#balon_nuevo').parent().removeClass('checked');
@@ -513,13 +702,14 @@ $(document).ready(function(){
 			$('#balon_nuevo').prop('checked', false);
 			$('#balon_a_cuenta').prop('checked', false)
 			$('#codigo_vale_monto').prop('readOnly', true);
-			$('#codigo_vale_sisfoh').prop('readOnly', true);
+			$('#codigo_vale_subcafae').prop('readOnly', true);
+			$('#codigo_vale_fise').prop('readOnly', true);
 			$('#monto_vale_balon').prop('readOnly', true);
-			$('#monto_vale_sisfoh').prop('readOnly', true);
+			$('#monto_vale_fise').prop('readOnly', true);
 			$('#monto_vale_balon').val('');
-			$('#monto_vale_sisfoh').val('');
+			$('#monto_vale_fise').val('');
 			$('#codigo_vale_monto').val('');
-			$('#codigo_vale_sisfoh').val('');
+			$('#codigo_vale_fise').val('');
 		}
 
 		if(cant != 0){
@@ -886,6 +1076,29 @@ var clientes = new Bloodhound({
 <script>
 
 function eliminarDetalle(comp){
+	$("#detalle tr").each(function(){
+		var id = parseInt($(this).attr('id'));
+		var cantidad = $(this).attr('cantidad');
+		if( id == "5" ){
+			$(this).attr('precio', (37).toFixed(2));
+			var trprecio = $(this).find('.precioeditable');
+			$(trprecio).val((37).toFixed(2));
+			var trprecioacumulado = $(this).find('.precioacumulado');
+			$(trprecioacumulado).html((37*cantidad).toFixed(2));
+			var btneliminar = $(this).find('.btnEliminar');
+			$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
+			calcularTotal();
+		}else if( id == "4" ){
+			$(this).attr('precio', (36).toFixed(2));
+			var trprecio = $(this).find('.precioeditable');
+			$(trprecio).val((36).toFixed(2));
+			var trprecioacumulado = $(this).find('.precioacumulado');
+			$(trprecioacumulado).html((36*cantidad).toFixed(2));
+			var btneliminar = $(this).find('.btnEliminar');
+			$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+			calcularTotal();
+		}
+	});
 	var precioeliminar = parseFloat($(comp).attr('precio'));
 	var idproducto = $(comp).attr('idproducto');
 	if(idproducto == 4 || idproducto == 5 ){
@@ -893,23 +1106,24 @@ function eliminarDetalle(comp){
 			activar_checkbox = false; 
 			console.log(activar_checkbox);
 			//desactibar checkbox
-			$('#vale_balon_lleno').prop('disabled', true);
+			$('#vale_balon_subcafae').prop('disabled', true);
 			$('#vale_balon_monto').prop('disabled', true);
-			$('#vale_balon_sisfoh').prop('disabled', true);
+			$('#vale_balon_fise').prop('disabled', true);
 
-			$('#vale_balon_lleno').prop('checked', false);
+			$('#vale_balon_subcafae').prop('checked', false);
 			$('#vale_balon_monto').prop('checked', false);
-			$('#vale_balon_sisfoh').prop('checked', false);
+			$('#vale_balon_fise').prop('checked', false);
 
 			//desactivar inputs
+			$('#codigo_vale_subcafae').prop('disabled', true);
 			$('#codigo_vale_monto').prop('disabled', true);
 			$('#monto_vale_balon').prop('disabled', true);
-			$('#codigo_vale_sisfoh').prop('disabled', true);
-			$('#monto_vale_sisfoh').prop('disabled', true);
+			$('#codigo_vale_fise').prop('disabled', true);
+			$('#monto_vale_fise').prop('disabled', true);
 
-			$('#vale_balon_lleno').parent().removeClass('checked');
+			$('#vale_balon_subcafae').parent().removeClass('checked');
 			$('#vale_balon_monto').parent().removeClass('checked');
-			$('#vale_balon_sisfoh').parent().removeClass('checked');
+			$('#vale_balon_fise').parent().removeClass('checked');
 
 			$('#balon_nuevo').prop('disabled', true);
 			$('#balon_a_cuenta').prop('disabled', true);
@@ -921,9 +1135,9 @@ function eliminarDetalle(comp){
 			$('#balon_a_cuenta').prop('checked', false);
 
 			$('#monto_vale_balon').val('');
-			$('#monto_vale_sisfoh').val('');
+			$('#monto_vale_fise').val('');
 			$('#codigo_vale_monto').val('');
-			$('#codigo_vale_sisfoh').val('');
+			$('#codigo_vale_fise').val('');
 		}
 	var cant = $("#cant"). val();
 	cant--;
@@ -948,24 +1162,26 @@ function eliminarDetalle(comp){
 			console.log(activar_checkbox);
 			$('#balon_nuevo').prop('disabled', false);
 			$('#balon_a_cuenta').prop('disabled', false);
-			$('#vale_balon_lleno').prop('disabled', false);
+			$('#vale_balon_subcafae').prop('disabled', false);
 			$('#vale_balon_monto').prop('disabled', false);
 			$('#codigo_vale_monto').prop('disabled', false);
+			$('#codigo_vale_subcafae').prop('disabled', false);
 			$('#monto_vale_balon').prop('disabled', false);
-			$('#vale_balon_sisfoh').prop('disabled', false);
-			$('#codigo_vale_sisfoh').prop('disabled', false);
-			$('#monto_vale_sisfoh').prop('disabled', false);
+			$('#vale_balon_fise').prop('disabled', false);
+			$('#codigo_vale_fise').prop('disabled', false);
+			$('#monto_vale_fise').prop('disabled', false);
 
 			$('#codigo_vale_monto').prop('readOnly', true);
-			$('#codigo_vale_sisfoh').prop('readOnly', true);
+			$('#codigo_vale_fise').prop('readOnly', true);
+			$('#codigo_vale_subcafae').prop('readOnly', true);
 			$('#monto_vale_balon').prop('readOnly', true);
-			$('#monto_vale_sisfoh').prop('readOnly', true);
+			$('#monto_vale_fise').prop('readOnly', true);
 			
 			$('#balon_nuevo').parent().removeClass('checked');
 			$('#balon_a_cuenta').parent().removeClass('checked');
-			$('#vale_balon_lleno').parent().removeClass('checked');
+			$('#vale_balon_subcafae').parent().removeClass('checked');
 			$('#vale_balon_monto').parent().removeClass('checked');
-			$('#vale_balon_sisfoh').parent().removeClass('checked');
+			$('#vale_balon_fise').parent().removeClass('checked');
 		}
 
 	});
@@ -1076,6 +1292,44 @@ function detalleventa(){
 			$(".empleado").css('background', 'rgb(255,255,255)');
 		}
 	});
+}
+
+function actualizarPreciosVales(){
+	var sucursal_id = $("#sucursal_id").val();
+	if( $("#vale_balon_fise").prop("checked") ){
+		var primero = true;
+		$("#detalle tr").each(function(){
+			var id = parseInt($(this).attr('id'));
+			var cantidad = $(this).attr('cantidad');
+			if( id == "4" || id == "5"){
+				if( sucursal_id == 1 && primero == true){
+					$(this).attr('precio', (36).toFixed(2));
+					var trprecio = $(this).find('.precioeditable');
+					$(trprecio).val((36).toFixed(2));
+					var trprecioacumulado = $(this).find('.precioacumulado');
+					$(trprecioacumulado).html((36*cantidad).toFixed(2));
+					var btneliminar = $(this).find('.btnEliminar');
+					$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+					primero = false;
+					calcularTotal();
+					var total = $("#total").val();
+					$("#total").val( (total - 16).toFixed(2) );
+				}else if( sucursal_id == 2 && primero == true){
+					$(this).attr('precio', (35).toFixed(2));
+					var trprecio = $(this).find('.precioeditable');
+					$(trprecio).val((35).toFixed(2));
+					var trprecioacumulado = $(this).find('.precioacumulado');
+					$(trprecioacumulado).html((35*cantidad).toFixed(2));
+					var btneliminar = $(this).find('.btnEliminar');
+					$(btneliminar).attr('precio',(35*cantidad).toFixed(2));
+					primero = false;
+					calcularTotal();
+					var total = $("#total").val();
+					$("#total").val( (total - 16).toFixed(2) );
+				}
+			}
+		});
+	}
 }
 
 function calcularTotal(){

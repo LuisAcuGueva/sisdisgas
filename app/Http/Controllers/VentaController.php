@@ -71,7 +71,7 @@ class VentaController extends Controller
         $reglas     = array('empleado_id' => 'required',
                             'serieventa' => 'required',
                             'cliente_id' => 'required',
-                            'montoefectivo' => 'required',
+                            //'montoefectivo' => 'required',
                            );
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
@@ -136,13 +136,6 @@ class VentaController extends Controller
                 $movimiento->balon_a_cuenta    = 0;
             }
 
-            $vale_balon_lleno                = $request->input('vale_balon_lleno');
-            if($vale_balon_lleno == true){
-                $movimiento->vale_balon_lleno    = 1;
-            }else{
-                $movimiento->vale_balon_lleno    = 0;
-            }
-
             $vale_balon_monto                = $request->input('vale_balon_monto');
             if($vale_balon_monto == true){
                 $movimiento->vale_balon_monto    = 1;
@@ -152,13 +145,21 @@ class VentaController extends Controller
                 $movimiento->vale_balon_monto    = 0;
             }
 
-            $vale_balon_sisfoh                = $request->input('vale_balon_sisfoh');
-            if($vale_balon_sisfoh == true){
-                $movimiento->vale_balon_sisfoh    = 1;
-                $movimiento->codigo_vale_sisfoh        = $request->input('codigo_vale_sisfoh');
-                $movimiento->monto_vale_sisfoh        = $request->input('monto_vale_sisfoh');
+            $vale_balon_subcafae                = $request->input('vale_balon_subcafae');
+            if($vale_balon_subcafae == true){
+                $movimiento->vale_balon_subcafae    = 1;
+                $movimiento->codigo_vale_subcafae        = $request->input('codigo_vale_subcafae');
             }else{
-                $movimiento->vale_balon_sisfoh    = 0;
+                $movimiento->vale_balon_subcafae    = 0;
+            }
+
+            $vale_balon_fise                = $request->input('vale_balon_fise');
+            if($vale_balon_fise == true){
+                $movimiento->vale_balon_fise    = 1;
+                $movimiento->codigo_vale_fise        = $request->input('codigo_vale_fise');
+                $movimiento->monto_vale_fise        = $request->input('monto_vale_fise');
+            }else{
+                $movimiento->vale_balon_fise    = 0;
             }
 
 
