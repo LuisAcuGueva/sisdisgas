@@ -73,10 +73,11 @@ operaciones
 			</div>
 
 			<div class="col-lg-6 col-md-6 col-sm-6">
+
 				<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
 					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS ADICIONALES DEL PEDIDO</h4>
 				</div>
-				{!! Form::hidden('activar_checkbox',false,array('id'=>'activar_checkbox')) !!}
+
 				<div class="col-lg-4 col-md-4 col-sm-4 m-b-15">
 					<div class="col-lg-12 col-md-12 col-sm-12" style="margin-bottom: 15px;">
 						{!! Form::label('balon_nuevo', 'Balón nuevo:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
@@ -87,6 +88,7 @@ operaciones
 						<input class="balon" name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
 					</div>
 				</div>
+
 				<div class="col-lg-8 col-md-8 col-sm-8 m-b-15 vales">
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<div class="col-lg-4 col-md-4 col-sm-2" style="margin-top: 10px;">
@@ -123,6 +125,7 @@ operaciones
 						</div>
 					</div>
 				</div>
+
 			</div>
 
 			<div class="col-lg-12 col-md-12 col-sm-12">
@@ -164,7 +167,7 @@ operaciones
 						{!! Form::hidden('ultimo_cliente',null,array('id'=>'ultimo_cliente')) !!}
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
-						{!! Form::label('fecha', 'Dirección:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+						{!! Form::label('cliente_direccion', 'Dirección:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
 						{!! Form::textarea('cliente_direccion', null, array('class' => 'form-control input-xs', 'rows' => '2','id' => 'cliente_direccion', 'readOnly')) !!}
 					</div>
 				</div>
@@ -544,6 +547,7 @@ $(document).ready(function(){
 						}
 					});
 					$('#codigo_vale_subcafae').prop('readOnly',false);
+					$('#codigo_vale_subcafae').prop('disabled',false);
 					$('#codigo_vale_fise').prop('readOnly',true);
 					$('#codigo_vale_monto').prop('readOnly',true);
 					$('#vale_balon_fise').parent().removeClass('checked');
