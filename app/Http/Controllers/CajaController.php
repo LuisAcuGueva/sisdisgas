@@ -220,13 +220,17 @@ class CajaController extends Controller
                                                     ->where('sucursal_id', "=", $sucursal_id)
                                                     ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                                     ->where('concepto.tipo', "=", 1) //egreso
+                                                    ->where(function($subquery)
+                                                    {
+                                                        $subquery->where('concepto_id', '!=', 12)->where('concepto_id', "!=", 15);
+                                                    })
                                                     ->sum('total');
                         round($egresos,2);
         
                         //saldo
                         $saldo = round($ingresos_total - $egresos, 2);
 
-                        $monto_caja = round($montoapertura + $ingresos_total - $egresos, 2);
+                        $monto_caja = round($montoapertura + $ingresos_total - $egresos - $monto_vuelto, 2);
         
                     }else if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura hasta ultimo movimiento
                         /*
@@ -342,14 +346,18 @@ class CajaController extends Controller
                                                     ->where('sucursal_id', "=", $sucursal_id)
                                                     ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                                     ->where('concepto.tipo', "=", 1) //egreso
+                                                    ->where(function($subquery)
+                                                    {
+                                                        $subquery->where('concepto_id', '!=', 12)->where('concepto_id', "!=", 15);
+                                                    })
                                                     ->sum('total');
                         round($egresos,2);
                         //saldo
                         $saldo = round($ingresos_total - $egresos, 2);
 
-                        $monto_caja = round($montoapertura + $ingresos_total - $egresos, 2);
+                        $monto_caja = round($montoapertura + $ingresos_total - $egresos - $monto_vuelto, 2);
                     }
-                    $saldo += $montoapertura +$monto_vuelto;// + $monto_vuelto;
+                    $saldo += $montoapertura;
                 }else if(!is_null($maxapertura) && is_null($maxcierre)) { //existe apertura pero no existe cierre
                     $apertura = Movimiento::where('concepto_id', 1)
                         ->where('sucursal_id', "=", $sucursal_id)
@@ -469,14 +477,18 @@ class CajaController extends Controller
                                                     ->where('sucursal_id', "=", $sucursal_id)
                                                     ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                                     ->where('concepto.tipo', "=", 1) //egreso
+                                                    ->where(function($subquery)
+                                                    {
+                                                        $subquery->where('concepto_id', '!=', 12)->where('concepto_id', "!=", 15);
+                                                    })
                                                     ->sum('total');
                         round($egresos,2);
                         //saldo
                         $saldo = round($ingresos_total - $egresos, 2);
 
-                        $monto_caja = round($montoapertura + $ingresos_total - $egresos, 2);
+                        $monto_caja = round($montoapertura + $ingresos_total - $egresos - $monto_vuelto, 2);
                     }
-                    $saldo += $montoapertura +$monto_vuelto; // + $monto_vuelto;
+                    $saldo += $montoapertura; // + $monto_vuelto;
                 }
 
         $pagina           = $request->input('page');
@@ -878,6 +890,7 @@ class CajaController extends Controller
                                 ->where('id','!=',13)
                                 ->where('id','!=',14)
                                 ->where('id','!=',15)
+                                ->where('id','!=',16)
                                 ->orderBy('id','ASC')->get();
         $html = "";
         foreach($conceptos as $key => $value){

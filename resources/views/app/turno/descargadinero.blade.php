@@ -54,7 +54,7 @@
 		</div>
 	</div-->
 	@if(empty($trabajadores_iniciados))
-	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">TODOS LOS REPARTIDORES EN TURNO</h4>
+	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">NINGÚN REPARTIDOR EN TURNO</h4>
 	@else
 	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center;">SELECCIONE REPARTIDOR</h4>
 	<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">

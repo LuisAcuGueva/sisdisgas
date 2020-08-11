@@ -78,13 +78,13 @@ operaciones
 					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS ADICIONALES DEL PEDIDO</h4>
 				</div>
 
-				<div class="col-lg-4 col-md-4 col-sm-4 m-b-15">
+				<div class="col-lg-4 col-md-4 col-sm-4 m-b-15 vales">
 					<div class="col-lg-12 col-md-12 col-sm-12" style="margin-bottom: 15px;">
 						{!! Form::label('balon_nuevo', 'Balón nuevo:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
 						<input class="balon" name="balon_nuevo" type="checkbox" id="balon_nuevo">
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12">
-						{!! Form::label('balon_a_cuenta', 'Balón a crédito:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+						{!! Form::label('balon_a_cuenta', 'Pedido a crédito:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
 						<input class="balon" name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
 					</div>
 				</div>
@@ -391,6 +391,8 @@ $(document).ready(function(){
 					$('#codigo_vale_fise').prop('readOnly',true);
 					$('#codigo_vale_subcafae').prop('readOnly',true);
 					$('#monto_vale_fise').val('');
+					$('#codigo_vale_fise').val('');
+					$('#codigo_vale_subcafae').val('');
 					$('#vale_balon_fise').parent().removeClass('checked');
 					$('#vale_balon_fise').prop('checked',false);
 					$('#vale_balon_subcafae').parent().removeClass('checked');
@@ -474,6 +476,8 @@ $(document).ready(function(){
 					$('#codigo_vale_monto').prop('readOnly',true);
 					$('#codigo_vale_subcafae').prop('readOnly',true);
 					$('#monto_vale_balon').val('');
+					$('#codigo_vale_monto').val('');
+					$('#codigo_vale_subcafae').val('');
 					$('#monto_vale_fise').val((16).toFixed(2));
 					$('#vale_balon_monto').parent().removeClass('checked');
 					$('#vale_balon_monto').prop('checked',false);
@@ -561,6 +565,8 @@ $(document).ready(function(){
 					$('#monto_vale_fise').val('');
 					$('#codigo_vale_monto').val('');
 					$('#codigo_vale_fise').val('');
+					$('#divMensajeErrorVenta').html("");
+					$('#btnGuardar').prop('disabled', false);
 				}else {
 					$("#detalle tr").each(function(){
 						var id = parseInt($(this).attr('id'));
@@ -590,10 +596,20 @@ $(document).ready(function(){
 					$('#codigo_vale_monto').prop('readOnly',true);
 					$('#codigo_vale_subcafae').prop('readOnly',true);
 					console.log('deseleccionar balon lleno');
+					$('#codigo_vale_subcafae').val('');
 					//divpadre.addClass('checked');
 					$('#vale_balon_monto').parent().removeClass('checked');
 					$('#vale_balon_monto').prop('checked',false);
 					$('#vale_balon_subcafae').parent().removeClass('checked');
+				}
+			}else if( input.attr('id') == 'balon_a_cuenta'){ //codigo_vale_subcafae
+				if( divpadre.hasClass('checked')) { 
+					$("#btnGuardar").prop('disabled',false);
+					$('#balon_a_cuenta').prop('checked',true);
+					$('#divMensajeErrorVenta').html("");
+				}else{
+					$("#btnGuardar").prop('disabled',true);
+					$('#balon_a_cuenta').prop('checked',false);
 				}
 			}
 		}
@@ -625,14 +641,19 @@ $(document).ready(function(){
 			vuelto =0.00;
 		}
 		$('#vuelto').val(vuelto.toFixed(2));
-		if(montoefectivo - vuelto  + montovisa + montomaster != total){
-			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-			cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
-			$('#divMensajeErrorVenta').html(cadenaError);
-			$('#btnGuardar').prop('disabled', true);
-		}else{
-			$('#divMensajeErrorVenta').html("");
-			$('#btnGuardar').prop('disabled', false);
+
+		if( !$("#balon_a_cuenta").parent().hasClass('checked') ){
+
+			if(montoefectivo - vuelto  + montovisa + montomaster != total){
+				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+				cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
+				$('#divMensajeErrorVenta').html(cadenaError);
+				$('#btnGuardar').prop('disabled', true);
+			}else{
+				$('#divMensajeErrorVenta').html("");
+				$('#btnGuardar').prop('disabled', false);
+			}
+
 		}
 	});
 
@@ -713,6 +734,7 @@ $(document).ready(function(){
 			$('#monto_vale_balon').val('');
 			$('#monto_vale_fise').val('');
 			$('#codigo_vale_monto').val('');
+			$('#codigo_vale_subcafae').val('');
 			$('#codigo_vale_fise').val('');
 		}
 
@@ -840,14 +862,19 @@ $(document).ready(function(){
 			vuelto =0.00;
 		}
 		$('#vuelto').val(vuelto.toFixed(2));
-		if(montoefectivo - vuelto  + montovisa + montomaster != total){
-			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-			cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
-			$('#divMensajeErrorVenta').html(cadenaError);
-			$('#btnGuardar').prop('disabled', true);
-		}else{
-			$('#divMensajeErrorVenta').html("");
-			$('#btnGuardar').prop('disabled', false);
+
+		if( !$("#balon_a_cuenta").parent().hasClass('checked') ){
+			
+			if(montoefectivo - vuelto  + montovisa + montomaster != total){
+				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+				cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
+				$('#divMensajeErrorVenta').html(cadenaError);
+				$('#btnGuardar').prop('disabled', true);
+			}else{
+				$('#divMensajeErrorVenta').html("");
+				$('#btnGuardar').prop('disabled', false);
+			}
+
 		}
 
 	});
@@ -883,7 +910,7 @@ $(document).ready(function(){
 		console.log("hay negativos = " + negativo);
 
 		if(!negativo){
-			if(!empleado || cant==0 || !cliente){
+			if(!empleado || cant==0 || !cliente || $("#vale_balon_fise").parent().hasClass('checked') || $("#vale_balon_subcafae").parent().hasClass('checked') || $("#vale_balon_monto").parent().hasClass('checked')){  // $("balon_a_cuenta").prop('checked') 
 				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
 				if(!empleado){
 					cadenaError += ' <li> El campo Empleado es obligatorio.</li>';
@@ -892,8 +919,23 @@ $(document).ready(function(){
 					cadenaError += ' <li> El campo Cliente es obligatorio.</li>';
 				}
 				if(cant ==0){
-					cadenaError += '<li>Debe agregar mínimo un producto.</li></ul></div>';
+					cadenaError += '<li>Debe agregar mínimo un producto.</li>';
 				}
+				if( $("#vale_balon_fise").parent().hasClass('checked') && $("#codigo_vale_fise").val() == "" ){
+					cadenaError += '<li>Ingresa Código de vale FISE.</li>';
+				}
+				if( $("#vale_balon_subcafae").parent().hasClass('checked') && $("#codigo_vale_subcafae").val() == "" ){
+					cadenaError += '<li>Ingresa Código de vale SUBCAFAE.</li>';
+				}
+				if( $("#vale_balon_monto").parent().hasClass('checked') && ( $("#codigo_vale_monto").val() == "" || $("#monto_vale_balon").val()  == "" )){
+					if($("#codigo_vale_monto").val() == "" ){
+					cadenaError += '<li>Ingresa Código de vale monto.</li>';
+					}
+					if($("#monto_vale_balon").val() == "" ){
+					cadenaError += '<li>Ingresa Monto de descuento de vale monto.</li>';
+					}
+				}
+				cadenaError += "</ul></div>";
 				$('#divMensajeErrorVenta').html(cadenaError);
 			}else{
 				swal({
@@ -1142,6 +1184,7 @@ function eliminarDetalle(comp){
 			$('#monto_vale_fise').val('');
 			$('#codigo_vale_monto').val('');
 			$('#codigo_vale_fise').val('');
+			$('#codigo_vale_subcafae').val('');
 		}
 	var cant = $("#cant"). val();
 	cant--;
@@ -1211,14 +1254,19 @@ function eliminarDetalle(comp){
 		vuelto =0.00;
 	}
 	$('#vuelto').val(vuelto.toFixed(2));
-	if(montoefectivo - vuelto  + montovisa + montomaster != total){
-		var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-		cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
-		$('#divMensajeErrorVenta').html(cadenaError);
-		$('#btnGuardar').prop('disabled', true);
-	}else{
-		$('#divMensajeErrorVenta').html("");
-		$('#btnGuardar').prop('disabled', false);
+
+	if( !$("#balon_a_cuenta").parent().hasClass('checked') ){
+
+		if(montoefectivo - vuelto  + montovisa + montomaster != total){
+			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+			cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
+			$('#divMensajeErrorVenta').html(cadenaError);
+			$('#btnGuardar').prop('disabled', true);
+		}else{
+			$('#divMensajeErrorVenta').html("");
+			$('#btnGuardar').prop('disabled', false);
+		}
+		
 	}
 }
 
