@@ -737,7 +737,7 @@ class CajaController extends Controller
                         ->where('sucursal_id', "=", $sucursal_id)
                         ->where('estado', "=", 1)
                         ->where('num_caja',$maxapertura)->first();
-                $turno_repartidor = Turnorepartidor::where('trabajador_id', $request->input('persona_id'))->first();
+                $turno_repartidor = Turnorepartidor::where('estado','I')->where('trabajador_id', $request->input('persona_id'))->first();
                 if(is_null($turno_repartidor)){
                     $turno_repartidor = new Turnorepartidor();
                     $turno_repartidor->estado    = "I";

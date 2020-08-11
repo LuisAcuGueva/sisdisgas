@@ -84,7 +84,7 @@ operaciones
 						<input class="balon" name="balon_nuevo" type="checkbox" id="balon_nuevo">
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12">
-						{!! Form::label('balon_a_cuenta', 'Balón a cuenta:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+						{!! Form::label('balon_a_cuenta', 'Balón a crédito:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
 						<input class="balon" name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
 					</div>
 				</div>

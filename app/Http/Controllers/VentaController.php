@@ -28,7 +28,7 @@ class VentaController extends Controller
     protected $folderview      = 'app.venta';
     protected $tituloAdmin     = 'Registrar Pedido';
     protected $tituloCliente   = 'Registrar Nuevo Cliente';
-    protected $rutas           = array('create' => 'trabajador.create', 
+    protected $rutas           = array(
             'cliente'   => 'cliente.create',
             'guardarventa'   => 'venta.guardarventa',
             'guardardetalle' => 'venta.guardardetalle',
@@ -198,17 +198,21 @@ class VentaController extends Controller
 
             // GUARDAR DETALLE TURNO PEDIDO
 
-            $trabajador =$request->input('empleado_id');
+            if($balon_a_cuenta != true){
 
-            $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
-                                ->max('id');
+                $trabajador =$request->input('empleado_id');
 
-            $turno_maximo = Turnorepartidor::find($max_turno);
+                $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
+                                    ->max('id');
 
-            $detalle_turno_pedido =  new Detalleturnopedido();
-            $detalle_turno_pedido->pedido_id = $movimiento->id;
-            $detalle_turno_pedido->turno_id = $turno_maximo->id;
-            $detalle_turno_pedido->save();
+                $turno_maximo = Turnorepartidor::find($max_turno);
+
+                $detalle_turno_pedido =  new Detalleturnopedido();
+                $detalle_turno_pedido->pedido_id = $movimiento->id;
+                $detalle_turno_pedido->turno_id = $turno_maximo->id;
+                $detalle_turno_pedido->save();
+                
+            }
 
         });
         return is_null($error) ? "OK" : $error;

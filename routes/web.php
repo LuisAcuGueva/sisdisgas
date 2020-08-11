@@ -73,6 +73,14 @@ Route::group(['middleware' => 'auth'], function () {
     //Route::get('caja/aperturaycierre', 'CajaController@aperturaycierre')->name('caja.aperturaycierre');
     Route::resource('caja', 'CajaController', array('except' => array('show')));
 
+    Route::post('baloncredito/buscar','BaloncreditoController@buscar')->name('baloncredito.buscar');
+    Route::get('baloncredito/detalle/{id}/', 'BaloncreditoController@detalle')->name('baloncredito.detalle');
+    Route::get('baloncredito/pagos/{id}/', 'BaloncreditoController@pagos')->name('baloncredito.pagos');
+    Route::get('baloncredito/pagar/{id}/', 'BaloncreditoController@pagar')->name('baloncredito.pagar');
+    Route::post('baloncredito/pagardeuda/', 'BaloncreditoController@pagardeuda')->name('baloncredito.pagardeuda');
+    Route::get('baloncredito/eliminar/{id}/{listarluego}','BaloncreditoController@eliminar')->name('baloncredito.eliminar');
+    Route::resource('baloncredito', 'BaloncreditoController', array('except' => array('show')));
+
     Route::post('producto/buscar','ProductoController@buscar')->name('producto.buscar');
     Route::get('producto/eliminar/{id}/{listarluego}','ProductoController@eliminar')->name('producto.eliminar');
     Route::resource('producto', 'ProductoController', array('except' => array('show')));

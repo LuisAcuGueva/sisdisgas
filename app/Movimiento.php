@@ -45,6 +45,19 @@ class Movimiento extends Model
         			->orderBy('num_caja','DESC')->orderBy('fecha', 'DESC');
 	}
 
+	public function scopebalonescredito($query, $fechainicio, $fechafin)
+    {
+		return $query->where(function($subquery) use($fechainicio, $fechafin)
+		            {
+		            	if (!is_null($fechainicio) && !is_null($fechafin)) {
+							$subquery->whereBetween(DB::raw('CONVERT(fecha,date)'),[$fechainicio,$fechafin]);
+		            	}
+					})
+					->where('balon_a_cuenta', "=", 1)
+					->where('credito_cancelado', "!=", 1)
+        			->orderBy('num_caja','DESC')->orderBy('fecha', 'ASC');
+	}
+
 	public function trabajador(){
 		return $this->belongsTo('App\Person', 'trabajador_id');
 	}

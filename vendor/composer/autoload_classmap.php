@@ -35,6 +35,7 @@ return array(
     'CrearTablaUsertype' => $baseDir . '/database/migrations/2017_03_22_142828_crear_tabla_usertype.php',
     'CrearTablaVenta' => $baseDir . '/database/migrations/2018_05_23_182509_crear_tabla_venta.php',
     'CrearTablaWorkertype' => $baseDir . '/database/migrations/2017_03_22_142709_crear_tabla_workertype.php',
+    'CreateTablaDetallePagos' => $baseDir . '/database/migrations/2020_08_07_181901_create_tabla_detalle_pagos.php',
     'CreateTablaSevicio' => $baseDir . '/database/migrations/2018_05_23_123325_create_tabla_sevicio.php',
     'DatabaseSeeder' => $baseDir . '/database/seeds/DatabaseSeeder.php',
     'Datamatrix' => $vendorDir . '/tecnickcom/tcpdf/include/barcodes/datamatrix.php',

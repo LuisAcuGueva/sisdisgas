@@ -47,6 +47,7 @@ class TurnoController extends Controller
         $turno_id         = Libreria::getParam($request->input('turno_id'));
         $lista            = array();
         $ingresos_repartidor = 0.00;
+        $ingresos_credito = 0.00;
         $vueltos_repartidor = 0.00;
         $total_ingresos = 0.00;
         $egresos_repartidor = 0.00;
@@ -61,6 +62,15 @@ class TurnoController extends Controller
                                                         ->where(function($subquery)
                                                             {
                                                                 $subquery->where('concepto.id','=', 3);
+                                                            })
+                                                        ->sum('total');
+                                                    
+            $ingresos_credito = Detalleturnopedido::where('turno_id', '=', $turno_id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where(function($subquery)
+                                                            {
+                                                                $subquery->where('concepto.id','=', 16);
                                                             })
                                                         ->sum('total');
 
@@ -83,12 +93,13 @@ class TurnoController extends Controller
                                                         ->sum('total');
 
             round($ingresos_repartidor,2);
+            round($ingresos_credito,2);
             round($vueltos_repartidor,2);
             round($egresos_repartidor,2);
 
-            $total_ingresos = $ingresos_repartidor + $vueltos_repartidor;
+            $total_ingresos = $ingresos_repartidor + $vueltos_repartidor + $ingresos_credito;
 
-            $saldo_repartidor = $ingresos_repartidor + $vueltos_repartidor - $egresos_repartidor;
+            $saldo_repartidor = $ingresos_repartidor + $ingresos_credito + $vueltos_repartidor - $egresos_repartidor;
 
             round($saldo_repartidor,2);
 
@@ -112,7 +123,7 @@ class TurnoController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloDetalle', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloDetalle', 'ruta'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -221,12 +232,12 @@ class TurnoController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-            $reglas     = array('num_caja' => 'required|numeric',
-                                'fecha'      => 'required',
-                                'concepto_id'   => 'required',
-                                'persona_id' => 'required',
-                                'monto'      => 'required|numeric',
-                            );
+        $reglas     = array('num_caja' => 'required|numeric',
+                            'fecha'      => 'required',
+                            'concepto_id'   => 'required',
+                            'persona_id' => 'required',
+                            'monto'      => 'required|numeric',
+                        );
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
         if ($validacion->fails()) {

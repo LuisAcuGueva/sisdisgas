@@ -32,6 +32,15 @@
 				{!! Form::hidden('cliente_id',null,array('id'=>'cliente_id')) !!}
 			</div>
 			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+				{!! Form::label('cliente', 'Cliente:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+				@if(!is_null($pedido->persona->dni))
+				{!! Form::textarea('cliente', $pedido->persona->apellido_pat.' '.$pedido->persona->apellido_mat.' '.$pedido->persona->nombres, array('class' => 'form-control input-sm','rows' => '2', 'id' => 'cliente', 'readOnly')) !!}
+				@else
+				{!! Form::textarea('cliente', $pedido->persona->razon_social , array('class' => 'form-control input-sm','rows' => '2', 'id' => 'cliente', 'readOnly')) !!}
+				@endif
+				{!! Form::hidden('cliente_id',null,array('id'=>'cliente_id')) !!}
+			</div>
+			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 				{!! Form::label('celular', 'Celular:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
 				{!! Form::text('celular', $pedido->persona->celular, array('class' => 'form-control input-xs','id' => 'celular', 'readOnly')) !!}
 			</div>
@@ -46,6 +55,19 @@
 				<h4 clas="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS ADICIONALES DEL PEDIDO</h4>
 			</div>
 			<div class="col-lg-12 col-md-12 col-sm-12">
+				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="margin-bottom: 15px;">
+					<div class="col-lg-3 col-md-3 col-sm-3" style="margin-top: 4px;">
+						{!! Form::label('trabajador', 'Repartidor:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+					</div>
+					<div class="col-lg-8 col-md-8 col-sm-8">
+						@if(!is_null($pedido->trabajador->dni))
+						{!! Form::text('trabajador', $pedido->trabajador->apellido_pat.' '.$pedido->trabajador->apellido_mat.' '.$pedido->trabajador->nombres, array('class' => 'form-control input-sm', 'id' => 'trabajador', 'readOnly')) !!}
+						@else
+						{!! Form::text('trabajador', $pedido->trabajador->razon_social , array('class' => 'form-control input-sm', 'id' => 'trabajador', 'readOnly')) !!}
+						@endif
+						{!! Form::hidden('trabajador_id',null,array('id'=>'trabajador_id')) !!}
+					</div>
+				</div>
 				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 					<div class="col-lg-6 col-md-6 col-sm-6" style="margin-bottom: 15px;">
 						{!! Form::label('balon_nuevo', 'Balón nuevo:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
