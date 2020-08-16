@@ -13,7 +13,7 @@
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-6 sucursal">
 			{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'generarNumeroSerie(); permisoRegistrar(); actualizarPreciosVales();')) !!}		
+			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'permisoRegistrar();')) !!}		
 		</div>
 		<div class="col-lg-12 col-md-12 col-sm-12 repartidor" style="display:none;">
 			@if(!empty($turnos_iniciados))
@@ -54,7 +54,7 @@
 	</div>
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 		</div>
 	</div>
@@ -113,4 +113,47 @@ $(document).ready(function() {
 	}); 
 
 }); 
+
+
+function permisoRegistrar(){
+
+var aperturaycierre = null;
+
+var sucursal_id = $('#sucursal_id').val();
+
+var ajax = $.ajax({
+	"method": "POST",
+	"url": "{{ url('/venta/permisoRegistrar') }}",
+	"data": {
+		"sucursal_id" : sucursal_id, 
+		"_token": "{{ csrf_token() }}",
+		}
+}).done(function(info){
+	aperturaycierre = info;
+}).always(function(){
+	if(aperturaycierre == 0){
+		$("#btnGuardar").prop('disabled',true);
+		$("#monto").prop('disabled',true);
+
+		$('#divMensajeErrorMovimiento').html("");
+
+		var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
+
+		var surcursal_id = $('#sucursal_id').val();
+
+		if(sucursal_id != null){
+			$('#divMensajeErrorMovimiento').html(cadenaError);
+		}
+
+	}else if(aperturaycierre == 1){
+		$("#btnGuardar").prop('disabled',false);
+		$("#monto").prop('disabled',false);
+
+		$('#divMensajeErrorMovimiento').html("");
+
+	}
+});
+
+return aperturaycierre;
+}
 </script>

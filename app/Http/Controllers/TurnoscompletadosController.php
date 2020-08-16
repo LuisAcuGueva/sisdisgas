@@ -17,10 +17,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class TurnoController extends Controller
+class TurnoscompletadosController extends Controller
 {
 
-    protected $folderview      = 'app.turno';
+    protected $folderview      = 'app.turnoscompletados';
     protected $tituloAdmin     = 'Repartidores en turno';
     protected $tituloMontoVuelto = 'Dar monto vuelto a repartidor';
     protected $tituloDescargaDinero = 'Ingreso de dinero a caja';

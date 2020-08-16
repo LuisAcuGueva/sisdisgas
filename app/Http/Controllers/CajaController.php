@@ -11,10 +11,12 @@ use App\Turnorepartidor;
 use App\Concepto;
 use App\Person;
 use App\Detalleturnopedido;
+use App\Tipodocumento;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Elibyy\TCPDF\Facades\TCPDF;
 
 class CajaController extends Controller
 {
@@ -26,6 +28,7 @@ class CajaController extends Controller
     protected $tituloApertura  = 'Apertura de Caja';
     protected $tituloTurnoRepartidor  = 'Iniciar Turno de Repartidor';
     protected $tituloCierre    = 'Cierre de Caja';
+    protected $tituloIngresarCierres    = 'Ingresar Cajas de otras sucursales';
     protected $tituloPersona   = 'Registrar Nueva Persona';
     protected $rutas           = array('create' => 'caja.create', 
             'persona'  => 'caja.persona',
@@ -36,6 +39,7 @@ class CajaController extends Controller
             'apertura' => 'caja.apertura',
             'turnoRepartidor' => 'caja.turnoRepartidor',
             'cierre'   => 'caja.cierre',
+            'ingresarcierres'   => 'caja.ingresarcierres',
             'repetido' => 'caja.repetido',
             'aperturaycierre' => 'caja.aperturaycierre',
         );
@@ -70,6 +74,60 @@ class CajaController extends Controller
             $aperturaycierre = 1;
         }
 
+        //cantidad de aperturas
+        $aperturas_principal = Movimiento::where('concepto_id', 1)
+                                ->where('sucursal_id', "=", 1)
+                                ->where('estado', "=", 1)
+                                ->count();
+        //cantidad de cierres
+        $cierres_principal = Movimiento::where('concepto_id', 2)
+                            ->where('sucursal_id', "=", 1)
+                            ->where('estado', "=", 1)
+                            ->count();
+
+        $caja_principal = null;
+
+        if($aperturas_principal == $cierres_principal){ // habilitar apertura de caja = CAJA CERRADA
+            $caja_principal = 0;
+        }else if($aperturas_principal != $cierres_principal){ //habilitar cierre de caja = CAJA ABIERTA
+            $caja_principal = 1;
+        }
+
+        $lstsucursal = Sucursal::all();
+
+        $sucursal_principal = Sucursal::find(1);
+
+        foreach ($lstsucursal as $key => $value) {
+            if($value == $sucursal_principal){
+               unset($lstsucursal[$key]);
+            }
+        }
+
+        $cant_cajas_sucursales_abiertas = 0;
+
+        foreach ($lstsucursal as $key => $value) {
+
+            $aperturas_sucursal = Movimiento::where('concepto_id', 1)
+                                ->where('sucursal_id', "=", $value->id)
+                                ->where('estado', "=", 1)
+                                ->count();
+            //cantidad de cierres
+            $cierres_sucursal = Movimiento::where('concepto_id', 2)
+                                ->where('sucursal_id', "=", $value->id)
+                                ->where('estado', "=", 1)
+                                ->count();
+
+            $aperturaycierre_sucursal = null;
+
+            if($aperturas_sucursal == $cierres_sucursal){ // habilitar apertura de caja = caja cerrada
+                //$aperturaycierre_sucursal = 0;
+            }else if($aperturas_sucursal != $cierres_sucursal){ //habilitar cierre de caja = caja abierta
+                $cant_cajas_sucursales_abiertas++;
+            }
+
+        }
+
+
         //max apertura
         $maxapertura = Movimiento::where('concepto_id', 1)
                 ->where('sucursal_id', "=", $sucursal_id)
@@ -80,6 +138,12 @@ class CajaController extends Controller
                 ->where('sucursal_id', "=", $sucursal_id)
                 ->where('estado', "=", 1)
                 ->max('num_caja');
+
+        $ultimo_cierre = Movimiento::where('concepto_id', 2)
+                                ->where('sucursal_id', "=", $sucursal_id)
+                                ->where('estado', "=", 1)
+                                ->where('num_caja', "=", $maxcierre)
+                                ->first();
 
                 $montoapertura = 0.00;
                 $monto_vuelto = 0.00;
@@ -504,7 +568,7 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'NRO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'PERSONA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TRABAJADOR', 'numero' => '1');
         $cabecera[]       = array('valor' => 'INGRESOS', 'numero' => '1');
         $cabecera[]       = array('valor' => 'EGRESOS', 'numero' => '1');
@@ -516,6 +580,7 @@ class CajaController extends Controller
         $titulo_registrar = $this->tituloRegistrar;
         $titulo_apertura  = $this->tituloApertura;
         $titulo_cierre    = $this->tituloCierre;
+        $tituloIngresarCierres  = $this->tituloIngresarCierres;
         $ruta             = $this->rutas;
 
         if (count($lista) > 0) {
@@ -527,9 +592,9 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('montoapertura','monto_vuelto', 'lista', 'ingresos_efectivo', 'monto_caja', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo',  'aperturas' , 'cierres' , 'ruta', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'aperturaycierre', 'tituloTurnoRepartidor', 'titulo_eliminar', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('maxapertura','ultima_apertura', 'ultimo_cierre','sucursal_id', 'tituloIngresarCierres','cant_cajas_sucursales_abiertas', 'caja_principal','montoapertura','monto_vuelto', 'lista', 'ingresos_efectivo', 'monto_caja', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo',  'aperturas' , 'cierres' , 'ruta', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'aperturaycierre', 'tituloTurnoRepartidor', 'titulo_eliminar', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'ruta'));
         }
-        return view($this->folderview.'.list')->with(compact('montoapertura', 'monto_vuelto', 'lista', 'ingresos_efectivo', 'monto_caja', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo', 'aperturas' , 'cierres' , 'ruta', 'aperturaycierre', 'titulo_registrar', 'tituloTurnoRepartidor', 'titulo_apertura', 'titulo_cierre', 'entidad'));
+        return view($this->folderview.'.list')->with(compact('maxapertura','ultimo_cierre','tituloIngresarCierres','sucursal_id','caja_principal','montoapertura', 'monto_vuelto', 'lista', 'ingresos_efectivo', 'monto_caja', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo', 'aperturas' , 'cierres' , 'ruta', 'aperturaycierre', 'titulo_registrar', 'tituloTurnoRepartidor', 'titulo_apertura', 'titulo_cierre', 'entidad'));
     }
 
     /**
@@ -663,6 +728,59 @@ class CajaController extends Controller
         $user = Auth::user();
         $persona_id = $user->person_id;
         $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
+
+        $sucursal = Sucursal::find(1);
+
+        $lstsucursal = Sucursal::all();
+
+        foreach ($lstsucursal as $key => $value) {
+            if($value == $sucursal){
+               unset($lstsucursal[$key]);
+            }
+        }
+
+        $cant_cajas_sucursales_abiertas = 0;
+
+        $sucursales_cerradas_no_ingresadas = 0;
+
+        foreach ($lstsucursal as $key => $value) {
+
+            $aperturas_sucursal = Movimiento::where('concepto_id', 1)
+                                ->where('sucursal_id', "=", $value->id)
+                                ->where('estado', "=", 1)
+                                ->count();
+            //cantidad de cierres
+            $cierres_sucursal = Movimiento::where('concepto_id', 2)
+                                ->where('sucursal_id', "=", $value->id)
+                                ->where('estado', "=", 1)
+                                ->count();
+
+
+            if($aperturas_sucursal == $cierres_sucursal){ // habilitar apertura de caja = caja cerrada
+
+                $cierre_max_sucursal = Movimiento::where('concepto_id', 2)
+                ->where('sucursal_id', "=", $value->id)
+                ->where('estado', "=", 1)
+                ->max('id');
+
+                $cierre_max  = Movimiento::find($cierre_max_sucursal);
+
+                if(!is_null($cierre_max)){
+
+                    if( $cierre_max->ingreso_caja_principal == null ){
+
+                        $sucursales_cerradas_no_ingresadas++;
+
+                    }
+
+                }
+
+
+            }else if($aperturas_sucursal != $cierres_sucursal){ //habilitar cierre de caja = caja abierta
+                $cant_cajas_sucursales_abiertas++;
+            }
+
+        }
         
 
         $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
@@ -680,7 +798,7 @@ class CajaController extends Controller
         }
 
         $boton        = 'Registrar';
-        return view($this->folderview.'.cierre')->with(compact('persona_id' , 'num_caja', 'sucursal_id','movimiento', 'turnos_cerrados' ,'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.cierre')->with(compact('sucursales_cerradas_no_ingresadas', 'cant_cajas_sucursales_abiertas', 'persona_id' , 'num_caja', 'sucursal_id','movimiento', 'turnos_cerrados' ,'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -717,28 +835,60 @@ class CajaController extends Controller
             $movimiento->tipomovimiento_id = 1;
             $movimiento->concepto_id    = $request->input('concepto_id');
             $movimiento->num_caja   = $request->input('num_caja');
-            if($request->input('concepto_id') == 1){
-                $movimiento->total          = $request->input('monto');
-                $movimiento->subtotal          = $request->input('monto');
-            }else{
-                $movimiento->total             = $request->input('total');
-                $movimiento->subtotal          = $request->input('total');
-                $movimiento->montoefectivo    = $request->input('total');
-            }
-            $movimiento->estado         = 1;
-            $trabajador = Person::find($request->input('persona_id'));
-            if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 2 || $request->input('concepto_id') == 12 || $request->input('concepto_id') == 14 || $request->input('concepto_id') == 13 || $request->input('concepto_id') == 15){
-                if($trabajador->tipo_persona == "T"){
-                    $movimiento->trabajador_id     = $request->input('persona_id');
+
+            if($request->input('concepto_id') != 17){
+
+                if($request->input('concepto_id') == 1){
+                    $movimiento->total          = $request->input('monto');
+                    $movimiento->subtotal          = $request->input('monto');
+                }else{
+                    $movimiento->total             = $request->input('total');
+                    $movimiento->subtotal          = $request->input('total');
+                    $movimiento->montoefectivo    = $request->input('total');
                 }
+
+                $movimiento->estado         = 1;
+
+                $trabajador = Person::find($request->input('persona_id'));
+                if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 2 || $request->input('concepto_id') == 12 || $request->input('concepto_id') == 14 || $request->input('concepto_id') == 13 || $request->input('concepto_id') == 15){
+                    if($trabajador->tipo_persona == "T"){
+                        $movimiento->trabajador_id     = $request->input('persona_id');
+                    }
+                }else{
+                    $movimiento->persona_id     = $request->input('persona_id');
+                }
+
+                $user           = Auth::user();
+                $movimiento->usuario_id     = $user->id;
+                $movimiento->sucursal_id   = $request->input('sucursal');
+                $movimiento->comentario     = strtoupper($request->input('comentario'));
+                $movimiento->save();
+
             }else{
-                $movimiento->persona_id     = $request->input('persona_id');
+
+                $caja_cerrada = Movimiento::find($request->input("caja_cerrada_sin_ingresar"));
+
+                $movimiento->total  = $caja_cerrada->total;
+
+                $movimiento->estado         = 1;
+
+                $movimiento->trabajador_id     = $caja_cerrada->trabajador_id;
+
+                $user           = Auth::user();
+
+                $movimiento->usuario_id     = $user->id;
+                $movimiento->sucursal_id   = $request->input('sucursal');
+                $movimiento->comentario     = strtoupper($request->input('comentario'));
+                $movimiento->save();
+
+                $caja_cerrada->ingreso_caja_principal = 1;
+                $caja_cerrada->ingreso_cierre_id = $movimiento->id;
+
+                $caja_cerrada->save();
+
+
             }
-            $user           = Auth::user();
-            $movimiento->usuario_id     = $user->id;
-            $movimiento->sucursal_id   = $request->input('sucursal');
-            $movimiento->comentario     = strtoupper($request->input('comentario'));
-            $movimiento->save();
+
             if($request->input('concepto_id') == 12  || $request->input('concepto_id') == 14 || $request->input('concepto_id') == 13 || $request->input('concepto_id') == 15){
                 $sucursal_id = $request->input('sucursal');
                 $maxapertura = Movimiento::where('concepto_id', 1)
@@ -766,6 +916,85 @@ class CajaController extends Controller
             }
         });
         return is_null($error) ? "OK" : $error;
+    }
+
+    public function ingresarcierres(Request $request)
+    {
+        $listar       = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad      = 'Caja';
+        $movimiento   = null;
+        $formData     = array('caja.store');
+        $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        
+        $sucursal_id  = $request->input('sucursal_id');
+        $user = Auth::user();
+        $persona_id = $user->person_id;
+        $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
+
+        $maxcierre = Movimiento::where('concepto_id', 2)
+                ->where('sucursal_id', "=", $sucursal_id)
+                ->where('estado', "=", 1)
+                ->max('num_caja');
+
+        $cierre_ultimo = Movimiento::where('concepto_id', 2)
+                    ->where('sucursal_id', "=", $sucursal_id)
+                    ->where('estado', "=", 1)
+                    ->where('num_caja',"=", $maxcierre)
+                    ->first();
+                    
+        $boton        = 'Registrar'; 
+
+
+        $lstsucursal = Sucursal::all();
+
+        $sucursal_principal = Sucursal::find(1);
+
+        foreach ($lstsucursal as $key => $value) {
+            if($value == $sucursal_principal){
+               unset($lstsucursal[$key]);
+            }
+        }
+
+        $cierres_sucursales = array();
+
+        foreach ($lstsucursal as $key => $value) {
+
+            $aperturas_sucursal = Movimiento::where('concepto_id', 1)
+                                ->where('sucursal_id', "=", $value->id)
+                                ->where('estado', "=", 1)
+                                ->count();
+            //cantidad de cierres
+            $cierres_sucursal = Movimiento::where('concepto_id', 2)
+                                ->where('sucursal_id', "=", $value->id)
+                                ->where('estado', "=", 1)
+                                ->count();
+
+            if($aperturas_sucursal != 0){
+
+                if($aperturas_sucursal == $cierres_sucursal){ // habilitar apertura de caja = caja cerrada
+
+                    $cierre_max_sucursal = Movimiento::where('concepto_id', 2)
+                            ->where('sucursal_id', "=", $value->id)
+                            ->where('estado', "=", 1)
+                            ->max('id');
+
+                    $cierre_max  = Movimiento::find($cierre_max_sucursal);
+
+                    if( $cierre_max->ingreso_caja_principal != 1 ){
+
+                        array_push($cierres_sucursales, $cierre_max);
+
+                    }
+
+                }else if($aperturas_sucursal != $cierres_sucursal){ //habilitar cierre de caja = caja abierta
+                    unset($lstsucursal[$key]);
+                }
+            }
+
+        }
+
+
+        return view($this->folderview.'.ingresarcierres')->with(compact('cierres_sucursales','persona_id' , 'num_caja', 'movimiento', 'cierre_ultimo', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -890,6 +1119,7 @@ class CajaController extends Controller
                                 ->where('id','!=',13)
                                 ->where('id','!=',14)
                                 ->where('id','!=',15)
+                                ->where('id','!=',17)
                                 ->where('id','!=',16)
                                 ->orderBy('id','ASC')->get();
         $html = "";
@@ -961,5 +1191,336 @@ class CajaController extends Controller
             $cliente->save();
         });
         return is_null($error) ? "OK" : $error;
+    }
+
+    //REPORTES 
+
+    public function pdfDetalleCierre(Request $request){
+
+        $sucursal_id = $request->input('sucursal_id');
+        $sucursal    = Sucursal::find($sucursal_id);
+        $rst         = Movimiento::where('tipomovimiento_id','=',1)->where('sucursal_id','=',$sucursal->id)->where('concepto_id','=',1)->orderBy('id','DESC')->limit(1)->first();
+
+        if(count($rst)>0){
+            $apertura_ultima = $rst->id;
+        }else{
+            $apertura_ultima = 0;
+        }
+
+        $nombrepdf = "DETALLE CIERRE DE CAJA ACTUAL - SUCURSAL " . $sucursal->nombre;
+
+        $totalingresos     = 0;
+        $totalvuelto   = 0;
+        $totalegresos  = 0;
+        
+        $pdf = new TCPDF();
+        $pdf::SetTitle($nombrepdf);
+        $pdf::AddPage('L');
+        $pdf::SetFont('helvetica','B',12);
+        $pdf::Cell(0,10,$nombrepdf,0,0,'C');
+        $pdf::Ln();
+        $pdf::SetFont('helvetica','B',7);
+        //$pdf::MultiCell(10, 7,'NRO', 1, 'C', 0, 0, '', '', true, 0, false, true, 14, 'M');
+        $pdf::Cell(10,7,utf8_decode("NRO"),1,0,'C');
+
+        //$pdf::MultiCell(25, 7,'FECHA', 1, 'C', 0, 0, '', '', true, 0, false, true, 14, 'M');
+        $pdf::Cell(25,7,utf8_decode("FECHA"),1,0,'C');
+
+        //$pdf::MultiCell(50, 7,'PERSONA', 1, 'C', 0, 0, '', '', true, 0, false, true, 14, 'M');
+        $pdf::Cell(45,7,utf8_decode("TRABAJADOR"),1,0,'C');
+
+        //$pdf::MultiCell(28, 7,'COMPROBANTE', 1, 'C', 0, 0, '', '', true, 0, false, true, 14, 'M');
+        $pdf::Cell(28,7,utf8_decode("COMPROBANTE"),1,0,'C');
+
+        //$pdf::MultiCell(45, 7,'CONCEPTO', 1, 'C', 0, 0, '', '', true, 0, false, true, 14, 'M');
+        $pdf::Cell(45,7,utf8_decode("CONCEPTO"),1,0,'C');
+
+        //$pdf::MultiCell(45, 7,'TRABAJADOR', 1, 'C', 0, 0, '', '', true, 0, false, true, 14, 'M');
+        $pdf::Cell(50,7,utf8_decode("PERSONA / CLIENTE"),1,0,'C');
+
+        //$pdf::MultiCell(15, 7,'EGRESO', 1, 'C', 0, 0, '', '', true, 0, false, true, 14, 'M');
+        $pdf::Cell(15,7,utf8_decode("EGRESO"),1,0,'C');
+
+        //$pdf::Ln();
+        //$pdf::Cell(218,7,utf8_decode(""),0,0,'C');
+        $pdf::Cell(15,7,utf8_decode("INGRESO"),1,0,'C');
+
+        $pdf::Cell(45,7,utf8_decode("COMENTARIO"),1,0,'C');
+        $pdf::Ln();
+
+        $pdf::SetFont('helvetica','B',8.5);
+        $pdf::Cell(278,7,'APERTURA DE CAJA',1,0,'L');
+        $pdf::Ln();
+        $pdf::SetFont('helvetica','',6);  
+        $pdf::Cell(10,7, $rst->num_caja ,1,0,'C');                 
+        $pdf::Cell(25,7,date("d/m/Y h:i:s a", strtotime($rst->fecha)),1,0,'C');
+        $persona = Person::find($rst->trabajador_id);
+        if($persona->dni == null){
+            $nombrepersona = $persona->razon_social;
+        }else{
+            $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
+        }
+        $pdf::Cell(45,7,$nombrepersona,1,0,'L');
+        $pdf::Cell(10,7, "" ,1,0,'C');
+        $pdf::Cell(18,7, "" ,1,0,'C');
+        $concepto = Concepto::find($rst->concepto_id);
+        $pdf::Cell(45,7,$concepto->concepto,1,0,'L');
+        $pdf::Cell(50,7, "" ,1,0,'L');
+        $pdf::Cell(15,7,"",1,0,'C');
+
+        if($rst->estado == 1) {
+            $valuetp = number_format($rst->total,2,'.','');
+            if($valuetp == 0){$valuetp='';}
+            $pdf::Cell(15,7,$valuetp,1,0,'R');                    
+            $pdf::Cell(45,7,$rst->comentario,1,0,'L');     
+        } else {
+            $pdf::Cell(60,7,'ANULADO',1,0,'C');                    
+        }  
+        $pdf::Ln(); 
+        $pdf::SetFont('helvetica','B',8.5);
+        $pdf::Cell(218,7,'SUBTOTAL',1,0,'R');
+        $pdf::Cell(15,7,number_format($rst->total,2,'.',''),1,0,'R');
+        $pdf::Ln();   
+
+        //MONTO VUELTO
+
+        $rstvueltos = Movimiento::leftjoin('concepto','movimiento.concepto_id','=','concepto.id')
+                            ->Where(function($subquery)
+                            {
+                                $subquery->where('concepto.id', '=', 12)->orwhere('concepto.id', '=', 15);
+                            })
+                            //->where('movimiento.estado','=', 1)
+                            ->where('movimiento.sucursal_id', '=', $sucursal_id)
+                            ->where('movimiento.tipomovimiento_id', '=', 1)
+                            ->where('movimiento.id', '>=', $apertura_ultima);
+
+        $rstvueltos = $rstvueltos->orderBy('movimiento.num_caja', 'asc');
+
+        $listarvueltos        = $rstvueltos->get();
+
+        if(count($listarvueltos)>0){
+            $pdf::SetFont('helvetica','B',8.5);
+            $pdf::Cell(278,7,'VUELTOS A REPARTIDORES',1,0,'L');
+            $pdf::Ln();
+            foreach ($listarvueltos as $row) { 
+                $pdf::SetFont('helvetica','',6);   
+                $pdf::Cell(10,7, $row['num_caja'] ,1,0,'C');                                 
+                $pdf::Cell(25,7,date("d/m/Y h:i:s a", strtotime($row['fecha'])),1,0,'C');
+                if(!is_null($row['persona_id'])){
+                    $persona = Person::find($row['persona_id']);
+                    if($persona->dni == null){
+                        $nombrepersona = $persona->razon_social;
+                    }else{
+                        $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
+                    }
+                }else if(!is_null($row['trabajador_id'])){
+                    $persona = Person::find($row['trabajador_id']);
+                    if($persona->dni == null){
+                        $nombrepersona = $persona->razon_social;
+                    }else{
+                        $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
+                    }
+                }
+                $pdf::Cell(45,7,$nombrepersona,1,0,'L');
+                $tipodoc = Tipodocumento::find($row['tipodocumento_id']);
+                $pdf::Cell(10,7,"",1,0,'C');
+                $pdf::Cell(18,7, $row['num_venta'] ,1,0,'C');
+                $concepto = Concepto::find($row['concepto_id']);
+                $pdf::Cell(45,7,$concepto->concepto,1,0,'L');
+                //$trabajador = Persona::find($row['trabajador_id']);
+                $pdf::Cell(50,7, "" ,1,0,'L');
+                if($row['estado'] == 1) {
+                    $pdf::Cell(15,7,number_format($row['total'],2,'.',''),1,0,'R');
+                    $totalvuelto += number_format($row['total'],2,'.','');
+                    $pdf::Cell(15,7,"",1,0,'R');
+                    $pdf::Cell(45,7,"",1,0,'R');
+                }else{
+                    $pdf::Cell(75,7,'ANULADO',1,0,'C');
+                }
+                $pdf::Ln();                  
+            } 
+            $pdf::SetFont('helvetica','B',8.5);
+            $pdf::Cell(203,7,'SUBTOTAL',1,0,'R');
+            $pdf::Cell(15,7,number_format($totalvuelto,2,'.',''),1,0,'R');
+           /* $pdf::Cell(15,7,"",1,0,'R');
+            $pdf::Cell(15,7,"",1,0,'R');
+            $pdf::Cell(15,7,number_format($subtotalefectivo+$subtotalvisa+$subtotalmaster,2,'.',''),1,0,'R');*/
+            $pdf::Ln();                   
+        }
+
+        // INGRESOS
+
+        $ingresos = Movimiento::leftjoin('concepto','movimiento.concepto_id','=','concepto.id')
+                            ->where('concepto.tipo','=', 0)
+                            ->where('concepto.id','!=', 3)
+                            ->where('concepto.id','!=', 1)
+                            //->where('movimiento.estado','=', 1)
+                            ->where('movimiento.sucursal_id', '=', $sucursal_id)
+                            ->where('movimiento.tipomovimiento_id', '=', 1)
+                            ->where('movimiento.id', '>=', $apertura_ultima);
+
+        $ingresos = $ingresos->orderBy('movimiento.num_caja', 'asc');
+
+        $listaotrosingresos        = $ingresos->get();
+
+        if(count($listaotrosingresos)>0){
+            $pdf::SetFont('helvetica','B',8.5);
+            $pdf::Cell(278,7,'INGRESOS',1,0,'L');
+            $pdf::Ln();
+            $subtotalingresos = 0;
+            foreach ($listaotrosingresos as $row) { 
+                $pdf::SetFont('helvetica','',6);   
+                $pdf::Cell(10,7, $row['num_caja'] ,1,0,'C');                                 
+                $pdf::Cell(25,7,date("d/m/Y h:i:s a", strtotime($row['fecha'])),1,0,'C');
+                $nombrepersona_trabajador = null;
+                $nombrepersona = null;
+                if(!is_null($row['persona_id'])){
+                    $persona = Person::find($row['persona_id']);
+                    if($persona->dni == null){
+                        $nombrepersona = $persona->razon_social;
+                    }else{
+                        $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
+                    }
+                }
+                if(!is_null($row['trabajador_id'])){
+                    $persona_trabajador = Person::find($row['trabajador_id']);
+                    if($persona_trabajador->dni == null){
+                        $nombrepersona_trabajador = $persona_trabajador->razon_social;
+                    }else{
+                        $nombrepersona_trabajador = $persona_trabajador->apellido_pat . " " . $persona_trabajador->apellido_mat . " " . $persona_trabajador->nombres;
+                    }
+                }
+                $pdf::Cell(45,7,$nombrepersona_trabajador,1,0,'L');
+                $tipodoc = Tipodocumento::find($row['tipodocumento_id']);
+                $pdf::Cell(10,7,"",1,0,'C');
+                $pdf::Cell(18,7, $row['num_venta'] ,1,0,'C');
+                $concepto = Concepto::find($row['concepto_id']);
+                $pdf::Cell(45,7,$concepto->concepto,1,0,'L');
+                //$trabajador = Persona::find($row['trabajador_id']);
+                $pdf::Cell(50,7, $nombrepersona ,1,0,'L');
+                if($row['estado'] == 1) {
+                    $pdf::Cell(15,7,"",1,0,'C');
+                    $total = number_format($row['total'],2,'.','');
+                    if($total == 0){$total='';}
+                    $pdf::Cell(15,7,$total,1,0,'R');                    
+                    $pdf::Cell(45,7,$row->comentario,1,0,'L');     
+                    $totalingresos += number_format($row['total'],2,'.','');
+                    $subtotalingresos += number_format($row['total'],2,'.','');
+                } else {
+                    $pdf::Cell(30,7,'ANULADO',1,0,'C');    
+                    $pdf::Cell(45,7, $row->comentario_anulado ,1,0,'L');                     
+                }  
+                $pdf::Ln();                  
+            } 
+            $pdf::SetFont('helvetica','B',8.5);
+            $pdf::Cell(218,7,'SUBTOTAL',1,0,'R');
+            $pdf::Cell(15,7,number_format($subtotalingresos,2,'.',''),1,0,'R');
+            $pdf::Ln();                   
+        }
+
+        //EGRESOS
+
+        $rstegresos = Movimiento::leftjoin('concepto','movimiento.concepto_id','=','concepto.id')
+                            ->where('concepto.tipo','=', 1)
+                            ->where('concepto.id','!=', 2)
+                            ->where('concepto.id','!=', 12)
+                            ->where('concepto.id','!=', 15)
+                            //->where('movimiento.estado','=', 1)
+                            ->where('movimiento.sucursal_id', '=', $sucursal_id)
+                            ->where('movimiento.tipomovimiento_id', '=', 1)
+                            ->where('movimiento.id', '>=', $apertura_ultima);
+
+        $rstegresos = $rstegresos->orderBy('movimiento.num_caja', 'asc');
+
+        $listarstegresos        = $rstegresos->get();
+
+        if(count($listarstegresos)>0){
+            $pdf::SetFont('helvetica','B',8.5);
+            $pdf::Cell(278,7,'EGRESOS',1,0,'L');
+            $pdf::Ln();
+            foreach ($listarstegresos as $row) { 
+                $pdf::SetFont('helvetica','',6);   
+                $pdf::Cell(10,7, $row['num_caja'] ,1,0,'C');                                 
+                $pdf::Cell(25,7,date("d/m/Y h:i:s a", strtotime($row['fecha'])),1,0,'C');
+                if(!is_null($row['persona_id'])){
+                    $persona = Person::find($row['persona_id']);
+                    if($persona->dni == null){
+                        $nombrepersona = $persona->razon_social;
+                    }else{
+                        $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
+                    }
+                }else if(!is_null($row['trabajador_id'])){
+                    $persona = Person::find($row['trabajador_id']);
+                    if($persona->dni == null){
+                        $nombrepersona = $persona->razon_social;
+                    }else{
+                        $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
+                    }
+                }
+                $pdf::Cell(45,7,"",1,0,'L');
+                $tipodoc = Tipodocumento::find($row['tipodocumento_id']);
+                $pdf::Cell(10,7,"",1,0,'C');
+                $pdf::Cell(18,7, $row['num_venta'] ,1,0,'C');
+                $concepto = Concepto::find($row['concepto_id']);
+                $pdf::Cell(45,7,$concepto->concepto,1,0,'L');
+                //$trabajador = Persona::find($row['trabajador_id']);
+                $pdf::Cell(50,7, $nombrepersona ,1,0,'L');
+                if($row['estado'] == 1) {
+                    $pdf::Cell(15,7,number_format($row['total'],2,'.',''),1,0,'R');
+                    $totalegresos += number_format($row['total'],2,'.','');
+                    $pdf::Cell(15,7,"",1,0,'R');
+                    $pdf::Cell(45,7,"",1,0,'R');
+                }else{
+                    $pdf::Cell(75,7,'ANULADO',1,0,'C');
+                }
+                $pdf::Ln();                  
+            } 
+            $pdf::SetFont('helvetica','B',8.5);
+            $pdf::Cell(203,7,'SUBTOTAL',1,0,'R');
+            $pdf::Cell(15,7,number_format($totalegresos,2,'.',''),1,0,'R');
+           /* $pdf::Cell(15,7,"",1,0,'R');
+            $pdf::Cell(15,7,"",1,0,'R');
+            $pdf::Cell(15,7,number_format($subtotalefectivo+$subtotalvisa+$subtotalmaster,2,'.',''),1,0,'R');*/
+            $pdf::Ln();                   
+        }
+
+        $pdf::SetFont('helvetica','',7);   
+        $pdf::Ln();
+
+        $user = Auth::user();
+        $persona = Person::find($user->person_id);
+
+        $pdf::Cell(110,7,('RESPONSABLE: '. $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres),0,0,'L');
+        $pdf::SetFont('helvetica','B',9);
+        $pdf::Cell(60,7,utf8_decode("RESUMEN DE CAJA"),1,0,'C');
+        $pdf::Ln();
+        $pdf::Cell(110,7,utf8_decode(""),0,0,'C');
+        $pdf::Cell(40,7,utf8_decode("MONTO APERTURA:"),1,0,'L');
+        $pdf::Cell(20,7,number_format($rst->total,2,'.',''),1,0,'R');
+        $pdf::Ln();
+        $pdf::Cell(110,7,utf8_decode(""),0,0,'C');
+        $pdf::Cell(40,7,utf8_decode("MONTO VUELTO:"),1,0,'L');
+        $pdf::Cell(20,7,number_format($totalvuelto,2,'.',''),1,0,'R');
+        $pdf::Ln();
+        $pdf::Cell(110,7,utf8_decode(""),0,0,'C');
+        $pdf::Cell(40,7,utf8_decode("INGRESOS :"),1,0,'L');
+        $pdf::Cell(20,7,number_format($totalingresos,2,'.',''),1,0,'R');
+        $pdf::Ln();
+        $pdf::Cell(110,7,utf8_decode(""),0,0,'C');
+        $pdf::Cell(40,7,utf8_decode("EGRESOS :"),1,0,'L');
+        $pdf::Cell(20,7,number_format($totalegresos,2,'.',''),1,0,'R');
+        $pdf::Ln();/*
+        $pdf::Cell(110,7,utf8_decode(""),0,0,'C');
+        $pdf::Cell(40,7,utf8_decode("SALDO:"),1,0,'L');
+        $pdf::Cell(20,7,number_format($rst->total + $totalingresos - $totalegresos,2,'.',''),1,0,'R');
+        $pdf::Ln();*/
+        $pdf::Cell(110,7,utf8_decode(""),0,0,'C');
+        $pdf::Cell(40,7,utf8_decode("CAJA :"),1,0,'L');
+        $pdf::Cell(20,7,number_format($rst->total + $totalingresos - $totalegresos - $totalvuelto,2,'.',''),1,0,'R');
+        $pdf::Ln();
+
+        if($sucursal->empresa_id == $user->empresa_id){
+            $pdf::Output('ReporteCierreCaja.pdf');
+        }
     }
 }

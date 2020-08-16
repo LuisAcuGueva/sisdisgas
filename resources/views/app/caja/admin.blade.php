@@ -18,20 +18,9 @@
 				{!! Form::open(['route' => $ruta["search"], 'method' => 'POST' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
 				{!! Form::hidden('page', 1, array('id' => 'page')) !!}
 				{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
-				<div class="form-group">
-				@if($sucursal !== null)
-					@if($user->usertype_id == 3)
-						{!! Form::label('sucursal_id', 'Sucursal:') !!}
-						{!! Form::text('sucursalnombre', $sucursal->nombre , array('class' => 'form-control input-xs', 'id' => 'sucursalnombre' , 'readOnly')) !!}
-						{!! Form::hidden('sucursal_id', $user->sucursal_id , array('id' => 'sucursal_id')) !!}
-					@else
-						{!! Form::label('sucursal_id', 'Sucursal:') !!}
-						{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-xs', 'id' => 'sucursal_id' , 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
-					@endif
-				@else
+				<div class="form-group">			
 					{!! Form::label('sucursal_id', 'Sucursal:') !!}
 					{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-xs', 'id' => 'sucursal_id' , 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
-				@endif
 				</div>
 				<div class="form-group">
 					{!! Form::label('filas', 'Filas a mostrar:')!!}
@@ -50,12 +39,7 @@
 		}
 		buscar('{{ $entidad }}');
 		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
-		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="concepto"]').keyup(function (e) {
-			var key = window.event ? e.keyCode : e.which;
-			if (key == '13') {
-				buscar('{{ $entidad }}');
-			}
-		});
+
 	});
 	function imprimirDetalle(){
         window.open("caja/pdfDetalleCierre?sucursal_id="+$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="sucursal_id"]').val(),"_blank");

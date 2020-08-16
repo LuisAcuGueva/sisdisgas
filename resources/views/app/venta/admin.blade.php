@@ -910,7 +910,7 @@ $(document).ready(function(){
 		console.log("hay negativos = " + negativo);
 
 		if(!negativo){
-			if(!empleado || cant==0 || !cliente || $("#vale_balon_fise").parent().hasClass('checked') || $("#vale_balon_subcafae").parent().hasClass('checked') || $("#vale_balon_monto").parent().hasClass('checked')){  // $("balon_a_cuenta").prop('checked') 
+			if(!empleado || cant==0 || !cliente || ( $("#vale_balon_fise").parent().hasClass('checked') && $("#codigo_vale_fise").val() == "" ) || ( $("#vale_balon_subcafae").parent().hasClass('checked') && $("#codigo_vale_subcafae").val() == "" ) || ( $("#vale_balon_monto").parent().hasClass('checked') && ( $("#codigo_vale_monto").val() == "" || $("#monto_vale_balon").val()  == "" ))  ){  // $("balon_a_cuenta").prop('checked') 
 				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
 				if(!empleado){
 					cadenaError += ' <li> El campo Empleado es obligatorio.</li>';
@@ -953,7 +953,7 @@ $(document).ready(function(){
 								cargarRutaMenu('turno', 'container', '15');
 							},3000);
 						}
-					})
+					});
 			}
 		}else{
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
@@ -1004,6 +1004,8 @@ function generarNumeroSerie(){
 	var serieventa = null;
 
 	var sucursal_id = $('#sucursal_id').val();
+
+	$('#empleado_id').val("");
 
 	var tipodocumento_id = $('#tipodocumento_id').val();
 

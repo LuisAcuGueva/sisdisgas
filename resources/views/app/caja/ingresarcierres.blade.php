@@ -7,19 +7,6 @@
 		{!! Form::hidden('persona_id', $persona_id,array('id'=>'persona_id')) !!}
 	</div>
 
-	@if($turnos_cerrados == "NO" && $sucursal_id == 1)
-	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">EXISTEN REPARTIDORES EN TURNO</h4><h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: black;">DEBE CERRAR TODOS LOS TURNOS DE REPARTIDORES</h4>
-	@endif
-
-	@if($cant_cajas_sucursales_abiertas > 0 && $sucursal_id == 1)
-	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">EXISTEN OTRAS CAJAS ABIERTAS</h4><h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: black;">DEBE CERRAR LA CAJA DE LAS OTRAS SUCURSALES E INGRESARLA EN LA CAJA PRINCIPAL</h4>
-	@endif
-
-	@if($sucursales_cerradas_no_ingresadas > 0 && $sucursal_id == 1)
-	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">EXISTEN CAJAS CERRADAS DE OTRAS SUCURSALES NO INGRESADAS</h4><h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: black;">INGRESE EL MONTO DE LAS CAJAS CERRADAS DE OTRAS SUCURSALES EN LA PRINCIPAL</h4>
-	@endif
-
-
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('fecha', 'Fecha:')!!}
@@ -53,7 +40,30 @@
 			{!! Form::hidden('concepto_id',null,array('id'=>'concepto_id')) !!}
 		</div>
 	</div>
-	<div class="form-group">
+
+	@if(empty($cierres_sucursales))
+
+		<h4 style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">NO EXISTEN CAJA CERRADAS PARA INGRESAR EN LA SUCURSAL PRINCIPAL</h4>
+
+	@else
+
+		<div class="form-group">
+			<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
+				{!! Form::label('caja_cerrada', 'Sucursal:')!!}
+			</div>
+			<div class="col-lg-8 col-md-8 col-sm-8 form-check ">
+		@foreach( $cierres_sucursales as $key => $value)
+				<input class="form-check-input caja_cerrada" type="radio" name="caja_cerrada" value="{{$value->id}}">
+				<label class="form-check-label">{{$value->sucursal->nombre}} : Monto = {{number_format($value->total,2)}}</label>
+				</br>
+		@endforeach
+			{!! Form::hidden('caja_cerrada_sin_ingresar',null,array('id'=>'caja_cerrada_sin_ingresar')) !!}
+			</div>
+		</div>
+
+	@endif
+
+	<div class="form-group" style="display:none;">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('total', 'Total:')!!}
 		</div>
@@ -71,10 +81,10 @@
 	</div>
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		@if( ($turnos_cerrados == "NO" || $sucursales_cerradas_no_ingresadas > 0 || $cant_cajas_sucursales_abiertas > 0 ) && $sucursal_id == 1)
-			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'disabled' => 'true', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+		@if(empty($cierres_sucursales))
+			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'disabled','onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
 		@else
-			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar','onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+		{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar','onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
 		@endif
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 		</div>
@@ -82,8 +92,12 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	configurarAnchoModal('400');
+	configurarAnchoModal('600');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+	$('input').iCheck({
+		checkboxClass: 'icheckbox_flat-green',
+		radioClass: 'iradio_flat-green'
+	});
 	
 	//SUCURSAL
 	var sucursal = $('#sucursal_id').val();
@@ -106,8 +120,8 @@ $(document).ready(function() {
 	$('#fecha').val(fecha);
 
 	//CONCEPTO
-	$('#concepto').val('CIERRE DE CAJA');
-	$('#concepto_id').val(2);
+	$('#concepto').val('INGRESO DE CAJA DE OTRA SUCURSAL');
+	$('#concepto_id').val(17);
 
 	//NRO MOVIMIENTO
 	$('#num_caja').val({{$num_caja}});
@@ -122,6 +136,12 @@ $(document).ready(function() {
 	$('#comentario').focus();
 
 	mueveReloj();
+
+	$('.iCheck-helper').on('click', function(){
+		var divpadre = $(this).parent();
+		var input = divpadre.find('input');
+		$("#caja_cerrada_sin_ingresar").val(input.val());
+	});
 
 }); 
 	

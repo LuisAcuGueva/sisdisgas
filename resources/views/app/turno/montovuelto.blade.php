@@ -10,7 +10,7 @@
 			{!! Form::label('sucursal_id', 'Sucursal:')!!}
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
-			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id', 'onchange' => 'generarNumeroCaja();')) !!}		
+			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id', 'onchange' => 'generarNumeroCaja();permisoRegistrar();')) !!}		
 		</div>
 	</div>
 	<div class="form-group">
@@ -191,6 +191,52 @@ $(document).ready(function() {
 
 	}); 
 }); 
+
+
+
+function permisoRegistrar(){
+
+var aperturaycierre = null;
+
+var sucursal_id = $('#sucursal_id').val();
+
+var ajax = $.ajax({
+	"method": "POST",
+	"url": "{{ url('/venta/permisoRegistrar') }}",
+	"data": {
+		"sucursal_id" : sucursal_id, 
+		"_token": "{{ csrf_token() }}",
+		}
+}).done(function(info){
+	aperturaycierre = info;
+}).always(function(){
+	if(aperturaycierre == 0){
+		$("#btnGuardar").prop('disabled',true);
+		$("#comentario").prop('disabled',true);
+		$("#monto").prop('disabled',true);
+
+		$('#divMensajeErrorTurnorepartidor').html("");
+
+		var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
+
+		var surcursal_id = $('#sucursal_id').val();
+
+		if(sucursal_id != null){
+			$('#divMensajeErrorTurnorepartidor').html(cadenaError);
+		}
+
+	}else if(aperturaycierre == 1){
+		$("#btnGuardar").prop('disabled',false);
+		$("#comentario").prop('disabled',false);
+		$("#monto").prop('disabled',false);
+
+		$('#divMensajeErrorTurnorepartidor').html("");
+
+	}
+});
+
+return aperturaycierre;
+}
 
 function generarNumeroCaja(){
 
