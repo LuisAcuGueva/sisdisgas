@@ -903,6 +903,7 @@ class CajaController extends Controller
                 if(is_null($turno_repartidor)){
                     $turno_repartidor = new Turnorepartidor();
                     $turno_repartidor->estado    = "I";
+                    $turno_repartidor->inicio = date('Y-m-d H:i:s');
                     $turno_repartidor->apertura_id = $apertura->id;
                     //$turno_repartidor->vuelto_id = $movimiento->id;
                     $turno_repartidor->trabajador_id = $request->input('persona_id');

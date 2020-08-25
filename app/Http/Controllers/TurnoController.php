@@ -291,6 +291,7 @@ class TurnoController extends Controller
                     $turno_repartidor->save();
                 }else{
                     if($request->input('concepto_id') == 14 ){
+                        $turno_repartidor->fin    = date('Y-m-d H:i:s');
                         $turno_repartidor->estado    = "C";
                         $turno_repartidor->save();
                     }

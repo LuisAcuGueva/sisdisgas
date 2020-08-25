@@ -96,6 +96,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('turno/eliminar/{id}/{listarluego}','TurnoController@eliminar')->name('turno.eliminar');
     Route::resource('turno', 'TurnoController', array('except' => array('show')));
 
+    Route::post('turnoscompletados/buscar','TurnoscompletadosController@buscar')->name('turnoscompletados.buscar');
+    Route::post('turnoscompletados/buscardetalles','TurnoscompletadosController@buscardetalles')->name('turnoscompletados.buscardetalles');
+    Route::get('turnoscompletados/detalleturno/{id}/', 'TurnoscompletadosController@detalleturno')->name('turnoscompletados.detalleturno');
+    Route::post('turnoscompletados/cargarnumerocaja', 'TurnoscompletadosController@cargarnumerocaja')->name('turnoscompletados.cargarnumerocaja');
+    Route::post('turnoscompletados/generarSaldoRepartidor', 'TurnoscompletadosController@generarSaldoRepartidor')->name('turnoscompletados.generarSaldoRepartidor');
+    Route::resource('turnoscompletados', 'TurnoscompletadosController', array('except' => array('show')));
+
     Route::post('trabajador/buscar','TrabajadorController@buscar')->name('trabajador.buscar');
     Route::get('trabajador/eliminar/{id}/{listarluego}','TrabajadorController@eliminar')->name('trabajador.eliminar');
     Route::resource('trabajador', 'TrabajadorController', array('except' => array('show')));
