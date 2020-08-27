@@ -48,7 +48,7 @@
 			@if($cierre_ultimo == null)
 				{!! Form::text('monto', '' , array('class' => 'form-control input-xs', 'id' => 'monto')) !!}
 			@else
-				{!! Form::text('monto', $cierre_ultimo->total , array('class' => 'form-control input-xs', 'id' => 'monto')) !!}
+				{!! Form::text('monto', '' , array('class' => 'form-control input-xs', 'id' => 'monto')) !!}
 			@endif
 		</div>
 	</div>

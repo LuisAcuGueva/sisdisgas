@@ -77,5 +77,9 @@ class Movimiento extends Model
 	public function tipodocumento(){
 		return $this->belongsTo('App\Tipodocumento', 'tipodocumento_id');
 	}
+
+	public function venta(){
+		return $this->belongsTo('App\Movimiento', 'venta_id');
+	}
 	
 }

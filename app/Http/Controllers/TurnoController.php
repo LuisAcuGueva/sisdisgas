@@ -53,12 +53,15 @@ class TurnoController extends Controller
         $egresos_repartidor = 0.00;
         $saldo_repartidor = 0.00;
         if($turno_id != null){
-            $resultado        = Detalleturnopedido::where('turno_id', '=', $turno_id);
+            $resultado        = Detalleturnopedido::where('turno_id', '=', $turno_id)
+                                                ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                ->orderby('fecha', 'DESC');
             $lista            = $resultado->get();
 
             $ingresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
                                                         ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
                                                         ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where('estado',1)
                                                         ->where(function($subquery)
                                                             {
                                                                 $subquery->where('concepto.id','=', 3);
@@ -68,6 +71,7 @@ class TurnoController extends Controller
             $ingresos_credito = Detalleturnopedido::where('turno_id', '=', $turno_id)
                                                         ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
                                                         ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where('estado',1)
                                                         ->where(function($subquery)
                                                             {
                                                                 $subquery->where('concepto.id','=', 16);
@@ -77,6 +81,7 @@ class TurnoController extends Controller
             $vueltos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
                                                         ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
                                                         ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where('estado',1)
                                                         ->where(function($subquery)
                                                             {
                                                                 $subquery->where('concepto.id','=', 12)->orwhere('concepto.id','=', 15);
@@ -86,6 +91,7 @@ class TurnoController extends Controller
             $egresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
                                                         ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
                                                         ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where('estado',1)
                                                         ->where(function($subquery)
                                                             {
                                                                 $subquery->where('concepto.id','=', 13)->orwhere('concepto.id','=', 14);
@@ -109,7 +115,9 @@ class TurnoController extends Controller
         $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'VALE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
 
         $tituloDetalle = $this->tituloDetalle;
@@ -332,7 +340,12 @@ class TurnoController extends Controller
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $detalle_turno_pedido = Detalleturnopedido::find($id);
         $pedido = Movimiento::find($detalle_turno_pedido->pedido_id);
-        $detalles = Detalleventa::where('venta_id',$pedido->id)->get();
+        if($pedido->tipomovimiento_id == 5){
+            $pedido = Movimiento::find($pedido->venta_id);
+            $detalles = Detalleventa::where('venta_id',$pedido->id)->get();
+        }else{
+            $detalles = Detalleventa::where('venta_id',$pedido->id)->get();
+        }
         $entidad  = 'Turnorepartidor';
         $formData = array('turno.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
@@ -342,7 +355,7 @@ class TurnoController extends Controller
 
     public function cargarnumerocaja(Request $request){
         $sucursal_id  = $request->input('sucursal_id');
-        $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
+        $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->where('estado',1)->max('num_caja') + 1;
         return $num_caja;
     }
 
@@ -360,6 +373,7 @@ class TurnoController extends Controller
             $ingresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
                                                         ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
                                                         ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where('estado',1)
                                                         ->where(function($subquery)
                                                             {
                                                                 $subquery->where('concepto.id','=', 3)->orwhere('concepto.id','=', 12)->orwhere('concepto.id','=', 15)->orwhere('concepto.id','=', 16);
@@ -369,6 +383,7 @@ class TurnoController extends Controller
             $egresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
                                                         ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
                                                         ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where('estado',1)
                                                         ->where(function($subquery)
                                                             {
                                                                 $subquery->where('concepto.id','=', 13)->orwhere('concepto.id','=', 14);

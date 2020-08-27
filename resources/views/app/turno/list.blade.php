@@ -16,10 +16,14 @@
 		$contador = $inicio + 1;
 		?>
 		@foreach ($lista as $key => $value)
-		<tr>
-			@if($value->pedido->tipomovimiento_id == 2)
+		@if($value->pedido->estado == 1)
+			<tr style ="background-color: #ffffff !important">
+		@elseif($value->estado == 0)
+			<tr style ="background-color: #ffc8cb !important">
+		@endif
+			@if($value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5)
 				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
-				@elseif($value->pedido->tipomovimiento_id == 1 || $value->pedido->tipomovimiento_id == 5)
+			@elseif($value->pedido->tipomovimiento_id == 1) 
 				<td align="center"> - </td>
 			@endif	
 			<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->pedido->fecha )) }}</td>
@@ -35,7 +39,25 @@
 			@else
 				<td align="center"> - </td>
 			@endif
+			
+			@if($value->pedido->vale_balon_subcafae == 1)
+				<td align="center"> SUBCAFAE </td>
+			@elseif($value->pedido->vale_balon_fise == 1)
+				<td align="center"> FISE </td>
+			@elseif($value->pedido->vale_balon_monto == 1)
+				<td align="center"> MONTO </td>
+			@else
+				<td align="center"> - </td>
+			@endif
+
 			<td> {{ $value->pedido->sucursal->nombre }} </td>
+			
+			@if (!is_null($value->pedido->comentario))
+				<td> {{ $value->pedido->comentario }} </td>
+			@else
+				<td align="center"> - </td>
+			@endif
+			
 			@if($value->pedido->concepto->tipo != 0 || $value->pedido->concepto_id == 3 || $value->pedido->concepto_id == 16 )
 				<td align="center" style="color:green;font-weight: bold;"> {{ $value->pedido->total }} </td>
 			@else

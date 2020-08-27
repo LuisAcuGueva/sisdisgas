@@ -96,6 +96,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('turno/eliminar/{id}/{listarluego}','TurnoController@eliminar')->name('turno.eliminar');
     Route::resource('turno', 'TurnoController', array('except' => array('show')));
 
+    Route::get('turnoscompletados/pdfDetalleTurno', 'TurnoscompletadosController@pdfDetalleTurno')->name('turnoscompletados.pdfDetalleTurno');
     Route::post('turnoscompletados/buscar','TurnoscompletadosController@buscar')->name('turnoscompletados.buscar');
     Route::post('turnoscompletados/buscardetalles','TurnoscompletadosController@buscardetalles')->name('turnoscompletados.buscardetalles');
     Route::get('turnoscompletados/detalleturno/{id}/', 'TurnoscompletadosController@detalleturno')->name('turnoscompletados.detalleturno');

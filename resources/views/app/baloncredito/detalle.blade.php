@@ -32,15 +32,6 @@
 				{!! Form::hidden('cliente_id',null,array('id'=>'cliente_id')) !!}
 			</div>
 			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
-				{!! Form::label('cliente', 'Cliente:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-				@if(!is_null($pedido->persona->dni))
-				{!! Form::textarea('cliente', $pedido->persona->apellido_pat.' '.$pedido->persona->apellido_mat.' '.$pedido->persona->nombres, array('class' => 'form-control input-sm','rows' => '2', 'id' => 'cliente', 'readOnly')) !!}
-				@else
-				{!! Form::textarea('cliente', $pedido->persona->razon_social , array('class' => 'form-control input-sm','rows' => '2', 'id' => 'cliente', 'readOnly')) !!}
-				@endif
-				{!! Form::hidden('cliente_id',null,array('id'=>'cliente_id')) !!}
-			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 				{!! Form::label('celular', 'Celular:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
 				{!! Form::text('celular', $pedido->persona->celular, array('class' => 'form-control input-xs','id' => 'celular', 'readOnly')) !!}
 			</div>
@@ -142,9 +133,9 @@
 
 		<div class="col-lg-3 col-md-3 col-sm-3">
 			<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
-				<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">PAGO</h4>
+				<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">MONTO DEL PEDIDO</h4>
 			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="display:none;">
 				<div  class="col-lg-4 col-md-4 col-sm-4">
 					<img src="assets/images/efectivo.png" style="width: 60px; height: 60px">
 				</div>
@@ -172,7 +163,7 @@
 				{!! Form::label('total', 'Total:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
 				{!! Form::text('total', $pedido->total, array('class' => 'form-control input-lg', 'id' => 'total', 'readOnly', 'style' => 'text-align: right; font-size: 30px; margin-top: 25px;')) !!}
 			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12" style="margin-top: 10px;">
+			<div class="col-lg-12 col-md-12 col-sm-12" style="margin-top: 10px; display:none;">
 				{!! Form::label('vuelto', 'Vuelto:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
 				{!! Form::text('vuelto', $pedido->vuelto , array('class' => 'form-control input-lg', 'id' => 'vuelto', 'readOnly', 'style' => 'text-align: right; font-size: 30px; margin-top: 25px;', 'placeholder' => '0.00')) !!}
 			</div>

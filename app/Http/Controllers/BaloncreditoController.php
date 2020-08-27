@@ -113,7 +113,10 @@ class BaloncreditoController extends Controller
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $pedido = Movimiento::find($id);
-        $detalles = Detallepagos::where('pedido_id', '=', $id)->get();
+        $detalles = Detallepagos::where('pedido_id', '=', $id)
+                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                    ->where('estado',1)
+                    ->get();    
         $entidad  = 'Movimiento';
         $formData = array('turno.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
@@ -131,7 +134,9 @@ class BaloncreditoController extends Controller
         $pedido = Movimiento::find($id);
         $detalles = Detalleventa::where('venta_id',$pedido->id)->get();
         $total_pagos = Detallepagos::where('pedido_id', '=', $id)
-                                            ->sum('monto');
+                                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                                    ->where('estado',1)
+                                    ->sum('monto');
         round($total_pagos,2);
         $saldo = $pedido->total - $total_pagos;
         round($saldo,2);
@@ -189,6 +194,7 @@ class BaloncreditoController extends Controller
                 $movimiento->usuario_id           = $user->id;
                 $movimiento->sucursal_id          = $pedido->sucursal_id;
                 $movimiento->venta_id             = $pedido->id;
+                $movimiento->comentario             = "Pago de pedido a crédito: ". $pedido->tipodocumento->abreviatura."-". $pedido->num_venta;
                 $movimiento->save();
 
                 $detalle_turno_pedido =  new Detalleturnopedido();
@@ -225,6 +231,7 @@ class BaloncreditoController extends Controller
                 $movimientocaja->usuario_id           = $user->id;
                 $movimientocaja->sucursal_id          = $sucursal_id;
                 $movimientocaja->venta_id             = $pedido->id;
+                $movimientocaja->comentario             = "Pago de pedido a crédito: ". $pedido->tipodocumento->abreviatura."-". $pedido->num_venta;
                 $movimientocaja->save();
 
                 $detalle_pagos = new Detallepagos();

@@ -16,12 +16,16 @@
 		$contador = $inicio + 1;
 		?>
 		@foreach ($lista as $key => $value)
-		<tr>
-			@if($value->pedido->tipomovimiento_id == 2)
+		@if($value->pedido->estado == 1)
+			<tr style ="background-color: #ffffff !important">
+		@elseif($value->estado == 0)
+			<tr style ="background-color: #ffc8cb !important">
+		@endif
+			@if($value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5)
 				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
-				@elseif($value->pedido->tipomovimiento_id == 1 || $value->pedido->tipomovimiento_id == 5)
+			@elseif($value->pedido->tipomovimiento_id == 1) 
 				<td align="center"> - </td>
-			@endif	
+			@endif
 			<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->pedido->fecha )) }}</td>
 
 			<td> {{  $value->pedido->concepto->concepto }} </td>
@@ -35,7 +39,29 @@
 			@else
 				<td align="center"> - </td>
 			@endif
+
+			@if($value->pedido->vale_balon_subcafae == 1)
+				<td align="center"> SUBCAFAE </td>
+			@elseif($value->pedido->vale_balon_fise == 1)
+				<td align="center"> FISE </td>
+			@elseif($value->pedido->vale_balon_monto == 1)
+				<td align="center"> MONTO </td>
+			@else
+				<td align="center"> - </td>
+			@endif
 			<td> {{ $value->pedido->sucursal->nombre }} </td>
+			
+			@if($value->pedido->estado == 1)
+				@if (!is_null($value->pedido->comentario))
+					<td> {{ $value->pedido->comentario }} </td>
+				@else
+					<td align="center"> - </td>
+				@endif
+			@elseif($value->estado == 0)
+				<td> {{ $value->pedido->comentario_anulado }} </td>
+			@endif
+			
+			
 			@if($value->pedido->concepto->tipo != 0 || $value->pedido->concepto_id == 3 || $value->pedido->concepto_id == 16 )
 				<td align="center" style="color:green;font-weight: bold;"> {{ $value->pedido->total }} </td>
 			@else
@@ -59,11 +85,11 @@
     </thead>
     <tbody>
 		<tr>
-            <th>MONTO VUELTOS :</th>
+            <th>MONTO VUELTOS:</th>
             <th class="text-right"><div id ="montovuelto"> {{ $vueltos_repartidor }}</div></th>
         </tr>
         <tr>
-            <th>INGRESOS DE PEDIDOS :</th>
+            <th>INGRESOS DE PEDIDOS:</th>
             <th class="text-right"><div id ="ingresopedidos"> {{ $ingresos_repartidor }} </div></th>
         </tr>
 		<tr>
@@ -74,12 +100,12 @@
             <th>TOTAL INGRESOS:</th>
             <th class="text-right"><div id ="total_ingresos"> {{ $total_ingresos }} </div></th>
         </tr>
-        <tr>
+        <tr style="display:none;">
             <th>EGRESOS A CAJA:</th>
             <th class="text-right"><div id ="egresos"> {{ $egresos_repartidor }} </div></th>
         </tr>
-        <tr>
-            <th>SALDO :</th>
+        <tr style="display:none;">
+            <th>SALDO:</th>
             <th class="text-right"><div id ="saldo"> {{ $saldo_repartidor }} </div></th>
         </tr>
     </tbody>

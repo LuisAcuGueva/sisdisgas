@@ -193,11 +193,18 @@ $container = "'container'";
 		<td align="center" style="color:red;font-weight: bold;">{{ $value->total }}</td>
 		@endif
 
-		@if( $value->comentario == null )
-		<td align="center"> - </td>
-		@else
-		<td>{{ $value->comentario }}</td>
+	
+
+		@if($value->estado == 1)
+			@if (!is_null($value->comentario))
+				<td> {{ $value->comentario }} </td>
+			@else
+				<td align="center"> - </td>
+			@endif
+		@elseif($value->estado == 0)
+			<td> {{ $value->comentario_anulado }} </td>
 		@endif
+			
 
 		<?php
 			$usuario = User::find($value->usuario_id);

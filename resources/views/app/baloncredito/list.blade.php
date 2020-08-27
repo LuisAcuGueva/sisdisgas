@@ -32,6 +32,8 @@ use App\Detallepagos;
 			<td align="center" style="color:black; font-weight: bold;">  {{ number_format($value->total,2) }} </td>
 			<?php
 				$total_pagos = Detallepagos::where('pedido_id', '=', $value->id)
+											->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+											->where('estado',1)
 											->sum('monto');
 				round($total_pagos,2);
 				$saldo = $value->total - $total_pagos;

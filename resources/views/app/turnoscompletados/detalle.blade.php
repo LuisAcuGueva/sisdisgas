@@ -33,13 +33,14 @@
 	</div>
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
+			{!! Form::button('<i class="glyphicon glyphicon-print"></i> Reporte Turno Repartidor', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnReporte'.$entidad, 'onclick' => 'imprimirDetalle();')) !!}
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 		</div>
 	</div>
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	configurarAnchoModal('1300');
+	configurarAnchoModal('1400');
 	buscar('{{ $entidad }}');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
@@ -48,4 +49,9 @@ $(document).ready(function() {
 		radioClass: 'iradio_flat-green'
 	});
 }); 
+
+
+function imprimirDetalle(){
+	window.open("turnoscompletados/pdfDetalleTurno?turno_id="+$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="turno_id"]').val(),"_blank");
+}
 </script>
