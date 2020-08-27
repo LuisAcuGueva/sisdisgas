@@ -6,6 +6,8 @@ use App\Person;
 use App\User;
 use App\Concepto;
 use App\Movimiento;
+use App\Detalleturnopedido;
+use App\Turnorepartidor;
 
 $user = Auth::user();
 
@@ -137,6 +139,21 @@ $container = "'container'";
 					-
 				@elseif ($concepto->id == 2)
 					-
+				@elseif ($concepto->id == 12 || $concepto->id == 13 || $concepto->id == 14 || $concepto->id == 15)
+					<?php
+					$detalle_turno = Detalleturnopedido::where('pedido_id',$value->id)->first();
+					$turno = Turnorepartidor::find($detalle_turno->turno_id);
+					$detalles_turno = Detalleturnopedido::where('turno_id',$turno->id)->get();
+					?>
+					@if($turno->estado == "C")
+						-
+					@else
+						@if(count($detalles_turno) > 1) 
+							-
+						@else
+							{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar' ,'activo' => 'si')) !!}
+						@endif
+					@endif
 				@else
 					{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar' ,'activo' => 'si')) !!}
 				@endif
