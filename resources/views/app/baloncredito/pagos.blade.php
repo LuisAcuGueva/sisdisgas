@@ -14,7 +14,7 @@
 					<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->pago->fecha )) }}</td>
 					@if($value->tipo == "R")
 					<td>PAGO CON REPARTIDOR</td>
-					<td>Repartidor: {{  $value->pedido->trabajador->apellido_pat.' '.$value->pedido->trabajador->apellido_mat.' '.$value->pedido->trabajador->nombres  }}</td>
+					<td>Repartidor: {{  $value->pago->trabajador->apellido_pat.' '.$value->pago->trabajador->apellido_mat.' '.$value->pago->trabajador->nombres  }}</td>
 					@elseif($value->tipo == "S")
 					<td>PAGO EN SUCURSAL</td>
 					<td>Sucursal: {{ $value->pago->sucursal->nombre }} </td>

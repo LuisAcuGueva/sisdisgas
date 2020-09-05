@@ -18,14 +18,27 @@
 		@foreach ($lista as $key => $value)
 		@if($value->pedido->estado == 1)
 			<tr style ="background-color: #ffffff !important">
-		@elseif($value->estado == 0)
+		@elseif($value->pedido->estado == 0)
 			<tr style ="background-color: #ffc8cb !important">
 		@endif
 			@if($value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5)
-				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
+				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
 			@elseif($value->pedido->tipomovimiento_id == 1) 
 				<td align="center"> - </td>
 			@endif	
+
+			@if($value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5)
+
+				@if($value->pedido->estado == 1)
+					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
+				@elseif($value->pedido->estado == 0)
+					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'disabled', 'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-remove')) !!}</td>	
+				@endif
+				
+			@elseif($value->pedido->tipomovimiento_id == 1) 
+				<td align="center"> - </td>
+			@endif
+
 			<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->pedido->fecha )) }}</td>
 
 			<td> {{  $value->pedido->concepto->concepto }} </td>
@@ -51,11 +64,15 @@
 			@endif
 
 			<td> {{ $value->pedido->sucursal->nombre }} </td>
-			
-			@if (!is_null($value->pedido->comentario))
-				<td> {{ $value->pedido->comentario }} </td>
-			@else
-				<td align="center"> - </td>
+		
+			@if($value->pedido->estado == 1)
+				@if (!is_null($value->pedido->comentario))
+					<td> {{ $value->pedido->comentario }} </td>
+				@else
+					<td align="center"> - </td>
+				@endif
+			@elseif($value->pedido->estado == 0)
+				<td> {{ $value->pedido->comentario_anulado }} </td>
 			@endif
 			
 			@if($value->pedido->concepto->tipo != 0 || $value->pedido->concepto_id == 3 || $value->pedido->concepto_id == 16 )

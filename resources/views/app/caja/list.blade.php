@@ -143,7 +143,10 @@ $container = "'container'";
 					<?php
 					$detalle_turno = Detalleturnopedido::where('pedido_id',$value->id)->first();
 					$turno = Turnorepartidor::find($detalle_turno->turno_id);
-					$detalles_turno = Detalleturnopedido::where('turno_id',$turno->id)->get();
+					$detalles_turno = Detalleturnopedido::where('turno_id',$turno->id)
+									->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+									->where('estado',1)
+									->get();
 					?>
 					@if($turno->estado == "C")
 						-

@@ -15,6 +15,7 @@ use App\Producto;
 use App\Tipodocumento;
 use App\Turnorepartidor;
 use App\Detalleturnopedido;
+use App\Detallepagos;
 use App\Sucursal;
 use App\Empresa;
 use App\Librerias\Libreria;
@@ -200,7 +201,7 @@ class VentaController extends Controller
 
             if($balon_a_cuenta != true){
 
-                $trabajador =$request->input('empleado_id');
+                $trabajador = $request->input('empleado_id');
 
                 $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
                                     ->max('id');
@@ -212,6 +213,47 @@ class VentaController extends Controller
                 $detalle_turno_pedido->turno_id = $turno_maximo->id;
                 $detalle_turno_pedido->save();
                 
+            }else{
+
+                $montocredito = $request->input('montoefectivo');
+
+                if($montocredito > 0){
+
+                    $movimientopago                       = new Movimiento();
+                    $movimientopago->tipomovimiento_id    = 5;
+                    $movimientopago->concepto_id          = 16;
+                    $movimientopago->total                = $request->input('montoefectivo');
+                    $movimientopago->subtotal             = $request->input('montoefectivo');
+                    $movimientopago->estado               = 1;
+                    $movimientopago->persona_id           = $request->input('cliente_id');
+                    $movimientopago->trabajador_id        = $request->input('empleado_id');
+                    $user           = Auth::user();
+                    $movimientopago->usuario_id           = $user->id;
+                    $movimientopago->sucursal_id          = $request->input('sucursal_id');
+                    $movimientopago->venta_id             = $movimiento->id;
+                    $movimientopago->comentario             = "Pago de pedido a crédito: ". $movimiento->tipodocumento->abreviatura."-". $movimiento->num_venta;
+                    $movimientopago->save();
+
+                    $trabajador = $request->input('empleado_id');
+
+                    $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
+                                        ->max('id');
+
+                    $turno_maximo = Turnorepartidor::find($max_turno);
+
+                    $detalle_turno_pedido =  new Detalleturnopedido();
+                    $detalle_turno_pedido->pedido_id = $movimientopago->id;
+                    $detalle_turno_pedido->turno_id = $turno_maximo->id;
+                    $detalle_turno_pedido->save();
+
+                    $detalle_pagos = new Detallepagos();
+                    $detalle_pagos->pedido_id = $movimiento->id;
+                    $detalle_pagos->pago_id = $movimientopago->id;
+                    $detalle_pagos->monto   = $request->input('montoefectivo');
+                    $detalle_pagos->tipo   =  'R';
+                    $detalle_pagos->save();
+
+                }
             }
 
         });

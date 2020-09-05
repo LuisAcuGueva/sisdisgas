@@ -86,6 +86,7 @@ operaciones
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						{!! Form::label('balon_a_cuenta', 'Balón a crédito:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
 						<input class="balon" name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
+						{!! Form::hidden('credito', 0 ,array('id'=>'credito')) !!}
 					</div>
 				</div>
 
@@ -285,12 +286,17 @@ $(document).ready(function(){
 		if( $("#monto_vale_balon").val() == ""){
 			calcularTotal();
 		}else{ 
-			var monto_vale_balon = parseFloat($("#monto_vale_balon").val());
-			var total = parseFloat($("#total").val());
-			if(monto_vale_balon < 0 ||  monto_vale_balon > total){
-				$("#monto_vale_balon").val("");
+
+			if( is_numeric( $("#monto_vale_balon").val())){
+				var monto_vale_balon = parseFloat($("#monto_vale_balon").val());
+				var total = parseFloat($("#total").val());
+				if(monto_vale_balon < 0 ||  monto_vale_balon > total){
+					$("#monto_vale_balon").val("");
+				}else{
+					$("#total").val((total - monto_vale_balon).toFixed(2));
+				}
 			}else{
-				$("#total").val((total - monto_vale_balon).toFixed(2));
+				$("#monto_vale_balon").val("");
 			}
 		}
 	}); 
@@ -604,16 +610,69 @@ $(document).ready(function(){
 				}
 			}else if( input.attr('id') == 'balon_a_cuenta'){ //codigo_vale_subcafae
 				if( divpadre.hasClass('checked')) { 
+
+					$("#credito").val("1");
+
+					$("#montoefectivo").val("");
+					$("#vuelto").val((0).toFixed(2));
+
 					$("#btnGuardar").prop('disabled',false);
 					$('#balon_a_cuenta').prop('checked',true);
 					$('#divMensajeErrorVenta').html("");
+
 				}else{
+
+					$("#montoefectivo").val("");
+					$("#credito").val("0");
+
 					$("#btnGuardar").prop('disabled',true);
 					$('#balon_a_cuenta').prop('checked',false);
 				}
 			}
 		}
 	});
+
+
+	$("#montoefectivo").keyup(function(){
+
+	var credito = $("#credito").val();
+
+	console.log("credito = " + credito);
+
+		if( credito == 1){
+
+			if( $("#montoefectivo").val() == ""){
+				//$('#total').val(saldo.toFixed(2));
+			}else{ 
+
+				if( is_numeric($("#montoefectivo").val()) == true){
+
+					var monto = parseFloat($("#montoefectivo").val());
+					var total = parseFloat($("#total").val());
+					if(monto < 0 ||  monto > total){
+						$("#montoefectivo").val("");
+					}
+
+				}else{
+
+					$("#montoefectivo").val("");
+					$("#vuelto").val((0).toFixed(2));
+
+				}
+			}
+		}else{
+
+			if( is_numeric($("#montoefectivo").val()) == true){
+
+			}else{
+
+			$("#montoefectivo").val("");
+			$("#vuelto").val((0).toFixed(2));
+
+			}
+
+		}
+	}); 
 
 	generarNumeroSerie();
 
@@ -1384,6 +1443,10 @@ function actualizarPreciosVales(){
 			}
 		});
 	}
+}
+
+function is_numeric(value) {
+	return !isNaN(parseFloat(value)) && isFinite(value);
 }
 
 function calcularTotal(){

@@ -26,12 +26,14 @@ class TurnoController extends Controller
     protected $tituloDescargaDinero = 'Ingreso de dinero a caja';
     protected $tituloCierreTurno = 'Cerrar turno de repartidor';
     protected $tituloDetalle  = 'Detalle de pedido';
+    protected $tituloAnulacion  = 'Anular pedido';
     protected $rutas           = array('detalle' => 'turno.detalle', 
             'vuelto'     => 'turno.vuelto', 
             'descargadinero'     => 'turno.descargadinero', 
             'cierre'   => 'turno.cierre',
             'search'   => 'turno.buscar',
             'index'    => 'turno.index',
+            'delete'   => 'turno.eliminar',
         );
 
     public function __construct()
@@ -112,6 +114,7 @@ class TurnoController extends Controller
         }
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'ANUL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
@@ -121,6 +124,7 @@ class TurnoController extends Controller
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
 
         $tituloDetalle = $this->tituloDetalle;
+        $tituloAnulacion = $this->tituloAnulacion;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -131,7 +135,7 @@ class TurnoController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloDetalle', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloAnulacion', 'tituloDetalle', 'ruta'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -333,13 +337,12 @@ class TurnoController extends Controller
      */
     public function detalle(Request $request, $id)
     {
-        $existe = Libreria::verificarExistencia($id, 'detalle_turno_pedido');
+        $existe = Libreria::verificarExistencia($id, 'movimiento');
         if ($existe !== true) {
             return $existe;
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
-        $detalle_turno_pedido = Detalleturnopedido::find($id);
-        $pedido = Movimiento::find($detalle_turno_pedido->pedido_id);
+        $pedido = Movimiento::find($id);
         if($pedido->tipomovimiento_id == 5){
             $pedido = Movimiento::find($pedido->venta_id);
             $detalles = Detalleventa::where('venta_id',$pedido->id)->get();
@@ -394,6 +397,64 @@ class TurnoController extends Controller
 
         }
         return $saldo_repartidor;
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $existe = Libreria::verificarExistencia($id, 'movimiento');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $reglas     = array('motivo' => 'required|max:300');
+        $mensajes   = array();
+        $validacion = Validator::make($request->all(), $reglas, $mensajes);
+        if ($validacion->fails()) {
+            return $validacion->messages()->toJson();
+        }
+        $error = DB::transaction(function() use($request, $id){
+            $movimiento = Movimiento::find($id);
+            $movimiento->estado = 0;
+            $movimiento->comentario_anulado  = strtoupper($request->input('motivo'));  
+            $movimiento->save();
+
+            if($movimiento->concepto_id == 15){
+                $detalle_turno = Detalleturnopedido::where('pedido_id',$movimiento->id)->first();
+                $turno = Turnorepartidor::find($detalle_turno->turno_id);
+                $turno->delete();
+            }
+
+            if($movimiento->venta_id != null){
+                $movimientoventa = Movimiento::find($movimiento->venta_id);
+                $movimientoventa->estado = 0;
+                $movimientoventa->comentario_anulado  = strtoupper($request->input('motivo'));  
+                $movimientoventa->save();
+            }
+        });
+        return is_null($error) ? "OK" : $error;
+    }
+
+    /**
+     * Función para confirmar la eliminación de un registrlo
+     * @param  integer $id          id del registro a intentar eliminar
+     * @param  string $listarLuego consultar si luego de eliminar se listará
+     * @return html              se retorna html, con la ventana de confirmar eliminar
+     */
+    public function eliminar($id, $listarLuego)
+    {
+        $existe = Libreria::verificarExistencia($id, 'movimiento');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $listar = "NO";
+        if (!is_null(Libreria::obtenerParametro($listarLuego))) {
+            $listar = $listarLuego;
+        }
+        $modelo   = Movimiento::find($id);
+        $entidad  = 'Turnorepartidor';
+        $formData = array('route' => array('turno.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton    = 'Anular';
+        $mensaje  = '<blockquote><p class="text-danger">¿Está seguro de anular el registro?</p></blockquote>';
+        return view('app.caja.confirmarAnular')->with(compact( 'mensaje' ,'modelo', 'formData', 'entidad', 'boton', 'listar'));
     }
 
 }

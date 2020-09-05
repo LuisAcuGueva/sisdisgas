@@ -100,7 +100,7 @@
             <th>TOTAL INGRESOS:</th>
             <th class="text-right"><div id ="total_ingresos"> {{ $total_ingresos }} </div></th>
         </tr>
-        <tr style="display:none;">
+        <tr>
             <th>EGRESOS A CAJA:</th>
             <th class="text-right"><div id ="egresos"> {{ $egresos_repartidor }} </div></th>
         </tr>

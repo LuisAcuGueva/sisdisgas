@@ -1,6 +1,6 @@
 <?php
 $hasta = date("Y-m-d");
-$desde = strtotime ( '-7 day' , strtotime ( $hasta ) ) ;
+$desde = strtotime ( '-14 day' , strtotime ( $hasta ) ) ;
 $desde = date( 'Y-m-d' , $desde );
 ?>
 <div class="row">

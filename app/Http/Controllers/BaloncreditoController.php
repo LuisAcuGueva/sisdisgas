@@ -182,6 +182,8 @@ class BaloncreditoController extends Controller
             if($tipo_pago == "R"){
                 $repartidor = $request->input('repartidor');
 
+                $turno = Turnorepartidor::find($repartidor);
+
                 $movimiento                       = new Movimiento();
                 $movimiento->tipomovimiento_id    = 5;
                 $movimiento->concepto_id          = 16;
@@ -189,7 +191,7 @@ class BaloncreditoController extends Controller
                 $movimiento->subtotal             = $request->input('monto');
                 $movimiento->estado               = 1;
                 $movimiento->persona_id           = $pedido->persona_id;
-                $movimiento->trabajador_id        = $pedido->trabajador_id;
+                $movimiento->trabajador_id        = $turno->person->id;
                 $user           = Auth::user();
                 $movimiento->usuario_id           = $user->id;
                 $movimiento->sucursal_id          = $pedido->sucursal_id;

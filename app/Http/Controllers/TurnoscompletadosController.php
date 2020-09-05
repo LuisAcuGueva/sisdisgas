@@ -404,11 +404,11 @@ class TurnoscompletadosController extends Controller
         $pdf::Cell(100,7,utf8_decode(""),0,0,'C');
         $pdf::Cell(60,7,utf8_decode("TOTAL INGRESOS:"),1,0,'L');
         $pdf::Cell(20,7,number_format($total_ingresos,2,'.',''),1,0,'R');
-        $pdf::Ln();/*
+        $pdf::Ln();
         $pdf::Cell(100,7,utf8_decode(""),0,0,'C');
         $pdf::Cell(60,7,utf8_decode("EGRESOS A CAJA:"),1,0,'L');
         $pdf::Cell(20,7,number_format($egresos_repartidor ,2,'.',''),1,0,'R');
-        $pdf::Ln();
+        $pdf::Ln();/*
         $pdf::Cell(100,7,utf8_decode(""),0,0,'C');
         $pdf::Cell(60,7,utf8_decode("SALDO:"),1,0,'L');
         $pdf::Cell(20,7,number_format($saldo_repartidor,2,'.',''),1,0,'R');

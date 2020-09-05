@@ -1033,6 +1033,12 @@ class CajaController extends Controller
             $movimiento->comentario_anulado  = strtoupper($request->input('motivo'));  
             $movimiento->save();
 
+            if($movimiento->concepto_id == 15){
+                $detalle_turno = Detalleturnopedido::where('pedido_id',$movimiento->id)->first();
+                $turno = Turnorepartidor::find($detalle_turno->turno_id);
+                $turno->delete();
+            }
+
             if($movimiento->venta_id != null){
                 $movimientoventa = Movimiento::find($movimiento->venta_id);
                 $movimientoventa->estado = 0;
