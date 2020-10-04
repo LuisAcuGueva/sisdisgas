@@ -216,7 +216,7 @@ class BaloncreditoController extends Controller
 
                 $num_caja = Movimiento::where('tipomovimiento_id', 1)
                                     ->where('sucursal_id', $sucursal_id)
-                                    ->where('estado', "=", 1)
+                                    //->where('estado', "=", 1)
                                     ->max('num_caja');
                 $num_caja = $num_caja + 1;
 

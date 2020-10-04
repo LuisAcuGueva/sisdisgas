@@ -61,6 +61,7 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
+	permisoRegistrar();
 	configurarAnchoModal('700');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 

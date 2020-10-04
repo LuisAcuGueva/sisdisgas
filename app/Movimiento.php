@@ -45,6 +45,22 @@ class Movimiento extends Model
         			->orderBy('num_caja','DESC')->orderBy('fecha', 'DESC');
 	}
 
+	public function scopelistarcompras($query, $fechainicio, $fechafin, $sucursal_id ,$proveedor_id)
+    {
+		return $query->where(function($subquery) use($fechainicio, $fechafin ,$proveedor_id)
+		            {
+		            	if (!is_null($fechainicio) && !is_null($fechafin)) {
+							$subquery->whereBetween(DB::raw('CONVERT(fecha,date)'),[$fechainicio,$fechafin]);
+						}
+						if (!is_null($proveedor_id)) {
+		            		$subquery->where('persona_id', $proveedor_id );
+		            	}
+					})
+					->where('sucursal_id', "=", $sucursal_id)
+					->where('tipomovimiento_id', "=", 3)
+        			->orderBy('fecha', 'DESC');
+	}
+
 	public function scopebalonescredito($query, $fechainicio, $fechafin)
     {
 		return $query->where(function($subquery) use($fechainicio, $fechafin)
@@ -72,6 +88,10 @@ class Movimiento extends Model
 
 	public function sucursal(){
 		return $this->belongsTo('App\Sucursal', 'sucursal_id');
+	}
+
+	public function almacen(){
+		return $this->belongsTo('App\Almacen', 'almacen_id');
 	}
 
 	public function tipodocumento(){

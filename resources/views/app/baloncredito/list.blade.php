@@ -42,12 +42,12 @@ use App\Detallepagos;
 			<td align="center" style="color:red; font-weight: bold;">  {{ number_format($saldo,2) }} </td>
 			<td align="center" style="color:green; font-weight: bold;">  {{ number_format($total_pagos,2) }} </td>
 			@if($total_pagos == 0)
-			<td align="center">{!! Form::button('<i class="glyphicon glyphicon-th-list"></i> Detalle de pagos', array('onclick' => 'modal (\''.URL::route($ruta["pagos"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagos.'\', this);', 'class' => 'btn btn-sm btn-warning ', 'disabled')) !!}</td>
+			<td align="center">{!! Form::button('<i class="glyphicon glyphicon-th-list"></i> Detalle de pagos', array('onclick' => 'modal (\''.URL::route($ruta["pagos"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagos.'\', this);', 'class' => 'btn btn-sm btn-secondary ', 'disabled')) !!}</td>
 			@else
 			<td align="center">{!! Form::button('<i class="glyphicon glyphicon-th-list"></i> Detalle de pagos', array('onclick' => 'modal (\''.URL::route($ruta["pagos"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagos.'\', this);', 'class' => 'btn btn-sm btn-warning ')) !!}</td>
 			@endif
 			@if($saldo == 0)
-			<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Pagar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-success' , 'disabled')) !!}</td>
+			<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Pagar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-secondary' , 'disabled')) !!}</td>
 			@else
 			<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Pagar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-success')) !!}</td>
 			@endif

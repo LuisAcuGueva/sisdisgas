@@ -135,11 +135,11 @@ $container = "'container'";
 		<td align="center">
 		@if($aperturaycierre == 1)	
 			@if($value->estado == 1)
-				@if($concepto->id == 1)
+				@if($concepto->id == 1) {{-- apertura --}}
 					-
-				@elseif ($concepto->id == 2)
+				@elseif ($concepto->id == 2) {{-- cierre --}}
 					-
-				@elseif ($concepto->id == 12 || $concepto->id == 13 || $concepto->id == 14 || $concepto->id == 15)
+				@elseif ($concepto->id == 12 || $concepto->id == 13 || $concepto->id == 14 || $concepto->id == 15) {{-- acciones repartidores --}}
 					<?php
 					$detalle_turno = Detalleturnopedido::where('pedido_id',$value->id)->first();
 					$turno = Turnorepartidor::find($detalle_turno->turno_id);
@@ -151,7 +151,7 @@ $container = "'container'";
 					@if($turno->estado == "C")
 						-
 					@else
-						@if(count($detalles_turno) > 1) 
+						@if(count($detalles_turno) == 1) 
 							-
 						@else
 							{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar' ,'activo' => 'si')) !!}
@@ -222,7 +222,7 @@ $container = "'container'";
 				<td align="center"> - </td>
 			@endif
 		@elseif($value->estado == 0)
-			<td> {{ $value->comentario_anulado }} </td>
+			<td> {{ $value->comentario }} | Anulado por: {{ $value->comentario_anulado }} </td>
 		@endif
 			
 

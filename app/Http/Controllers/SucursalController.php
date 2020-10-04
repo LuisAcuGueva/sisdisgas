@@ -6,6 +6,9 @@ use Validator;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Sucursal;
+use App\Almacen;
+use App\Producto;
+use App\Stock;
 use App\Movimiento;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -111,7 +114,23 @@ class SucursalController extends Controller
             $sucursal->nombre = strtoupper($request->input('nombre'));
             $sucursal->direccion = strtoupper($request->input('direccion'));
             $sucursal->telefono = $request->input('telefono');
-            $sucursal->save();
+            $sucursal->save(); 
+
+         /*   $productos = Producto::all();
+            $almacenes = Almacen::all();
+
+            foreach ($almacenes as $key => $almacen) {
+                foreach ($productos as $key => $producto) {
+
+                    $stock = new Stock();
+                    $stock->cantidad = 0;
+                    $stock->almacen_id = $almacen->id;
+                    $stock->producto_id = $producto->id;
+                    $stock->save();
+
+                }
+            }*/
+
         });
         return is_null($error) ? "OK" : $error;
     }

@@ -218,14 +218,14 @@ class ClienteController extends Controller
         $cant = $request->input('cantc');
         if($cant == 11){
             $reglas = array(
-                'dni'       => 'required|unique:person,ruc,NULL,id,deleted_at,NULL|max:11',
+                'dni'       => 'required|max:11',
                 'razon_social'    => 'required|max:200',
                 'direccion'    => 'required|max:400',
                 'celular'       => 'required|numeric|digits:9',
                 );
         }else{
             $reglas = array(
-                'dni'       => 'required|unique:person,dni,NULL,id,deleted_at,NULL|max:8',
+                'dni'       => 'required|max:8',
                 'nombres'    => 'required|max:100',
                 'apellido_pat'    => 'required|max:100',
                 'apellido_mat'    => 'required|max:100',
@@ -316,7 +316,10 @@ class ClienteController extends Controller
                
             }		            		
         })
-        ->where('tipo_persona','C')
+        ->where(function($subquery)
+            {
+                $subquery->where('tipo_persona','C')->orwhere('tipo_persona','T');
+            })
         ->whereNull('person.deleted_at')
         ->orderBy('apellido_pat', 'ASC')
         ->orderBy('apellido_mat', 'ASC')

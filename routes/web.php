@@ -52,9 +52,22 @@ Route::group(['middleware' => 'auth'], function () {
     //Route::get('venta/productoautocompletar/{searching}', 'VentaController@productoautocompletar')->name('venta.productoautocompletar');
     Route::post('venta/guardarventa', 'VentaController@guardarventa')->name('venta.guardarventa');
     Route::post('venta/guardardetalle', 'VentaController@guardardetalle')->name('venta.guardardetalle');
+    Route::get('venta/cliente', 'VentaController@cliente')->name('venta.cliente');
+    Route::post('venta/guardarcliente', 'VentaController@guardarcliente')->name('venta.guardarcliente');
     Route::post('venta/serieventa', 'VentaController@serieventa')->name('venta.serieventa');
     Route::post('venta/permisoRegistrar', 'VentaController@permisoRegistrar')->name('venta.permisoRegistrar');
     Route::resource('venta', 'VentaController', array('except' => array('show')));
+    
+    Route::post('compras/buscar','ComprasController@buscar')->name('compras.buscar');
+    Route::get('compras/eliminar/{id}/{listarluego}','ComprasController@eliminar')->name('compras.eliminar');
+    Route::get('compras/detalle/{id}/', 'ComprasController@detalle')->name('compras.detalle');
+    Route::resource('compras', 'ComprasController', array('except' => array('show')));
+    Route::get('compras/proveedor', 'ComprasController@proveedor')->name('compras.proveedor');
+    Route::post('compras/guardarproveedor', 'ComprasController@guardarproveedor')->name('compras.guardarproveedor');
+    Route::post('compras/consultarAlmacenes', 'ComprasController@consultarAlmacenes')->name('compras.consultarAlmacenes');
+    Route::post('compras/buscandoproducto','ComprasController@buscandoproducto')->name('compras.buscandoproducto');
+    Route::post('compras/consultaproducto','ComprasController@consultaproducto')->name('compras.consultaproducto');
+    Route::post('compras/agregarcarritocompra','ComprasController@agregarcarritocompra')->name('compras.agregarcarritocompra');
 
     Route::get('caja/pdfDetalleCierre', 'CajaController@pdfDetalleCierre')->name('caja.pdfDetalleCierre');
     Route::get('caja/clienteautocompletar/{searching}', 'CajaController@clienteautocompletar')->name('caja.clienteautocompletar');
@@ -82,9 +95,18 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('baloncredito/eliminar/{id}/{listarluego}','BaloncreditoController@eliminar')->name('baloncredito.eliminar');
     Route::resource('baloncredito', 'BaloncreditoController', array('except' => array('show')));
 
+    Route::post('inventario/buscar','InventarioController@buscar')->name('inventario.buscar');
+    Route::get('inventario/eliminar/{id}/{listarluego}','InventarioController@eliminar')->name('inventario.eliminar');
+    Route::resource('inventario', 'InventarioController', array('except' => array('show')));
+
+    Route::post('kardex/buscar','KardexController@buscar')->name('kardex.buscar');
+    Route::get('kardex/eliminar/{id}/{listarluego}','KardexController@eliminar')->name('kardex.eliminar');
+    Route::resource('kardex', 'KardexController', array('except' => array('show')));
+
     Route::post('producto/buscar','ProductoController@buscar')->name('producto.buscar');
     Route::get('producto/eliminar/{id}/{listarluego}','ProductoController@eliminar')->name('producto.eliminar');
     Route::resource('producto', 'ProductoController', array('except' => array('show')));
+    Route::get('producto/productoautocompleting/{searching}', 'ProductoController@productoautocompleting')->name('producto.productoautocompleting');
 
     Route::post('turno/buscar','TurnoController@buscar')->name('turno.buscar');
     Route::get('turno/vuelto', 'TurnoController@vuelto')->name('turno.vuelto');
@@ -109,6 +131,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('trabajador', 'TrabajadorController', array('except' => array('show')));
     Route::get('trabajador/trabajadorautocompleting/{searching}', 'TrabajadorController@trabajadorautocompleting')->name('trabajador.trabajadorautocompleting');
 
+    Route::post('proveedor/buscar','ProveedorController@buscar')->name('proveedor.buscar');
+    Route::get('proveedor/eliminar/{id}/{listarluego}','ProveedorController@eliminar')->name('proveedor.eliminar');
+    Route::resource('proveedor', 'ProveedorController', array('except' => array('show')));
+    Route::get('proveedor/proveedorautocompleting/{searching}', 'ProveedorController@proveedorautocompleting')->name('proveedor.proveedorautocompleting');
+    Route::get('proveedor/buscarEmpresa', 'ProveedorController@buscarEmpresa')->name('proveedor.buscarEmpresa');
+    Route::post('proveedor/ultimoproveedor','ProveedorController@ultimoproveedor')->name('proveedor.ultimoproveedor');
+
     Route::post('cliente/buscar','ClienteController@buscar')->name('cliente.buscar');
     Route::get('cliente/eliminar/{id}/{listarluego}','ClienteController@eliminar')->name('cliente.eliminar');
     Route::resource('cliente', 'ClienteController', array('except' => array('show')));
@@ -122,6 +151,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('sucursal/buscar','SucursalController@buscar')->name('sucursal.buscar');
     Route::get('sucursal/eliminar/{id}/{listarluego}','SucursalController@eliminar')->name('sucursal.eliminar');
     Route::resource('sucursal', 'SucursalController', array('except' => array('show')));
+
+    Route::post('almacen/buscar','AlmacenController@buscar')->name('almacen.buscar');
+    Route::get('almacen/eliminar/{id}/{listarluego}','AlmacenController@eliminar')->name('almacen.eliminar');
+    Route::resource('almacen', 'AlmacenController', array('except' => array('show')));
 
     Route::post('categoriaopcionmenu/buscar', 'CategoriaopcionmenuController@buscar')->name('categoriaopcionmenu.buscar');
     Route::get('categoriaopcionmenu/eliminar/{id}/{listarluego}', 'CategoriaopcionmenuController@eliminar')->name('categoriaopcionmenu.eliminar');

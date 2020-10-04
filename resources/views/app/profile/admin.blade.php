@@ -28,7 +28,7 @@
 				</div>
 
 				<div class="row">
-					<div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12">
+					<div class="form-group col-lg-6 col-md-6 col-sm-12 col-xs-12" style="display:none;">
 						{!! Form::label('registro', 'Registro:') !!}
 						{!! Form::text('registro', $person->registro, array('class' => 'form-control input-sm', 'id' => 'registro', 'readOnly')) !!}
 					</div>

@@ -1039,6 +1039,13 @@ class CajaController extends Controller
                 $turno->delete();
             }
 
+            if($movimiento->concepto_id == 17){
+                $caja_cerrada = Movimiento::where('ingreso_cierre_id',$id)->first();
+                $caja_cerrada->ingreso_caja_principal = null;
+                $caja_cerrada->ingreso_cierre_id = null;
+                $caja_cerrada->save();
+            }
+
             if($movimiento->venta_id != null){
                 $movimientoventa = Movimiento::find($movimiento->venta_id);
                 $movimientoventa->estado = 0;
@@ -1234,7 +1241,7 @@ class CajaController extends Controller
         $pdf::Cell(25,7,utf8_decode("FECHA"),1,0,'C');
 
         //$pdf::MultiCell(50, 7,'PERSONA', 1, 'C', 0, 0, '', '', true, 0, false, true, 14, 'M');
-        $pdf::Cell(45,7,utf8_decode("TRABAJADOR"),1,0,'C');
+        $pdf::Cell(50,7,utf8_decode("TRABAJADOR"),1,0,'C');
 
         //$pdf::MultiCell(28, 7,'COMPROBANTE', 1, 'C', 0, 0, '', '', true, 0, false, true, 14, 'M');
         $pdf::Cell(28,7,utf8_decode("COMPROBANTE"),1,0,'C');
@@ -1256,7 +1263,7 @@ class CajaController extends Controller
         $pdf::Ln();
 
         $pdf::SetFont('helvetica','B',8.5);
-        $pdf::Cell(278,7,'APERTURA DE CAJA',1,0,'L');
+        $pdf::Cell(283,7,'APERTURA DE CAJA',1,0,'L');
         $pdf::Ln();
         $pdf::SetFont('helvetica','',6);  
         $pdf::Cell(10,7, $rst->num_caja ,1,0,'C');                 
@@ -1267,7 +1274,7 @@ class CajaController extends Controller
         }else{
             $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
         }
-        $pdf::Cell(45,7,$nombrepersona,1,0,'L');
+        $pdf::Cell(50,7,$nombrepersona,1,0,'L');
         $pdf::Cell(10,7, "" ,1,0,'C');
         $pdf::Cell(18,7, "" ,1,0,'C');
         $concepto = Concepto::find($rst->concepto_id);
@@ -1285,7 +1292,7 @@ class CajaController extends Controller
         }  
         $pdf::Ln(); 
         $pdf::SetFont('helvetica','B',8.5);
-        $pdf::Cell(218,7,'SUBTOTAL',1,0,'R');
+        $pdf::Cell(223,7,'SUBTOTAL',1,0,'R');
         $pdf::Cell(15,7,number_format($rst->total,2,'.',''),1,0,'R');
         $pdf::Ln();   
 
@@ -1307,7 +1314,7 @@ class CajaController extends Controller
 
         if(count($listarvueltos)>0){
             $pdf::SetFont('helvetica','B',8.5);
-            $pdf::Cell(278,7,'VUELTOS A REPARTIDORES',1,0,'L');
+            $pdf::Cell(283,7,'VUELTOS A REPARTIDORES',1,0,'L');
             $pdf::Ln();
             foreach ($listarvueltos as $row) { 
                 $pdf::SetFont('helvetica','',6);   
@@ -1328,7 +1335,7 @@ class CajaController extends Controller
                         $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
                     }
                 }
-                $pdf::Cell(45,7,$nombrepersona,1,0,'L');
+                $pdf::Cell(50,7,$nombrepersona,1,0,'L');
                 $tipodoc = Tipodocumento::find($row['tipodocumento_id']);
                 $pdf::Cell(10,7,"",1,0,'C');
                 $pdf::Cell(18,7, $row['num_venta'] ,1,0,'C');
@@ -1340,14 +1347,15 @@ class CajaController extends Controller
                     $pdf::Cell(15,7,number_format($row['total'],2,'.',''),1,0,'R');
                     $totalvuelto += number_format($row['total'],2,'.','');
                     $pdf::Cell(15,7,"",1,0,'R');
-                    $pdf::Cell(45,7,"",1,0,'R');
+                    $pdf::Cell(45,7,$row->comentario,1,0,'L');   
                 }else{
-                    $pdf::Cell(75,7,'ANULADO',1,0,'C');
+                    $pdf::Cell(30,7,'ANULADO',1,0,'C');
+                    $pdf::Cell(45,7,$row->comentario_anulado,1,0,'L');   
                 }
                 $pdf::Ln();                  
             } 
             $pdf::SetFont('helvetica','B',8.5);
-            $pdf::Cell(203,7,'SUBTOTAL',1,0,'R');
+            $pdf::Cell(208,7,'SUBTOTAL',1,0,'R');
             $pdf::Cell(15,7,number_format($totalvuelto,2,'.',''),1,0,'R');
            /* $pdf::Cell(15,7,"",1,0,'R');
             $pdf::Cell(15,7,"",1,0,'R');
@@ -1372,7 +1380,7 @@ class CajaController extends Controller
 
         if(count($listaotrosingresos)>0){
             $pdf::SetFont('helvetica','B',8.5);
-            $pdf::Cell(278,7,'INGRESOS',1,0,'L');
+            $pdf::Cell(283,7,'INGRESOS',1,0,'L');
             $pdf::Ln();
             $subtotalingresos = 0;
             foreach ($listaotrosingresos as $row) { 
@@ -1397,10 +1405,18 @@ class CajaController extends Controller
                         $nombrepersona_trabajador = $persona_trabajador->apellido_pat . " " . $persona_trabajador->apellido_mat . " " . $persona_trabajador->nombres;
                     }
                 }
-                $pdf::Cell(45,7,$nombrepersona_trabajador,1,0,'L');
-                $tipodoc = Tipodocumento::find($row['tipodocumento_id']);
-                $pdf::Cell(10,7,"",1,0,'C');
-                $pdf::Cell(18,7, $row['num_venta'] ,1,0,'C');
+                $pdf::Cell(50,7,$nombrepersona_trabajador,1,0,'L');
+
+                if($row->concepto_id == 16){
+                    $tipodoc = Tipodocumento::find($row->venta->tipodocumento_id);
+                    $pdf::Cell(10,7,$tipodoc->abreviatura,1,0,'C');
+                    $pdf::Cell(18,7, $row->venta->num_venta ,1,0,'C');
+                }else{
+                    $tipodoc = Tipodocumento::find($row['tipodocumento_id']);
+                    $pdf::Cell(10,7,"",1,0,'C');
+                    $pdf::Cell(18,7, $row['num_venta'] ,1,0,'C');
+                }
+
                 $concepto = Concepto::find($row['concepto_id']);
                 $pdf::Cell(45,7,$concepto->concepto,1,0,'L');
                 //$trabajador = Persona::find($row['trabajador_id']);
@@ -1420,7 +1436,7 @@ class CajaController extends Controller
                 $pdf::Ln();                  
             } 
             $pdf::SetFont('helvetica','B',8.5);
-            $pdf::Cell(218,7,'SUBTOTAL',1,0,'R');
+            $pdf::Cell(223,7,'SUBTOTAL',1,0,'R');
             $pdf::Cell(15,7,number_format($subtotalingresos,2,'.',''),1,0,'R');
             $pdf::Ln();                   
         }
@@ -1443,7 +1459,7 @@ class CajaController extends Controller
 
         if(count($listarstegresos)>0){
             $pdf::SetFont('helvetica','B',8.5);
-            $pdf::Cell(278,7,'EGRESOS',1,0,'L');
+            $pdf::Cell(283,7,'EGRESOS',1,0,'L');
             $pdf::Ln();
             foreach ($listarstegresos as $row) { 
                 $pdf::SetFont('helvetica','',6);   
@@ -1464,7 +1480,7 @@ class CajaController extends Controller
                         $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
                     }
                 }
-                $pdf::Cell(45,7,"",1,0,'L');
+                $pdf::Cell(50,7,"",1,0,'L');
                 $tipodoc = Tipodocumento::find($row['tipodocumento_id']);
                 $pdf::Cell(10,7,"",1,0,'C');
                 $pdf::Cell(18,7, $row['num_venta'] ,1,0,'C');
@@ -1476,14 +1492,15 @@ class CajaController extends Controller
                     $pdf::Cell(15,7,number_format($row['total'],2,'.',''),1,0,'R');
                     $totalegresos += number_format($row['total'],2,'.','');
                     $pdf::Cell(15,7,"",1,0,'R');
-                    $pdf::Cell(45,7,"",1,0,'R');
+                    $pdf::Cell(45,7,$row->comentario,1,0,'L');   
                 }else{
-                    $pdf::Cell(75,7,'ANULADO',1,0,'C');
+                    $pdf::Cell(30,7,'ANULADO',1,0,'C');
+                    $pdf::Cell(45,7, $row->comentario_anulado ,1,0,'L');     
                 }
                 $pdf::Ln();                  
             } 
             $pdf::SetFont('helvetica','B',8.5);
-            $pdf::Cell(203,7,'SUBTOTAL',1,0,'R');
+            $pdf::Cell(208,7,'SUBTOTAL',1,0,'R');
             $pdf::Cell(15,7,number_format($totalegresos,2,'.',''),1,0,'R');
            /* $pdf::Cell(15,7,"",1,0,'R');
             $pdf::Cell(15,7,"",1,0,'R');

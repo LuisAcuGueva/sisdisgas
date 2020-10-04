@@ -58,7 +58,7 @@
 					<td align="center"> - </td>
 				@endif
 			@elseif($value->estado == 0)
-				<td> {{ $value->pedido->comentario_anulado }} </td>
+				<td> {{ $value->pedido->comentario }} | Anulado por: {{ $value->pedido->comentario_anulado }} </td>
 			@endif
 			
 			

@@ -180,7 +180,7 @@ operaciones
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<div id="servicios_frecuentes" class="col-lg-12 col-md-12 col-sm-12" style="margin: 10px; border-style: groove; width: 100%; height: 180px; overflow-y: scroll;">
 							@foreach($productos  as $key => $value)
-								<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="{{ $value->id}}"  precio="{{ $value->precio }}" descripcion="{{ $value->descripcion }}" editable="{{ $value->editable }}" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
+								<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="{{ $value->id}}"  precio="{{ $value->precio_venta }}" descripcion="{{ $value->descripcion }}" editable="{{ $value->editable }}" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
 									<!--img src="assets/images/peine_1.png" style="width: 30px; height: 30px"-->
 									<label style="font-size: 9.5px; color: #2a3f54; padding-top: 13px;">{{ $value->descripcion}}</label>
 								</div>
@@ -833,25 +833,35 @@ $(document).ready(function(){
 		$(".precioeditable").blur(function() {
 			var elemento = this;
 			var precionuevo = parseFloat($(this).val());
-			if(precionuevo >= 0){
-				var tr = $(this).parent().parent();
-				var precioactual = $(tr).attr('precio');
-				var cantidad = $(tr).attr('cantidad');
-				$(tr).attr('precio',(precionuevo).toFixed(2));
-				var trprecioacumulado = $(tr).find('.precioacumulado');
-				$(trprecioacumulado).html((precionuevo*cantidad).toFixed(2));
-				var btneliminar = $(tr).find('.btnEliminar');
-				$(btneliminar).attr('precio',(precionuevo*cantidad).toFixed(2));
-				calcularTotal();
-				$("#montoefectivo").val("");
-				$("#montovisa").val("");
-				$("#montomaster").val("");
-				$("#vuelto").val((0).toFixed(2));
-				$('#divMensajeErrorVenta').html("");
-				//$('#btnGuardar').prop('disabled', false);
+			if( is_numeric(precionuevo) ){
+				if(precionuevo > 0){
+					var tr = $(this).parent().parent();
+					var precioactual = $(tr).attr('precio');
+					var cantidad = $(tr).attr('cantidad');
+					$(tr).attr('precio',(precionuevo).toFixed(2));
+					var trprecioacumulado = $(tr).find('.precioacumulado');
+					$(trprecioacumulado).html((precionuevo*cantidad).toFixed(2));
+					var btneliminar = $(tr).find('.btnEliminar');
+					$(btneliminar).attr('precio',(precionuevo*cantidad).toFixed(2));
+					calcularTotal();
+					$("#montoefectivo").val("");
+					$("#montovisa").val("");
+					$("#montomaster").val("");
+					$("#vuelto").val((0).toFixed(2));
+					$('#divMensajeErrorVenta').html("");
+					//$('#btnGuardar').prop('disabled', false);
+				}else{
+					var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+					cadenaError += '<li>Los campos de precios editables deben ser montos positivos.</li></ul></div>';
+					$('#divMensajeErrorVenta').html(cadenaError);
+					//$('#btnGuardar').prop('disabled', true);
+					var tr = $(this).parent().parent();
+					var precioactual = $(tr).attr('precio');
+					$(this).val(precioactual);
+				}
 			}else{
 				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-				cadenaError += '<li>Los campos de precios editables deben ser montos positivos.</li></ul></div>';
+				cadenaError += '<li>Los campos de precios editables deben ser númericos.</li></ul></div>';
 				$('#divMensajeErrorVenta').html(cadenaError);
 				//$('#btnGuardar').prop('disabled', true);
 				var tr = $(this).parent().parent();
@@ -863,27 +873,36 @@ $(document).ready(function(){
 		$(".cantidadeditable").blur(function() {
 			var elemento = this;
 			var cantidadnueva = parseInt($(this).val());
-			console.log("cantidadnueva :" + cantidadnueva);
-			if(cantidadnueva >= 0){
-				var tr = $(this).parent().parent();
-				var precioactual = $(tr).attr('precio');
-				//var cantidad = $(tr).attr('cantidad');
-				$(tr).attr('precio',precioactual);
-				$(tr).attr('cantidad',cantidadnueva);
-				var trprecioacumulado = $(tr).find('.precioacumulado');
-				$(trprecioacumulado).html((precioactual*cantidadnueva).toFixed(2));
-				var btneliminar = $(tr).find('.btnEliminar');
-				$(btneliminar).attr('precio',(precioactual*cantidadnueva).toFixed(2));
-				calcularTotal();
-				$("#montoefectivo").val("");
-				$("#montovisa").val("");
-				$("#montomaster").val("");
-				$("#vuelto").val((0).toFixed(2));
-				$('#divMensajeErrorVenta').html("");
-				//$('#btnGuardar').prop('disabled', false);
+			if( is_numeric(cantidadnueva) ){
+				if(cantidadnueva > 0){
+					var tr = $(this).parent().parent();
+					var precioactual = $(tr).attr('precio');
+					//var cantidad = $(tr).attr('cantidad');
+					$(tr).attr('precio',precioactual);
+					$(tr).attr('cantidad',cantidadnueva);
+					var trprecioacumulado = $(tr).find('.precioacumulado');
+					$(trprecioacumulado).html((precioactual*cantidadnueva).toFixed(2));
+					var btneliminar = $(tr).find('.btnEliminar');
+					$(btneliminar).attr('precio',(precioactual*cantidadnueva).toFixed(2));
+					calcularTotal();
+					$("#montoefectivo").val("");
+					$("#montovisa").val("");
+					$("#montomaster").val("");
+					$("#vuelto").val((0).toFixed(2));
+					$('#divMensajeErrorVenta').html("");
+					//$('#btnGuardar').prop('disabled', false);
+				}else{
+					var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+					cadenaError += '<li>Los campos de cantidad deben ser números positivos.</li></ul></div>';
+					$('#divMensajeErrorVenta').html(cadenaError);
+					//$('#btnGuardar').prop('disabled', true);
+					var tr = $(this).parent().parent();
+					var cantidadactual = $(tr).attr('cantidad');
+					$(this).val(cantidadactual);
+				}
 			}else{
 				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-				cadenaError += '<li>Los campos de cantidad deben ser números positivos.</li></ul></div>';
+				cadenaError += '<li>Los campos de cantidad deben ser númericos.</li></ul></div>';
 				$('#divMensajeErrorVenta').html(cadenaError);
 				//$('#btnGuardar').prop('disabled', true);
 				var tr = $(this).parent().parent();
@@ -1010,7 +1029,7 @@ $(document).ready(function(){
 							guardarventa();
 							setTimeout(function(){
 								cargarRutaMenu('turno', 'container', '15');
-							},2000);
+							},1000);
 						}
 					});
 			}
@@ -1035,16 +1054,10 @@ function mostrarultimo(){
 	}).done(function(info){
 		cliente = info;
 	}).always(function(){
-		console.log(cliente.id);
-		if( $("#ultimo_cliente").val() == ""){
-		console.log( "vacio" );
-		}
 		if( $("#ultimo_cliente").val() == "" ){
 			$("#ultimo_cliente").val(cliente.id);
 		}else{
 			if( $("#ultimo_cliente").val() != cliente.id){
-				console.log("id cliente : " + cliente.id);
-				console.log("nombre cliente : " + cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
 				if(cliente.dni != null){
 					$('#cliente').val(cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
 				}else{

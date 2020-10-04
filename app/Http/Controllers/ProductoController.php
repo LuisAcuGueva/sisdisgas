@@ -15,7 +15,7 @@ class ProductoController extends Controller
 {
 
     protected $folderview      = 'app.producto';
-    protected $tituloAdmin     = 'Producto';
+    protected $tituloAdmin     = 'Productos';
     protected $tituloRegistrar = 'Registrar producto';
     protected $tituloModificar = 'Modificar producto';
     protected $tituloEliminar  = 'Eliminar producto';
@@ -42,10 +42,11 @@ class ProductoController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'EDIT', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ELIM', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Descripcion', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Precio', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Activo', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'Precio Editable', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DESCRIPCIÓN', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'PRECIO COMPRA', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'PRECIO VENTA', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'ACTIVO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'PRECIO EDITABLE', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -104,7 +105,8 @@ class ProductoController extends Controller
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $reglas     = array('descripcion' => 'required|max:100',
-                            'precio' => 'required',
+                            'precio_venta' => 'required|numeric',
+                            'precio_compra' => 'required|numeric',
                             );
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
@@ -114,7 +116,8 @@ class ProductoController extends Controller
         $error = DB::transaction(function() use($request){
             $producto       = new Producto();
             $producto->descripcion = strtoupper($request->input('descripcion'));
-            $producto->precio = $request->input('precio');
+            $producto->precio_venta = $request->input('precio_venta');
+            $producto->precio_compra = $request->input('precio_compra');
             $producto->frecuente = $request->input('frecuente');
             $producto->editable = $request->input('editable');
             $producto->save();
@@ -168,7 +171,8 @@ class ProductoController extends Controller
             return $existe;
         }
         $reglas     = array('descripcion' => 'required|max:100',
-                            'precio' => 'required',
+                            'precio_venta' => 'required|numeric',
+                            'precio_compra' => 'required|numeric',
                             );
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
@@ -178,7 +182,8 @@ class ProductoController extends Controller
         $error = DB::transaction(function() use($request, $id){
             $producto       = Producto::find($id);
             $producto->descripcion = strtoupper($request->input('descripcion'));
-            $producto->precio = $request->input('precio');
+            $producto->precio_venta = $request->input('precio_venta');
+            $producto->precio_compra = $request->input('precio_compra');
             $producto->frecuente = $request->input('frecuente');
             $producto->editable = $request->input('editable');
             $producto->save();
@@ -226,5 +231,22 @@ class ProductoController extends Controller
         $formData = array('route' => array('producto.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Eliminar';
         return view('app.confirmarEliminar')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
+    public function productoautocompleting($searching)
+    {
+        $entidad    = 'Producto';
+        $resultado = Producto::where('descripcion', 'LIKE', '%'.strtoupper($searching).'%')
+        ->whereNull('deleted_at')
+        ->orderBy('id', 'ASC');
+        $list      = $resultado->get();
+        $data = array();
+        foreach ($list as $key => $value) {
+            $data[] = array(
+                            'id'    => $value->id,
+                            'descripcion'    => $value->descripcion,
+                        );
+        }
+        return json_encode($data);
     }
 }

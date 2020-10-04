@@ -22,7 +22,8 @@
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
 
 			<td>{{ $value->descripcion }}</td>
-			<td>{{ $value->precio }}</td>
+			<td align="center">{{ $value->precio_compra }}</td>
+			<td align="center">{{ $value->precio_venta }}</td>
 
 			@if($value->frecuente == 0)
 			<td align="center">&#10008;</td>

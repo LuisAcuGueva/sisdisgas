@@ -30,12 +30,18 @@
 			@if($value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5)
 
 				@if($value->pedido->estado == 1)
-					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
+					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloAnulacion.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
 				@elseif($value->pedido->estado == 0)
-					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'disabled', 'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-remove')) !!}</td>	
+					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloAnulacion.'\', this);', 'disabled', 'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-remove')) !!}</td>	
 				@endif
 				
-			@elseif($value->pedido->tipomovimiento_id == 1) 
+			@elseif($value->pedido->tipomovimiento_id == 1 && ( $value->pedido->concepto_id == 12 || $value->pedido->concepto_id == 13 ) ) 
+				@if($value->pedido->estado == 1)
+					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloAnulacion.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
+				@elseif($value->pedido->estado == 0)
+					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloAnulacion.'\', this);', 'disabled', 'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-remove')) !!}</td>	
+				@endif
+			@else
 				<td align="center"> - </td>
 			@endif
 
@@ -72,7 +78,7 @@
 					<td align="center"> - </td>
 				@endif
 			@elseif($value->pedido->estado == 0)
-				<td> {{ $value->pedido->comentario_anulado }} </td>
+				<td> {{ $value->pedido->comentario }} | Anulado por: {{ $value->pedido->comentario_anulado }} </td>
 			@endif
 			
 			@if($value->pedido->concepto->tipo != 0 || $value->pedido->concepto_id == 3 || $value->pedido->concepto_id == 16 )

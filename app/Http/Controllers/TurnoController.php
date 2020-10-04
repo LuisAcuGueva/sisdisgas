@@ -358,7 +358,9 @@ class TurnoController extends Controller
 
     public function cargarnumerocaja(Request $request){
         $sucursal_id  = $request->input('sucursal_id');
-        $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->where('estado',1)->max('num_caja') + 1;
+        $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)
+        //->where('estado',1)
+        ->max('num_caja') + 1;
         return $num_caja;
     }
 

@@ -24,6 +24,8 @@
 {!! Html::script('js/funciones.js') !!}
 {!! Html::script('js/sweetalert2.all.min.js') !!}
 
+<!-- bootbox code -->
+{!! Html::script('dist/js/bootbox.min.js') !!}
 
 {!! Html::script('js/jquery.core.js') !!}
 

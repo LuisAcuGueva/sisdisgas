@@ -59,6 +59,8 @@ class TrabajadorController extends Controller
         $cabecera[]       = array('valor' => 'ELIM', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DNI', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NOMBRE COMPLETO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'CELULAR', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -135,6 +137,8 @@ class TrabajadorController extends Controller
             $trabajador->apellido_pat  = strtoupper($request->input('apellido_pat'));
             $trabajador->apellido_mat  = strtoupper($request->input('apellido_mat'));
             $trabajador->tipo_persona  = "T";
+            $trabajador->direccion  = $request->input('direccion');
+            $trabajador->celular  = $request->input('celular');
             $trabajador->save();
             
         });
@@ -205,6 +209,8 @@ class TrabajadorController extends Controller
             $trabajador->apellido_pat  = strtoupper($request->input('apellido_pat'));
             $trabajador->apellido_mat  = strtoupper($request->input('apellido_mat'));
             $trabajador->tipo_persona  = "T";
+            $trabajador->direccion  = $request->input('direccion');
+            $trabajador->celular  = $request->input('celular');
             $trabajador->save();
             
         });

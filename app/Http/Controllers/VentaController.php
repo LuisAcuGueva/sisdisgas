@@ -15,8 +15,12 @@ use App\Producto;
 use App\Tipodocumento;
 use App\Turnorepartidor;
 use App\Detalleturnopedido;
+use App\Detallemovalmacen;
 use App\Detallepagos;
 use App\Sucursal;
+use App\Almacen;
+use App\Kardex;
+use App\Stock;
 use App\Empresa;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -30,11 +34,12 @@ class VentaController extends Controller
     protected $tituloAdmin     = 'Registrar Pedido';
     protected $tituloCliente   = 'Registrar Nuevo Cliente';
     protected $rutas           = array(
-            'cliente'   => 'cliente.create',
-            'guardarventa'   => 'venta.guardarventa',
-            'guardardetalle' => 'venta.guardardetalle',
-            'serieventa'     => 'venta.serieventa',
-            'permisoRegistrar' => 'venta.permisoRegistrar'
+            'guardarventa'       => 'venta.guardarventa',
+            'guardardetalle'     => 'venta.guardardetalle',
+            'serieventa'         => 'venta.serieventa',
+            'permisoRegistrar'   => 'venta.permisoRegistrar',
+            'cliente'            => 'venta.cliente',
+            'guardarcliente'     => 'venta.guardarcliente',
         );
 
     public function __construct()
@@ -268,15 +273,102 @@ class VentaController extends Controller
                             ->where('sucursal_id', $request->input('sucursal_id'))
                             ->max('id');
         $cantidad_servicios = $request->input('cantidad');
+        $almacen= Almacen::where('sucursal_id', $request->input('sucursal_id'))->first();
         foreach ($detalles->{"data"} as $detalle) {
-            $error = DB::transaction(function() use($venta_id, $detalle,$cantidad_servicios){
-                $detalleventa            = new Detalleventa();
-                $cantidad                = $detalle->{"cantidad"};
+            $error = DB::transaction(function() use($request, $venta_id, $detalle,$cantidad_servicios, $almacen ){
+                $cantidad           = $detalle->{"cantidad"};
+                $precio             = $detalle->{"precio"};
+                $subtotal           = round(($cantidad*$precio), 2);
+                $producto_id        = $detalle->{"id"} ;
+
+                $detalleventa       = new Detalleventa();
                 $detalleventa->cantidad  = $cantidad;
-                $detalleventa->producto_id  = $detalle->{"id"};
+                $detalleventa->producto_id  = $producto_id;
                 $detalleventa->venta_id  = $venta_id;
-                $detalleventa->precio  = $detalle->{"precio"};
+                $detalleventa->precio  = $precio;
                 $detalleventa->save();
+
+                $detalleMovAlmacen = new Detallemovalmacen();
+                $detalleMovAlmacen->cantidad = $cantidad;
+                $detalleMovAlmacen->precio = $precio;
+                $detalleMovAlmacen->subtotal = $subtotal;
+                $detalleMovAlmacen->movimiento_id = $venta_id;
+                $detalleMovAlmacen->producto_id = $producto_id;
+                $detalleMovAlmacen->save();
+
+                $lote = null;
+              
+                /*if( $request->input('lote'.$i) != ""){
+                    // Creamos el lote para el producto
+                    $lote = new Lote();
+                    $lote->nombre  = $request->input('lote'.$i);
+                    $lote->fecha  = $request->input('fecha');
+                    $lote->cantidad = $cantidad;
+                    $lote->stock_restante = $cantidad;
+                    $lote->producto_id = $request->input('producto_id'.$i);
+                    $lote->almacen_id = $almacen_id;
+                    $lote->save();
+
+                    $detalleCompra->lote_id = $lote->id ;
+                    $detalleCompra->save();
+                }*/
+
+                $stockanterior = 0;
+                $stockactual = 0;
+
+                $ultimokardex = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                                        //->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
+                                        ->where('detalle_mov_almacen.producto_id', '=', $producto_id)
+                                        ->where('kardex.almacen_id', '=',$almacen->id)
+                                        ->orderBy('kardex.id', 'DESC')
+                                        ->first();
+
+                if ($ultimokardex === NULL) {
+                    $stockactual = $cantidad;
+                    $kardex = new Kardex();
+                    $kardex->tipo = 'E';
+                    $kardex->fecha =  $request->input('fecha');
+                    $kardex->stock_anterior = $stockanterior;
+                    $kardex->stock_actual = $stockactual;
+                    $kardex->cantidad = $cantidad;
+                    $kardex->precio_venta = $precio;
+                    $kardex->almacen_id = $almacen->id;
+                    $kardex->detalle_mov_almacen_id = $detalleMovAlmacen->id;
+                    if( $lote != null){
+                        $kardex->lote_id = $lote->id;
+                    }
+                    $kardex->save();
+                    
+                }else{
+                    $stockanterior = $ultimokardex->stock_actual;
+                    $stockactual = $ultimokardex->stock_actual - $cantidad;
+                    $kardex = new Kardex();
+                    $kardex->tipo = 'E';
+                    $kardex->fecha =  $request->input('fecha');
+                    $kardex->stock_anterior = $stockanterior;
+                    $kardex->stock_actual = $stockactual;
+                    $kardex->cantidad = $cantidad;
+                    $kardex->precio_compra = $precio;
+                    $kardex->almacen_id = $almacen->id;
+                    $kardex->detalle_mov_almacen_id = $detalleMovAlmacen->id;
+                    if( $lote != null){
+                        $kardex->lote_id = $lote->id;
+                    }
+                    $kardex->save();    
+
+                }
+
+                //Reducir Stock
+
+                $stock = Stock::where('producto_id', $producto_id )->where('almacen_id', $almacen->id)->first();
+                if (count($stock) == 0) {
+                    $stock = new Stock();
+                    $stock->producto_id = $producto_id;
+                    $stock->almacen_id = $almacen->id;
+                }
+                $stock->cantidad -= $cantidad;
+                $stock->save();
+
             });
         }
 
@@ -353,4 +445,77 @@ class VentaController extends Controller
 
     }
 
+/**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function cliente(Request $request)
+    {
+        $listar         = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad        = 'Cliente'; 
+        $cliente        = null;
+        $formData       = array('venta.guardarcliente');
+        $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton          = 'Registrar'; 
+        $accion = 0;
+        return view($this->folderview.'.cliente')->with(compact('accion' ,'cliente', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function guardarcliente(Request $request)
+    {
+        $listar     = Libreria::getParam($request->input('listar'), 'NO');
+        $cant = $request->input('cantc');
+        if($cant == 11){
+            $reglas = array(
+                'dni'       => 'required|unique:person,ruc,NULL,id,deleted_at,NULL|max:11',
+                'razon_social'    => 'required|max:200',
+                'direccion'    => 'required|max:400',
+                'celular'       => 'required|numeric|digits:9',
+                );
+        }else{
+            $reglas = array(
+                'dni'       => 'required|unique:person,dni,NULL,id,deleted_at,NULL|max:8',
+                'nombres'    => 'required|max:100',
+                'apellido_pat'    => 'required|max:100',
+                'apellido_mat'    => 'required|max:100',
+                'direccion'    => 'required|max:400',
+                'celular'       => 'required|numeric|digits:9',
+                );
+        }
+        $validacion = Validator::make($request->all(),$reglas);
+        if ($validacion->fails()) {
+            return $validacion->messages()->toJson();
+        }
+        $error = DB::transaction(function() use($request){
+            $cliente                = new Person();
+            $cant = $request->input('cantc');
+            if($cant == 8){
+                $cliente->dni           = $request->input('dni');
+                $cliente->nombres       = strtoupper($request->input('nombres'));
+                $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
+                $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
+                $cliente->ruc           = null;
+                $cliente->razon_social  = null;
+            }else{
+                $cliente->dni           = null;
+                $cliente->nombres       = null;
+                $cliente->apellido_pat  = null;
+                $cliente->apellido_mat  = null;
+                $cliente->ruc           = $request->input('dni');
+                $cliente->razon_social  = strtoupper($request->input('razon_social'));
+            }
+            $cliente->tipo_persona  = "C";
+            $cliente->direccion  = $request->input('direccion');
+            $cliente->celular  = $request->input('celular');
+            $cliente->save();
+        });
+        return is_null($error) ? "OK" : $error;
+    }
 }
