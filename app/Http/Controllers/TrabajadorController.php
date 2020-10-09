@@ -11,6 +11,7 @@ use App\Distrito;
 use App\Provincia;
 use App\Departamento;
 use App\Person;
+use App\Sucursal;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -52,13 +53,15 @@ class TrabajadorController extends Controller
         $entidad          = 'Trabajador';
         $nombre           = Libreria::getParam($request->input('nombre'));
         $dni              = Libreria::getParam($request->input('dni'));
-        $resultado        = Person::listar($nombre,$dni,'T');
+        $resultado        = Person::listar($nombre,$dni,'T','A');
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'EDIT', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ELIM', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DNI', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NOMBRE COMPLETO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'TIPO DE TRABAJADOR', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CELULAR', 'numero' => '1');
         
@@ -106,8 +109,13 @@ class TrabajadorController extends Controller
         $formData       = array('trabajador.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Registrar'; 
+        $cboTipo = array(
+            'A' => 'Administrador',
+            'T' => 'Repartidor',
+        );
+        $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
         $accion = 0;
-        return view($this->folderview.'.mant')->with(compact('accion' ,'trabajador', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact('accion', 'cboSucursal', 'cboTipo' ,'trabajador', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -136,7 +144,8 @@ class TrabajadorController extends Controller
             $trabajador->nombres       = strtoupper($request->input('nombres'));
             $trabajador->apellido_pat  = strtoupper($request->input('apellido_pat'));
             $trabajador->apellido_mat  = strtoupper($request->input('apellido_mat'));
-            $trabajador->tipo_persona  = "T";
+            $trabajador->tipo_persona  = $request->input('tipo_persona');
+            $trabajador->sucursal_id   = $request->input('sucursal_id');
             $trabajador->direccion  = $request->input('direccion');
             $trabajador->celular  = $request->input('celular');
             $trabajador->save();
@@ -175,7 +184,12 @@ class TrabajadorController extends Controller
         $formData       = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton          = 'Modificar';
         $accion = 1;
-        return view($this->folderview.'.mant')->with(compact( 'accion' , 'trabajador', 'formData', 'entidad', 'boton', 'listar'));
+        $cboTipo = array(
+            'A' => 'Administrador',
+            'T' => 'Repartidor',
+        );
+        $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
+        return view($this->folderview.'.mant')->with(compact( 'accion' , 'cboSucursal','cboTipo', 'trabajador', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -208,7 +222,8 @@ class TrabajadorController extends Controller
             $trabajador->nombres       = strtoupper($request->input('nombres'));
             $trabajador->apellido_pat  = strtoupper($request->input('apellido_pat'));
             $trabajador->apellido_mat  = strtoupper($request->input('apellido_mat'));
-            $trabajador->tipo_persona  = "T";
+            $trabajador->tipo_persona  = $request->input('tipo_persona');
+            $trabajador->sucursal_id   = $request->input('sucursal_id');
             $trabajador->direccion  = $request->input('direccion');
             $trabajador->celular  = $request->input('celular');
             $trabajador->save();

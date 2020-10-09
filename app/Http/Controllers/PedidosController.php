@@ -12,28 +12,24 @@ use App\Sucursal;
 use App\Movimiento;
 use App\Detalleturnopedido;
 use App\Detalleventa;
+use App\Detallepagos;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class TurnoController extends Controller
+class PedidosController extends Controller
 {
 
-    protected $folderview      = 'app.turno';
-    protected $tituloAdmin     = 'Repartidores en turno';
-    protected $tituloMontoVuelto = 'Dar monto vuelto a repartidor';
-    protected $tituloDescargaDinero = 'Ingreso de dinero a caja';
-    protected $tituloCierreTurno = 'Cerrar turno de repartidor';
+    protected $folderview      = 'app.pedidos';
+    protected $tituloAdmin     = 'Pedidos';
     protected $tituloDetalle  = 'Detalle de pedido';
     protected $tituloAnulacion  = 'Anular pedido';
-    protected $rutas           = array('detalle' => 'turno.detalle', 
-            'vuelto'     => 'turno.vuelto', 
-            'descargadinero'     => 'turno.descargadinero', 
-            'cierre'   => 'turno.cierre',
-            'search'   => 'turno.buscar',
-            'index'    => 'turno.index',
-            'delete'   => 'turno.eliminar',
+    protected $rutas           = array(
+            'detalle' => 'pedidos.detalle', 
+            'search'   => 'pedidos.buscar',
+            'index'    => 'pedidos.index',
+            'delete'   => 'pedidos.eliminar',
         );
 
     public function __construct()
@@ -45,81 +41,70 @@ class TurnoController extends Controller
     {
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
-        $entidad          = 'Turnorepartidor';
-        $turno_id         = Libreria::getParam($request->input('turno_id'));
+        $entidad          = 'Pedidos';
+        $sucursal_id         = Libreria::getParam($request->input('sucursal_id'));
         $lista            = array();
+        
         $ingresos_repartidor = 0.00;
         $ingresos_credito = 0.00;
         $vueltos_repartidor = 0.00;
         $total_ingresos = 0.00;
         $egresos_repartidor = 0.00;
         $saldo_repartidor = 0.00;
-        if($turno_id != null){
-            $resultado        = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                ->orderby('fecha', 'DESC');
-            $lista            = $resultado->get();
 
-            $ingresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                                        ->where('estado',1)
-                                                        ->where(function($subquery)
-                                                            {
-                                                                $subquery->where('concepto.id','=', 3);
-                                                            })
-                                                        ->sum('total');
-                                                    
-            $ingresos_credito = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                                        ->where('estado',1)
-                                                        ->where(function($subquery)
-                                                            {
-                                                                $subquery->where('concepto.id','=', 16);
-                                                            })
-                                                        ->sum('total');
+        //max apertura
+        $maxapertura = Movimiento::where('concepto_id', 1)
+                ->where('sucursal_id', "=", $sucursal_id)
+                ->where('estado', "=", 1)
+                ->max('num_caja');
+        //max cierre
+        $maxcierre = Movimiento::where('concepto_id', 2)
+                ->where('sucursal_id', "=", $sucursal_id)
+                ->where('estado', "=", 1)
+                ->max('num_caja');
 
-            $vueltos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                                        ->where('estado',1)
-                                                        ->where(function($subquery)
-                                                            {
-                                                                $subquery->where('concepto.id','=', 12)->orwhere('concepto.id','=', 15);
-                                                            })
-                                                        ->sum('total');
+        //cantidad de aperturas
+        $aperturas = Movimiento::where('concepto_id', 1)
+        ->where('sucursal_id', "=", $sucursal_id)
+        ->where('estado', "=", 1)
+        ->count();
 
-            $egresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                                        ->where('estado',1)
-                                                        ->where(function($subquery)
-                                                            {
-                                                                $subquery->where('concepto.id','=', 13)->orwhere('concepto.id','=', 14);
-                                                            })
-                                                        ->sum('total');
+        //cantidad de cierres
+        $cierres = Movimiento::where('concepto_id', 2)
+            ->where('sucursal_id', "=", $sucursal_id)
+            ->where('estado', "=", 1)
+            ->count();
 
-            round($ingresos_repartidor,2);
-            round($ingresos_credito,2);
-            round($vueltos_repartidor,2);
-            round($egresos_repartidor,2);
+        $aperturaycierre = null;
 
-            $total_ingresos = $ingresos_repartidor + $vueltos_repartidor + $ingresos_credito;
-
-            $saldo_repartidor = $ingresos_repartidor + $ingresos_credito + $vueltos_repartidor - $egresos_repartidor;
-
-            round($saldo_repartidor,2);
-
+        if($aperturas == $cierres){ // habilitar apertura de caja
+        $aperturaycierre = 0;
+        }else if($aperturas != $cierres){ //habilitar cierre de caja
+        $aperturaycierre = 1;
         }
+
+        if (!is_null($maxapertura) && !is_null($maxcierre)) { // Ya existe una apertura y un cierre
+            if($aperturaycierre == 0){ //apertura y cierre iguales ---- mostrar desde apertura a cierre
+                $resultado = Movimiento::listarpedidos($sucursal_id, $aperturaycierre, $maxapertura, $maxcierre, 2);
+            }else if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura hasta ultimo movimiento
+                $resultado = Movimiento::listarpedidos($sucursal_id, $aperturaycierre, $maxapertura, $maxcierre, 2);
+            }
+            $lista            = $resultado->get();
+        }else if(!is_null($maxapertura) && is_null($maxcierre)) { //existe apertura pero no existe cierre
+            $resultado = Movimiento::listarpedidos($sucursal_id, $aperturaycierre, $maxapertura, $maxcierre, 2);
+            $lista            = $resultado->get();
+        }else{
+            $lista = null;
+        }
+        
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ANUL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'NRO DOC', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'VALE', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
 
@@ -149,19 +134,9 @@ class TurnoController extends Controller
     {
         $entidad          = 'Turnorepartidor';
         $title            = $this->tituloAdmin;
-        $tituloMontoVuelto = $this->tituloMontoVuelto;
-        $tituloDescargaDinero = $this->tituloDescargaDinero;
-        $tituloCierreTurno = $this->tituloCierreTurno;
         $ruta             = $this->rutas;
-        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
-        // TRABAJADORES EN TURNO
-        $empleados = array();
-        foreach ($turnos_iniciados as $key => $value) {
-            $trabajador = Person::find($value->trabajador_id);
-            array_push($empleados, $trabajador);
-        }
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        return view($this->folderview.'.admin')->with(compact('entidad', 'turnos_iniciados', 'cboSucursal','title', 'tituloCierreTurno', 'tituloMontoVuelto', 'tituloDescargaDinero','ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'cboSucursal','title', 'ruta'));
     }
 
     /**
@@ -179,12 +154,7 @@ class TurnoController extends Controller
 
         $num_caja   = null;
 
-        $sucursal_id  = $request->input('sucursal_id');
-
-        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
-                                            ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', $sucursal_id)
-                                            ->get();
+        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
         // TRABAJADORES EN TURNO
         $trabajadores_iniciados = array();
         foreach ($turnos_iniciados as $key => $value) {
@@ -205,13 +175,8 @@ class TurnoController extends Controller
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
 
         $num_caja   = null;
-
-        $sucursal_id  = $request->input('sucursal_id');
         
-        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
-                                            ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', $sucursal_id)
-                                            ->get();
+        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
         // TRABAJADORES EN TURNO
         $trabajadores_iniciados = array();
         foreach ($turnos_iniciados as $key => $value) {
@@ -233,12 +198,7 @@ class TurnoController extends Controller
 
         $num_caja   = null;
 
-        $sucursal_id  = $request->input('sucursal_id');
-
-        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
-                                            ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', $sucursal_id)
-                                            ->get();
+        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
         // TRABAJADORES EN TURNO
         $trabajadores_iniciados = array();
         foreach ($turnos_iniciados as $key => $value) {
@@ -368,7 +328,11 @@ class TurnoController extends Controller
         $formData = array('turno.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        return view($this->folderview.'.detalle')->with(compact('pedido', 'detalles','formData', 'entidad', 'boton', 'listar'));
+        $detallespago = Detallepagos::where('pedido_id', '=', $id)
+                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                    ->where('estado',1)
+                    ->get();  
+        return view($this->folderview.'.detalle')->with(compact('pedido', 'detallespago','detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function cargarnumerocaja(Request $request){

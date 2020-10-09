@@ -2,6 +2,18 @@
 {!! Form::model($trabajador, $formData) !!}
 {!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 <div class="form-group">
+	{!! Form::label('sucursal_id', 'Sucursal:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
+	<div class="col-lg-5 col-md-5 col-sm-5">
+		{!! Form::select('sucursal_id', $cboSucursal , null, array('class' => 'form-control input-xs', 'id' => 'sucursal_id')) !!}
+	</div>
+</div>
+<div class="form-group">
+	{!! Form::label('tipo_persona', 'Tipo de Trabajador:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
+	<div class="col-lg-5 col-md-5 col-sm-5">
+		{!! Form::select('tipo_persona', $cboTipo, null, array('class' => 'form-control input-xs', 'id' => 'tipo_persona')) !!}
+	</div>
+</div>
+<div class="form-group">
 	{!! Form::label('dni', 'DNI:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 	<div class="col-lg-5 col-md-5 col-sm-5">
 		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI')) !!}

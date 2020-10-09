@@ -13,7 +13,7 @@ class Person extends Model
     protected $table = 'person';
     protected $dates = ['deleted_at'];
 
-    public function scopelistar($query, $nombre, $dni, $type)
+    public function scopelistar($query, $nombre, $dni, $type, $secondtype)
     {   
         return $query->where(function($subquery) use($nombre)
 		            {
@@ -27,13 +27,20 @@ class Person extends Model
                             $subquery->orwhere('dni', '=', $dni);
 		            	}
                     })
-                    ->Where(function($subquery) use($type)
+                    ->Where(function($subquery) use($type , $secondtype)
 		            {
 		            	if (!is_null($type)) {
                             $subquery->orwhere('tipo_persona', '=', $type);
+                        }
+                        if (!is_null($secondtype)) {
+                            $subquery->orwhere('tipo_persona', '=', $secondtype);
 		            	}
                     })
                     ->orderBy('apellido_pat', 'ASC')->orderBy('apellido_mat', 'ASC')->orderBy('nombres', 'ASC');
     }
+
+    public function sucursal(){
+		return $this->belongsTo('App\Sucursal', 'sucursal_id');
+	}
 
 }

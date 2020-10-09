@@ -118,6 +118,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('turno/eliminar/{id}/{listarluego}','TurnoController@eliminar')->name('turno.eliminar');
     Route::resource('turno', 'TurnoController', array('except' => array('show')));
 
+    Route::post('pedidos/buscar','PedidosController@buscar')->name('pedidos.buscar');
+    Route::get('pedidos/detalle/{id}/', 'PedidosController@detalle')->name('pedidos.detalle');
+    Route::get('pedidos/eliminar/{id}/{listarluego}','PedidosController@eliminar')->name('pedidos.eliminar');
+    Route::resource('pedidos', 'PedidosController', array('except' => array('show')));
+
     Route::get('turnoscompletados/pdfDetalleTurno', 'TurnoscompletadosController@pdfDetalleTurno')->name('turnoscompletados.pdfDetalleTurno');
     Route::post('turnoscompletados/buscar','TurnoscompletadosController@buscar')->name('turnoscompletados.buscar');
     Route::post('turnoscompletados/buscardetalles','TurnoscompletadosController@buscardetalles')->name('turnoscompletados.buscardetalles');

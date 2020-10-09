@@ -1028,7 +1028,7 @@ $(document).ready(function(){
 						if (result.value) {
 							guardarventa();
 							setTimeout(function(){
-								cargarRutaMenu('turno', 'container', '15');
+								cargarRutaMenu('pedidos', 'container', '15');
 							},1000);
 						}
 					});

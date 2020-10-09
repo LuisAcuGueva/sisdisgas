@@ -28,7 +28,7 @@
 				{!! Form::label('tipo', 'Tipo:')!!}
 			</div>
 			<div class="col-lg-8 col-md-8 col-sm-8">
-				<select id="tipo" name="tipo" onchange="generarConcepto(this.value)" class="form-control input-xs">
+				<select id="tipo" name="tipo" onchange="generarConcepto(this.value); $('#total').val('');" class="form-control input-xs">
 					<option value="0">INGRESOS</option>
 					<option value="1">EGRESOS</option>
 				</select>
@@ -141,11 +141,18 @@ $(document).ready(function() {
 
 	$("#total").keyup(function(){
 		var total = parseFloat($("#total").val());
+		var caja_efectivo = parseFloat($("#caja_efectivo").val());
+		var tipo = $("#tipo").val();
 
 		if( total <= 0){
 			$('#btnGuardar').prop('disabled', true);
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
 			cadenaError += '<li>El monto a ingresar debe ser mayor a 0.</li></ul></div>';
+			$('#divMensajeErrorCaja').html(cadenaError);
+		}else if( total >= caja_efectivo && tipo == 1){
+			$('#btnGuardar').prop('disabled', true);
+			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+			cadenaError += '<li>El monto a ingresar debe ser menor al monto actual en caja.</li></ul></div>';
 			$('#divMensajeErrorCaja').html(cadenaError);
 		}else{
 			$('#btnGuardar').prop('disabled', false);

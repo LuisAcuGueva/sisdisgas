@@ -45,6 +45,23 @@ class Movimiento extends Model
         			->orderBy('num_caja','DESC')->orderBy('fecha', 'DESC');
 	}
 
+	public function scopelistarpedidos($query, $sucursal_id, $aperturaycierre, $maxapertura, $maxcierre, $tipomovimiento_id)
+    {
+		return $query->where(function($subquery) use( $aperturaycierre, $maxapertura, $maxcierre)
+		            {
+						if (!is_null($maxapertura) && !is_null($maxcierre)) {
+							if($aperturaycierre == 0){ //apertura y cierre iguales ---- no mostrar nada
+								$subquery->Where('num_caja','>=', $maxapertura)->Where('num_caja','<=', $maxcierre);
+							}else if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura
+								$subquery->Where('num_caja','>=', $maxapertura);
+							}
+						}
+					})
+					->where('sucursal_id', "=", $sucursal_id)
+					->where('tipomovimiento_id', "=", $tipomovimiento_id)
+        			->orderBy('num_caja','DESC')->orderBy('fecha', 'DESC');
+	}
+
 	public function scopelistarcompras($query, $fechainicio, $fechafin, $sucursal_id ,$proveedor_id)
     {
 		return $query->where(function($subquery) use($fechainicio, $fechafin ,$proveedor_id)

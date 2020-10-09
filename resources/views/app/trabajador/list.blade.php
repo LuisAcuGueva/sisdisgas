@@ -21,6 +21,12 @@
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
 			<td>{{ $value->dni }}</td>
 			<td>{{ $value->apellido_pat.' '.$value->apellido_mat.' '.$value->nombres  }}</td>
+			@if( $value->tipo_persona == 'A')
+			<td>ADMINISTRADOR</td>
+			@else
+			<td>REPARTIDOR</td>
+			@endif
+			<td>{{ $value->sucursal->nombre  }}</td>
 			<td>{{ $value->direccion  }}</td>
 			<td>{{ $value->celular  }}</td>
 		</tr>

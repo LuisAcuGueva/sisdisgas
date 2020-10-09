@@ -53,7 +53,7 @@ class ClienteController extends Controller
         $nombre           = Libreria::getParam($request->input('nombre'));
         $dni              = Libreria::getParam($request->input('dni'));
         $registro         = Libreria::getParam($request->input('registro'));
-        $resultado        = Person::listar($nombre,$dni,'C');
+        $resultado        = Person::listar($nombre,$dni,'C', null);
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'EDIT', 'numero' => '1');

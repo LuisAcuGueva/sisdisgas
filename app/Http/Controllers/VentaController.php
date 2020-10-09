@@ -52,13 +52,17 @@ class VentaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $entidad          = 'Venta';
         $title            = $this->tituloAdmin;
         $titulo_cliente   = $this->tituloCliente;
         $ruta             = $this->rutas;
-        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
+        $sucursal_id  = $request->input('sucursal_id');
+        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
+                                            ->where('turno_repartidor.estado','I')
+                                            ->where('person.sucursal_id', $sucursal_id)
+                                            ->get();
         // TRABAJADORES EN TURNO
         $empleados = array();
         foreach ($turnos_iniciados as $key => $value) {
@@ -257,6 +261,35 @@ class VentaController extends Controller
                     $detalle_pagos->monto   = $request->input('montoefectivo');
                     $detalle_pagos->tipo   =  'R';
                     $detalle_pagos->save();
+
+                }else if($montocredito == 0){
+
+                    $movimientopago                       = new Movimiento();
+                    $movimientopago->tipomovimiento_id    = 5;
+                    $movimientopago->concepto_id          = 16;
+                    $movimientopago->total                = 0;
+                    $movimientopago->subtotal             = 0;
+                    $movimientopago->estado               = 1;
+                    $movimientopago->persona_id           = $request->input('cliente_id');
+                    $movimientopago->trabajador_id        = $request->input('empleado_id');
+                    $user           = Auth::user();
+                    $movimientopago->usuario_id           = $user->id;
+                    $movimientopago->sucursal_id          = $request->input('sucursal_id');
+                    $movimientopago->venta_id             = $movimiento->id;
+                    $movimientopago->comentario             = "Pedido a crédito: ". $movimiento->tipodocumento->abreviatura."-". $movimiento->num_venta;
+                    $movimientopago->save();
+
+                    $trabajador = $request->input('empleado_id');
+
+                    $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
+                                        ->max('id');
+
+                    $turno_maximo = Turnorepartidor::find($max_turno);
+
+                    $detalle_turno_pedido =  new Detalleturnopedido();
+                    $detalle_turno_pedido->pedido_id = $movimientopago->id;
+                    $detalle_turno_pedido->turno_id = $turno_maximo->id;
+                    $detalle_turno_pedido->save();
 
                 }
             }

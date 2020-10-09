@@ -52,7 +52,7 @@ class ProveedorController extends Controller
         $entidad          = 'Proveedor';
         $nombre           = Libreria::getParam($request->input('nombre'));
         $dni              = Libreria::getParam($request->input('dni'));
-        $resultado        = Person::listar($nombre,$dni,'P');
+        $resultado        = Person::listar($nombre,$dni,'P', null);
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'EDIT', 'numero' => '1');
