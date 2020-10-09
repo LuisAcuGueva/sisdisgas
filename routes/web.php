@@ -114,6 +114,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('turno/cierre', 'TurnoController@cierre')->name('turno.cierre');
     Route::get('turno/detalle/{id}/', 'TurnoController@detalle')->name('turno.detalle');
     Route::post('turno/cargarnumerocaja', 'TurnoController@cargarnumerocaja')->name('turno.cargarnumerocaja');
+    Route::post('turno/cargarempleados', 'TurnoController@cargarempleados')->name('turno.cargarempleados');
     Route::post('turno/generarSaldoRepartidor', 'TurnoController@generarSaldoRepartidor')->name('turno.generarSaldoRepartidor');
     Route::get('turno/eliminar/{id}/{listarluego}','TurnoController@eliminar')->name('turno.eliminar');
     Route::resource('turno', 'TurnoController', array('except' => array('show')));

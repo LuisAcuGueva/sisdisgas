@@ -136,7 +136,7 @@ operaciones
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 						{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-						{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'generarNumeroSerie(); permisoRegistrar(); actualizarPreciosVales();')) !!}		
+						{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'generarNumeroSerie(); permisoRegistrar(); actualizarPreciosVales(); generarEmpleados();')) !!}		
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 						{!! Form::label('tipodocumento_id', 'Tipo de Documento:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
@@ -1042,6 +1042,36 @@ $(document).ready(function(){
 	});
 
 });
+
+function generarEmpleados(){
+
+//$('#empleados_mant').html("");
+
+var empleados = null;
+
+var tabla = "";
+
+var sucursal_id = $('#sucursal_id').val();
+
+$.ajax({
+	"method": "POST",
+	"url": "{{ url('/turno/cargarempleados') }}",
+	"data": {
+		"sucursal_id" : sucursal_id, 
+		"_token": "{{ csrf_token() }}",
+		}
+}).done(function(info){
+	empleados = info;
+}).always(function(){
+
+	$.each(empleados, function(i, item) {
+		tabla =  tabla +'<div class="empleado" id="' + item.id + '" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;"><img src="assets/images/empleado.png" style="width: 50px; height: 50px"><label style="font-size: 11px;  color: #2a3f54;">' + item.nombres + ' ' + item.apellido_pat  + ' ' + item.apellido_mat +'</label></div>';   
+	});
+
+	$('#empleados').html(tabla);
+});
+
+}
 
 function mostrarultimo(){
 	var cliente = null;

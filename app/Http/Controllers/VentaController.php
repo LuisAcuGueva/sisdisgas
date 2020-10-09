@@ -58,10 +58,9 @@ class VentaController extends Controller
         $title            = $this->tituloAdmin;
         $titulo_cliente   = $this->tituloCliente;
         $ruta             = $this->rutas;
-        $sucursal_id  = $request->input('sucursal_id');
         $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
                                             ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', $sucursal_id)
+                                            ->where('person.sucursal_id', 1)
                                             ->get();
         // TRABAJADORES EN TURNO
         $empleados = array();

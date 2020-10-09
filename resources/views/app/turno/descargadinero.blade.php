@@ -10,7 +10,7 @@
 			{!! Form::label('sucursal_id', 'Sucursal:')!!}
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
-			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id', 'onchange' => 'generarNumeroCaja(); permisoRegistrar();')) !!}		
+			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id', 'onchange' => 'generarNumeroCaja(); permisoRegistrar();generarEmpleados();')) !!}		
 		</div>
 	</div>
 	<div class="form-group">
@@ -57,7 +57,7 @@
 	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">NINGÚN REPARTIDOR EN TURNO</h4>
 	@else
 	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center;">SELECCIONE REPARTIDOR</h4>
-	<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
+	<div id="empleados_mant" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
 		@foreach($trabajadores_iniciados  as $key => $value)
 			<div class="empleadodd" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
 				<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
@@ -210,6 +210,35 @@ $(document).ready(function() {
 	}); 
 });
 
+function generarEmpleados(){
+
+//$('#empleados_mant').html("");
+
+var empleados = null;
+
+var tabla = "";
+
+var sucursal_id = $('#sucursal_id').val();
+
+$.ajax({
+	"method": "POST",
+	"url": "{{ url('/turno/cargarempleados') }}",
+	"data": {
+		"sucursal_id" : sucursal_id, 
+		"_token": "{{ csrf_token() }}",
+		}
+}).done(function(info){
+	empleados = info;
+}).always(function(){
+
+	$.each(empleados, function(i, item) {
+		tabla =  tabla +'<div class="empleado" id="' + item.id + '" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;"><img src="assets/images/empleado.png" style="width: 50px; height: 50px"><label style="font-size: 11px;  color: #2a3f54;">' + item.nombres + ' ' + item.apellido_pat  + ' ' + item.apellido_mat +'</label></div>';   
+	});
+
+	$('#empleados_mant').html(tabla);
+});
+
+}
 
 function permisoRegistrar(){
 

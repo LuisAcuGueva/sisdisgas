@@ -179,11 +179,9 @@ class TurnoController extends Controller
 
         $num_caja   = null;
 
-        $sucursal_id  = $request->input('sucursal_id');
-
         $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
                                             ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', $sucursal_id)
+                                            ->where('person.sucursal_id', 1)
                                             ->get();
         // TRABAJADORES EN TURNO
         $trabajadores_iniciados = array();
@@ -206,11 +204,9 @@ class TurnoController extends Controller
 
         $num_caja   = null;
 
-        $sucursal_id  = $request->input('sucursal_id');
-        
         $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
                                             ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', $sucursal_id)
+                                            ->where('person.sucursal_id', 1)
                                             ->get();
         // TRABAJADORES EN TURNO
         $trabajadores_iniciados = array();
@@ -233,11 +229,9 @@ class TurnoController extends Controller
 
         $num_caja   = null;
 
-        $sucursal_id  = $request->input('sucursal_id');
-
         $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
                                             ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', $sucursal_id)
+                                            ->where('person.sucursal_id', 1)
                                             ->get();
         // TRABAJADORES EN TURNO
         $trabajadores_iniciados = array();
@@ -377,6 +371,24 @@ class TurnoController extends Controller
         //->where('estado',1)
         ->max('num_caja') + 1;
         return $num_caja;
+    }
+
+    public function cargarempleados(Request $request){
+        $sucursal_id  = $request->input('sucursal_id');
+
+        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
+                                            ->where('turno_repartidor.estado','I')
+                                            ->where('person.sucursal_id', '=', $sucursal_id)
+                                            ->get();
+
+        // TRABAJADORES EN TURNO
+        $trabajadores_iniciados = array();
+        foreach ($turnos_iniciados as $key => $value) {
+            $trabajador = Person::find($value->trabajador_id);
+            array_push($trabajadores_iniciados, $trabajador);
+        }
+
+        return $trabajadores_iniciados;
     }
 
     public function generarSaldoRepartidor(Request $request){
