@@ -55,18 +55,22 @@
 	</div-->
 	@if(empty($trabajadores_iniciados))
 	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">NINGÚN REPARTIDOR EN TURNO</h4>
+	<div id="empleados_mant" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
+	</div>
+	{!! Form::hidden('persona_id',null,array('id'=>'persona_id')) !!}
+	{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 	@else
 	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center;">SELECCIONE REPARTIDOR</h4>
 	<div id="empleados_mant" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
 		@foreach($trabajadores_iniciados  as $key => $value)
-			<div class="empleadodd" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
+			<div class="empleadomv" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
 				<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
 				<label style="font-size: 11px;  color: #2a3f54;">{{ $value->razon_social ? $value->razon_social : $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat}}</label>
 			</div>
 		@endforeach
-		{!! Form::hidden('persona_id',null,array('id'=>'persona_id')) !!}
-		{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 	</div>
+	{!! Form::hidden('persona_id',null,array('id'=>'persona_id')) !!}
+	{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 	@endif
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
@@ -176,9 +180,9 @@ $(document).ready(function() {
 		$('#persona_id').val(datum.id);
 	});
 
-	$(".empleadodd").on('click', function(){
+	$(".empleadomv").on('click', function(){
 		var idempleado = $(this).attr('id');
-		$(".empleadodd").css('background', 'rgb(255,255,255)');
+		$(".empleadomv").css('background', 'rgb(255,255,255)');
 		$(this).css('background', 'rgb(179,188,237)');
 		$('#persona_id').attr('value',idempleado);
 		$("#empleado_nombre").val($(this).children('label').html());
@@ -231,11 +235,30 @@ $.ajax({
 	empleados = info;
 }).always(function(){
 
+	if( empleados != ""){
+		$('.page-venta').html("SELECCIONE REPARTIDOR");
+		$('.page-venta').css("color","black");
+	}else{
+		$('.page-venta').html("NINGÚN REPARTIDOR EN TURNO");
+		$('.page-venta').css("color","red");
+	}
+
+
 	$.each(empleados, function(i, item) {
-		tabla =  tabla +'<div class="empleado" id="' + item.id + '" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;"><img src="assets/images/empleado.png" style="width: 50px; height: 50px"><label style="font-size: 11px;  color: #2a3f54;">' + item.nombres + ' ' + item.apellido_pat  + ' ' + item.apellido_mat +'</label></div>';   
+		tabla =  tabla +'<div class="empleadomv" id="' + item.id + '" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;"><img src="assets/images/empleado.png" style="width: 50px; height: 50px"><label style="font-size: 11px;  color: #2a3f54;">' + item.nombres + ' ' + item.apellido_pat  + ' ' + item.apellido_mat +'</label></div>';   
 	});
 
 	$('#empleados_mant').html(tabla);
+	
+	$(".empleadomv").on('click', function(){
+		var idempleado = $(this).attr('id');
+		$(".empleadomv").css('background', 'rgb(255,255,255)');
+		$(this).css('background', 'rgb(179,188,237)');
+		$('#persona_id').attr('value',idempleado);
+		$("#empleado_nombre").val($(this).children('label').html());
+		generarSaldoRepartidor();
+	});
+	
 });
 
 }

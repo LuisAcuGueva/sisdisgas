@@ -57,6 +57,7 @@ operaciones
 				</div>
 
 				@if(!empty($empleados))
+				<h4 class="page-ventaa" style ="margin: 10px 0px;  font-weight: 600; text-align: center;"></h4>
 				<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
 					@foreach($empleados  as $key => $value)
 						<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
@@ -64,11 +65,15 @@ operaciones
 							<label style="font-size: 11px;  color: #2a3f54;">{{ $value->razon_social ? $value->razon_social : $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat}}</label>
 						</div>
 					@endforeach
-					{!! Form::hidden('empleado_id',null,array('id'=>'empleado_id')) !!}
-					{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 				</div>
+				{!! Form::hidden('empleado_id',null,array('id'=>'empleado_id')) !!}
+				{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 				@else
-				<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES EN TURNO</h4>
+				<h4 class="page-ventaa" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES EN TURNO</h4>
+				<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
+				</div>
+				{!! Form::hidden('empleado_id',null,array('id'=>'empleado_id')) !!}
+				{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 				@endif
 			</div>
 
@@ -1064,11 +1069,29 @@ $.ajax({
 	empleados = info;
 }).always(function(){
 
+	if( empleados != ""){
+		$('.page-ventaa').html("SELECCIONE REPARTIDOR");
+		$('.page-ventaa').css("display","none");
+		$('.page-ventaa').css("color","black");
+	}else{
+		$('.page-ventaa').html("NINGÚN REPARTIDOR EN TURNO");
+		$('.page-ventaa').css("display","");
+		$('.page-ventaa').css("color","red");
+	}
+
 	$.each(empleados, function(i, item) {
 		tabla =  tabla +'<div class="empleado" id="' + item.id + '" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;"><img src="assets/images/empleado.png" style="width: 50px; height: 50px"><label style="font-size: 11px;  color: #2a3f54;">' + item.nombres + ' ' + item.apellido_pat  + ' ' + item.apellido_mat +'</label></div>';   
 	});
 
 	$('#empleados').html(tabla);
+
+	$(".empleado").on('click', function(){
+		var idempleado = $(this).attr('id');
+		$(".empleado").css('background', 'rgb(255,255,255)');
+		$(this).css('background', 'rgb(179,188,237)');
+		$('#empleado_id').attr('value',idempleado);
+		$("#empleado_nombre").val($(this).children('label').html());
+	});
 });
 
 }
