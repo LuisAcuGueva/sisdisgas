@@ -524,7 +524,7 @@ $(document).on('click', '.quitarFila', function(event) {
 	calculatetotal();
 });
 
-var personas = new Bloodhound({
+var proveedores = new Bloodhound({
 	datumTokenizer: function (d) {
 		return Bloodhound.tokenizers.whitespace(d.value);
 	},
@@ -532,8 +532,8 @@ var personas = new Bloodhound({
 	limit:10,
 	remote: {
 		url: 'proveedor/proveedorautocompleting/%QUERY',
-		filter: function (personas) {
-			return $.map(personas, function (proveedor) {
+		filter: function (proveedores) {
+			return $.map(proveedores, function (proveedor) {
 				return {
 					value: proveedor.razon_social,
 					id: proveedor.id,
@@ -544,11 +544,11 @@ var personas = new Bloodhound({
 		}
 	}
 });
-personas.initialize();
+proveedores.initialize();
 $('#ccrazon').typeahead(null,{
 	displayKey: 'value',
 	limit:10,
-	source: personas.ttAdapter()
+	source: proveedores.ttAdapter()
 }).on('typeahead:selected', function (object, datum) {
 	$('#proveedor_id').val(datum.id);
 	$('#ccrazon').val(datum.razon_social);

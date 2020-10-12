@@ -1074,7 +1074,7 @@ $.ajax({
 		$('.page-ventaa').css("display","none");
 		$('.page-ventaa').css("color","black");
 	}else{
-		$('.page-ventaa').html("NINGÚN REPARTIDOR EN TURNO");
+		$('.page-ventaa').html("NO HAY REPARTIDOR EN TURNO");
 		$('.page-ventaa').css("display","");
 		$('.page-ventaa').css("color","red");
 	}

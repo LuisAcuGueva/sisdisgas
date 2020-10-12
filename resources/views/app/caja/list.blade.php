@@ -151,7 +151,7 @@ $container = "'container'";
 					@if($turno->estado == "C")
 						-
 					@else
-						@if(count($detalles_turno) == 1) 
+						@if(count($detalles_turno) != 1) 
 							-
 						@else
 							{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar' ,'activo' => 'si')) !!}

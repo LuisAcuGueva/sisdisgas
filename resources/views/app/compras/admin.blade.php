@@ -33,7 +33,7 @@ use App\Sucursal;
 						{!! Form::label('proveedor', 'Proveedor:') !!}
 						<div class="form-group">
 							{!! Form::text('proveedor', '', array('class' => 'form-control input-sm', 'id' => 'proveedor')) !!}
-							{!! Form::hidden('proveedor_id', '', array('id' => 'proveedor_id')) !!}
+							{!! Form::hidden('proveedor_idb', '', array('id' => 'proveedor_idb')) !!}
 						</div>
 						{!! Form::button('<i class="glyphicon glyphicon-trash"></i>', array('id' => 'btnproductoborrar' , 'class' => 'btn btn-danger waves-effect waves-light btn-sm btnBorrar' , 'style' => 'height: 30px; margin-top: 5px;', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'Borrar')) !!}
 					</div>
@@ -111,7 +111,7 @@ use App\Sucursal;
 		limit:10,
 		source: personas.ttAdapter()
 	}).on('typeahead:selected', function (object, datum) {
-		$('#proveedor_id').val(datum.id);
+		$('#proveedor_idb').val(datum.id);
 		$('#proveedor').val(datum.razon_social);
 		$('#proveedor').prop('disabled', true);
 		buscar('{{ $entidad }}');

@@ -12,6 +12,7 @@ use App\Sucursal;
 use App\Movimiento;
 use App\Detalleturnopedido;
 use App\Detalleventa;
+use App\Detallepagos;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -362,7 +363,11 @@ class TurnoController extends Controller
         $formData = array('turno.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        return view($this->folderview.'.detalle')->with(compact('pedido', 'detalles','formData', 'entidad', 'boton', 'listar'));
+        $detallespago = Detallepagos::where('pedido_id', '=', $pedido->id)
+                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                    ->where('estado',1)
+                    ->get();  
+        return view($this->folderview.'.detalle')->with(compact('pedido', 'detallespago', 'detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function cargarnumerocaja(Request $request){

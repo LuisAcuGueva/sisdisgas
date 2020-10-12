@@ -55,6 +55,12 @@
 				<td align="center"> - </td>
 			@endif
 
+			@if($value->balon_a_cuenta == 1)
+				<td align="center"> SI </td>
+			@else
+				<td align="center"> NO </td>
+			@endif
+
 			@if($value->estado == 1)
 				@if (!is_null($value->comentario))
 					<td> {{ $value->comentario }} </td>
