@@ -55,9 +55,13 @@
 				@else
 				<td>{{ $value->pedido->persona->razon_social  }}</td>
 				@endif
+				<td>{{ $value->pedido->persona->direccion  }}</td>
 			@else
 				<td align="center"> - </td>
+				<td align="center"> - </td>
 			@endif
+
+			
 			
 			@if($value->pedido->vale_balon_subcafae == 1)
 				<td align="center"> SUBCAFAE </td>

@@ -31,8 +31,6 @@
 			
 			<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->fecha )) }}</td>
 
-			<td> {{  $value->concepto->concepto }} </td>
-
 			<td> {{ $value->tipodocumento->abreviatura . $value->num_venta  }} </td>
 
 			@if (!is_null($value->persona))
@@ -44,7 +42,9 @@
 			@else
 				<td align="center"> - </td>
 			@endif
-			
+
+			<td> {{  $value->persona->direccion }} </td>
+
 			@if($value->vale_balon_subcafae == 1)
 				<td align="center"> SUBCAFAE </td>
 			@elseif($value->vale_balon_fise == 1)

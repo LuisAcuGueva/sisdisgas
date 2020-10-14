@@ -71,7 +71,11 @@ class VentaController extends Controller
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
         $cboTipoDocumento = Tipodocumento::where('tipomovimiento_id','2')->pluck('descripcion', 'id')->all();
         $anonimo = Person::where('id','=',1)->first();
-        $productos = Producto::where('frecuente',1)->orderBy('descripcion', 'ASC')->get();
+
+        $productos = Stock::join('producto', 'stock.producto_id', '=', 'producto.id')
+                                ->where('frecuente',1)
+                                ->where('stock.almacen_id',1)
+                                ->orderBy('descripcion', 'ASC')->get();
         
         return view($this->folderview.'.admin')->with(compact('productos', 'empleados', 'cboTipoDocumento','anonimo' , 'cboSucursal' ,'entidad', 'title', 'titulo_cliente', 'ruta'));
     }

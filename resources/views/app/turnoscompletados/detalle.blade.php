@@ -40,7 +40,7 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	configurarAnchoModal('1400');
+	configurarAnchoModal('1600');
 	buscar('{{ $entidad }}');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 

@@ -185,9 +185,10 @@ operaciones
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<div id="servicios_frecuentes" class="col-lg-12 col-md-12 col-sm-12" style="margin: 10px; border-style: groove; width: 100%; height: 180px; overflow-y: scroll;">
 							@foreach($productos  as $key => $value)
-								<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="{{ $value->id}}"  precio="{{ $value->precio_venta }}" descripcion="{{ $value->descripcion }}" editable="{{ $value->editable }}" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
+								<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="{{ $value->id}}"  precio="{{ $value->precio_venta }}" descripcion="{{ $value->descripcion }}" editable="{{ $value->editable }}" stock="{{ $value->cantidad }}" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
 									<!--img src="assets/images/peine_1.png" style="width: 30px; height: 30px"-->
 									<label style="font-size: 9.5px; color: #2a3f54; padding-top: 13px;">{{ $value->descripcion}}</label>
+									<label style="font-size: 9.5px; color: #2a3f54;">STOCK: {{$value->cantidad}}</label>
 								</div>
 							@endforeach
 						</div>
@@ -369,7 +370,7 @@ $(document).ready(function(){
 		if(activar_checkbox){
 			if( input.attr('id') == 'vale_balon_monto' ){
 				if( divpadre.hasClass('checked')) { 
-					console.log('seleccionar balon monto');
+				//	console.log('seleccionar balon monto');
 					$("#detalle tr").each(function(){
 						var id = parseInt($(this).attr('id'));
 						var cantidad = $(this).attr('cantidad');
@@ -435,14 +436,14 @@ $(document).ready(function(){
 					$('#monto_vale_balon').prop('readOnly',true);
 					$('#codigo_vale_monto').prop('readOnly',true);
 					$('#monto_vale_balon').val('');
-					console.log('deseleccionar balon monto');
+					//console.log('deseleccionar balon monto');
 					//divpadre.addClass('checked');
 					$('#vale_balon_fise').parent().removeClass('checked');
 					$('#vale_balon_subcafae').parent().removeClass('checked');
 				}
 			}else if( input.attr('id') == 'vale_balon_fise'){
 				if( divpadre.hasClass('checked')) { 
-					console.log('seleccionar balon sisfoh');
+					//console.log('seleccionar balon sisfoh');
 					//modificar precio del balon normal
 					var sucursal_id = $("#sucursal_id").val();
 					var primero = true;
@@ -521,7 +522,7 @@ $(document).ready(function(){
 					$('#monto_vale_fise').prop('readOnly',true);
 					$('#codigo_vale_fise').prop('readOnly',true);
 					$('#monto_vale_fise').val('');
-					console.log('deseleccionar balon sisfoh');
+					//console.log('deseleccionar balon sisfoh');
 					//divpadre.addClass('checked');
 					$('#vale_balon_monto').parent().removeClass('checked');
 					$('#vale_balon_monto').prop('checked',false);
@@ -530,7 +531,7 @@ $(document).ready(function(){
 				}
 			}else if( input.attr('id') == 'vale_balon_subcafae'){ //codigo_vale_subcafae
 				if( divpadre.hasClass('checked')) { 
-					console.log('secleccionar balon lleno');
+					//console.log('secleccionar balon lleno');
 					var primero = true;
 					$("#detalle tr").each(function(){
 						var id = parseInt($(this).attr('id'));
@@ -606,7 +607,7 @@ $(document).ready(function(){
 					$('#codigo_vale_fise').prop('readOnly',true);
 					$('#codigo_vale_monto').prop('readOnly',true);
 					$('#codigo_vale_subcafae').prop('readOnly',true);
-					console.log('deseleccionar balon lleno');
+					//console.log('deseleccionar balon lleno');
 					$('#codigo_vale_subcafae').val('');
 					//divpadre.addClass('checked');
 					$('#vale_balon_monto').parent().removeClass('checked');
@@ -642,7 +643,7 @@ $(document).ready(function(){
 
 	var credito = $("#credito").val();
 
-	console.log("credito = " + credito);
+	//console.log("credito = " + credito);
 
 		if( credito == 1){
 
@@ -727,12 +728,14 @@ $(document).ready(function(){
 
 	var activar_checkbox = false;
 
+	//AGREGAR SERVICIO
 	$(".servicio_frecuente").on('click', function(){
 		var elemento = this;
 		var idservicio_frecuente = $(this).attr('id');
 		var precio = parseFloat($(this).attr('precio'));
 		var descripcion = $(this).attr('descripcion');
 		var editable = $(this).attr('editable');
+		var stock = $(this).attr('stock');
 		var cant = $("#cant").val();
 
 		$(this).css('background', 'rgb(179,188,237)');
@@ -765,7 +768,7 @@ $(document).ready(function(){
 				}
 			});
 			activar_checkbox = true; 
-			console.log(activar_checkbox);
+			//console.log(activar_checkbox);
 			$('#balon_nuevo').prop('disabled', false);
 			$('#balon_a_cuenta').prop('disabled', false);
 			$('#vale_balon_subcafae').prop('disabled', false);
@@ -806,18 +809,26 @@ $(document).ready(function(){
 			$("#detalle tr").each(function(){
 				if(idservicio_frecuente == this.id){
 					if($(this).attr('class') == "DetalleServicio"){
-						var cantidadfila = parseInt($(this).attr('cantidad'));
-						var precioactual = parseFloat($(this).attr('precio'));
-						cantidadfila++;
-						$(this).attr('cantidad',cantidadfila);
-						if(editable == 0){
-							var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;">'+ (precio*cantidadfila).toFixed(2) +'</td><td class="precioacumulado" style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
-						}else if(editable == 1){
-							var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precioactual).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precioactual*cantidadfila).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precioactual*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
-						}
-						$(this).html(nuevafila);
 						existe = true;
-						calcularTotal();
+						var cantidadfila = parseInt($(this).attr('cantidad'));
+						var stockfila = parseInt($(this).attr('stock'));
+						var precioactual = parseFloat($(this).attr('precio'));
+						if(stockfila > cantidadfila){
+							cantidadfila++;
+							$(this).attr('cantidad',cantidadfila);
+							if(editable == 0){
+								var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;">'+ (precio*cantidadfila).toFixed(2) +'</td><td class="precioacumulado" style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+							}else if(editable == 1){
+								var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precioactual).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precioactual*cantidadfila).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precioactual*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+							}
+							$(this).html(nuevafila);
+							calcularTotal();
+						}else{
+							swal({
+								title: 'NO HAY STOCK SUFICIENTE',
+								type: 'error',
+							});
+						}
 					}
 				}
 			});
@@ -825,9 +836,9 @@ $(document).ready(function(){
 
 		if(!existe){
 			if(editable == 0){
-				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +' stock='+ stock +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
 			}else if(editable == 1){
-				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precio).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +' stock='+ stock +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precio).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
 			}
 			$("#detalle").append(fila);
 			cant++;
@@ -881,21 +892,33 @@ $(document).ready(function(){
 			if( is_numeric(cantidadnueva) ){
 				if(cantidadnueva > 0){
 					var tr = $(this).parent().parent();
-					var precioactual = $(tr).attr('precio');
-					//var cantidad = $(tr).attr('cantidad');
-					$(tr).attr('precio',precioactual);
-					$(tr).attr('cantidad',cantidadnueva);
-					var trprecioacumulado = $(tr).find('.precioacumulado');
-					$(trprecioacumulado).html((precioactual*cantidadnueva).toFixed(2));
-					var btneliminar = $(tr).find('.btnEliminar');
-					$(btneliminar).attr('precio',(precioactual*cantidadnueva).toFixed(2));
-					calcularTotal();
-					$("#montoefectivo").val("");
-					$("#montovisa").val("");
-					$("#montomaster").val("");
-					$("#vuelto").val((0).toFixed(2));
-					$('#divMensajeErrorVenta').html("");
-					//$('#btnGuardar').prop('disabled', false);
+					var precioactual = parseFloat($(tr).attr('precio'));
+					var stockactual = $(tr).attr('stock');
+					console.log( stockactual + ' < ' + cantidadnueva);
+					if(stockactual >= cantidadnueva ){
+						//var cantidad = $(tr).attr('cantidad');
+						$(tr).attr('precio',precioactual);
+						$(tr).attr('cantidad',cantidadnueva);
+						var trprecioacumulado = $(tr).find('.precioacumulado');
+						$(trprecioacumulado).html((precioactual*cantidadnueva).toFixed(2));
+						var btneliminar = $(tr).find('.btnEliminar');
+						$(btneliminar).attr('precio',(precioactual*cantidadnueva).toFixed(2));
+						calcularTotal();
+						$("#montoefectivo").val("");
+						$("#montovisa").val("");
+						$("#montomaster").val("");
+						$("#vuelto").val((0).toFixed(2));
+						$('#divMensajeErrorVenta').html("");
+						//$('#btnGuardar').prop('disabled', false);
+					}else{
+						swal({
+							title: 'NO HAY STOCK SUFICIENTE',
+							type: 'error',
+						});
+						var tr = $(this).parent().parent();
+						var cantidadactual = $(tr).attr('cantidad');
+						$(this).val(cantidadactual);
+					}
 				}else{
 					var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
 					cadenaError += '<li>Los campos de cantidad deben ser números positivos.</li></ul></div>';
@@ -990,7 +1013,7 @@ $(document).ready(function(){
 				negativo = true;
 			}
 		});
-		console.log("hay negativos = " + negativo);
+		//console.log("hay negativos = " + negativo);
 
 		if(!negativo){
 			if(!empleado || cant==0 || !cliente || ( $("#vale_balon_fise").parent().hasClass('checked') && $("#codigo_vale_fise").val() == "" ) || ( $("#vale_balon_subcafae").parent().hasClass('checked') && $("#codigo_vale_subcafae").val() == "" ) || ( $("#vale_balon_monto").parent().hasClass('checked') && ( $("#codigo_vale_monto").val() == "" || $("#monto_vale_balon").val()  == "" ))  ){  // $("balon_a_cuenta").prop('checked') 
@@ -1277,7 +1300,7 @@ function eliminarDetalle(comp){
 	if(idproducto == 4 || idproducto == 5 ){
 			$('#activar_checkbox').val(false);
 			activar_checkbox = false; 
-			console.log(activar_checkbox);
+			//console.log(activar_checkbox);
 			//desactibar checkbox
 			$('#vale_balon_subcafae').prop('disabled', true);
 			$('#vale_balon_monto').prop('disabled', true);
@@ -1333,7 +1356,7 @@ function eliminarDetalle(comp){
 		if(id == 4 || id == 5 ){
 			$('#activar_checkbox').val(true);
 			activar_checkbox = true; 
-			console.log(activar_checkbox);
+			//console.log(activar_checkbox);
 			$('#balon_nuevo').prop('disabled', false);
 			$('#balon_a_cuenta').prop('disabled', false);
 			$('#vale_balon_subcafae').prop('disabled', false);

@@ -36,7 +36,9 @@
 				@else
 				<td>{{ $value->pedido->persona->razon_social  }}</td>
 				@endif
+				<td>{{ $value->pedido->persona->direccion  }}</td>
 			@else
+				<td align="center"> - </td>
 				<td align="center"> - </td>
 			@endif
 

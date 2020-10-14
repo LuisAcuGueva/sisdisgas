@@ -23,7 +23,7 @@
 			<tr style ="background-color: #ffc8cb !important">
 		@endif
 
-			<td align="center">{{ $fechaformato = date("d/m/Y",strtotime($value->fecha))}}</td>	
+			<td align="center">{{ $fechaformato = date("d/m/Y h:m:s a",strtotime($value->fecha))}}</td>	
 
 			@if($value->estado == 1)
 				@if( $value->tipo == "I")

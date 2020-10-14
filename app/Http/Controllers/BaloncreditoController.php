@@ -51,6 +51,7 @@ class BaloncreditoController extends Controller
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
         $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
         $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DEBE', 'numero' => '1');

@@ -28,6 +28,7 @@ use App\Detallepagos;
 			@else
 			<td>{{ $value->persona->razon_social  }}</td>
 			@endif
+			<td>{{ $value->persona->direccion  }}</td>
 			<td> {{ $value->sucursal->nombre }} </td>
 			<td align="center" style="color:black; font-weight: bold;">  {{ number_format($value->total,2) }} </td>
 			<?php

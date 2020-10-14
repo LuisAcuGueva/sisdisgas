@@ -119,6 +119,7 @@ class TurnoController extends Controller
         $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
         $cabecera[]       = array('valor' => 'VALE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
