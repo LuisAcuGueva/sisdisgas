@@ -1266,10 +1266,13 @@ class CajaController extends Controller
         $pdf::Cell(10,7, $rst->num_caja ,1,0,'C');                 
         $pdf::Cell(25,7,date("d/m/Y h:i:s a", strtotime($rst->fecha)),1,0,'C');
         $persona = Person::find($rst->trabajador_id);
-        if($persona->dni == null){
-            $nombrepersona = $persona->razon_social;
-        }else{
-            $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
+        $nombrepersona = "";
+        if(!is_null($persona)){
+            if($persona->dni == null){
+                $nombrepersona = $persona->razon_social;
+            }else{
+                $nombrepersona = $persona->apellido_pat . " " . $persona->apellido_mat . " " . $persona->nombres;
+            }
         }
         $pdf::Cell(50,7,$nombrepersona,1,0,'L');
         $pdf::Cell(10,7, "" ,1,0,'C');
