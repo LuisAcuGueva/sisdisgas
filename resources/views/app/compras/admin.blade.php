@@ -66,7 +66,7 @@ use App\Sucursal;
 		$('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
 
 		$('.btnBorrar').on('click', function(){
-			$('#proveedor_id').val("");
+			$('#proveedor_idb').val("");
 			$('#proveedor').val("");
 			$("#proveedor").prop('disabled',false);
 			$('#proveedor').focus();

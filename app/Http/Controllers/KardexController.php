@@ -35,11 +35,11 @@ class KardexController extends Controller
         $filas            = $request->input('filas');
         $entidad          = 'Kardex';
         $producto_id      = Libreria::getParam($request->input('producto_id'));
-        $almacen_id       = Libreria::getParam($request->input('almacen_id'));
+        $sucursal_id       = Libreria::getParam($request->input('sucursal_id'));
         $tipo             = Libreria::getParam($request->input('tipo'));
         $fechainicio      = Libreria::getParam($request->input('fechai'));
         $fechafin         = Libreria::getParam($request->input('fechaf'));
-        $resultado        = Kardex::listar($producto_id, $almacen_id , $fechainicio, $fechafin ,$tipo);
+        $resultado        = Kardex::listar($producto_id, $sucursal_id , $fechainicio, $fechafin ,$tipo);
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
@@ -77,17 +77,12 @@ class KardexController extends Controller
         $title            = $this->tituloAdmin;
         $ruta             = $this->rutas;
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        $almacenes = Almacen::where('sucursal_id', 1)->get();
         $cboTipo = array(
             '' => 'Todos',
             'I' => 'Ingreso',
             'E' => 'Egreso',
         );
-        $cboAlmacenes = array();
-        foreach ($almacenes as $key => $value) {
-            $cboAlmacenes = $cboAlmacenes + array( $value->id => $value->nombre);
-        }
-        return view($this->folderview.'.admin')->with(compact('entidad', 'cboTipo', 'cboSucursal', 'cboAlmacenes','title', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'cboTipo', 'cboSucursal','title', 'ruta'));
     }
 
 }

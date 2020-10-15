@@ -107,10 +107,6 @@ class Movimiento extends Model
 		return $this->belongsTo('App\Sucursal', 'sucursal_id');
 	}
 
-	public function almacen(){
-		return $this->belongsTo('App\Almacen', 'almacen_id');
-	}
-
 	public function tipodocumento(){
 		return $this->belongsTo('App\Tipodocumento', 'tipodocumento_id');
 	}

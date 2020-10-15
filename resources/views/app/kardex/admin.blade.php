@@ -18,11 +18,7 @@ $desde = date( 'Y-m-d' , $desde );
 				<div class="col-sm-12">
 					<div class="form-group">
 						{!! Form::label('sucursal_id', 'Sucursal:') !!}
-						{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'getAlmacenes1();')) !!}
-					</div>
-					<div class="form-group">
-						{!! Form::label('almacen_id', 'Almacén:') !!}
-						{!! Form::select('almacen_id', $cboAlmacenes, null, array('class' => 'form-control input-sm', 'id' => 'almacen_id' )) !!}
+						{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'buscar("'. $entidad.'");')) !!}
 					</div>
 				</div>
 				<div class="col-sm-12" style="margin-top:10px;">
@@ -87,26 +83,6 @@ $desde = date( 'Y-m-d' , $desde );
 
 	function pdf(entidad){
 			window.open('tipousuario/pdf?descripcion='+$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="name"]').val());
-	}
-
-	function getAlmacenes1(){
-		var almacenes = null;
-
-		var sucursal_id = $('#sucursal_id').val();
-
-		var serieajax = $.ajax({
-			"method": "POST",
-			"url": "{{ url('/compras/consultarAlmacenes') }}",
-			"data": {
-				"sucursal_id" : sucursal_id, 
-				"_token": "{{ csrf_token() }}",
-				}
-		}).done(function(info){
-			almacenes = info;
-		}).always(function(){
-			$('#almacen_id').html(almacenes);
-			buscar('{{ $entidad }}');
-		});
 	}
 
 	var productos = new Bloodhound({

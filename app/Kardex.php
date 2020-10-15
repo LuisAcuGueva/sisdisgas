@@ -13,19 +13,19 @@ class Kardex extends Model
     protected $table = 'kardex';
     protected $dates = ['deleted_at'];
 
-    public function scopelistar($query, $producto_id, $almacen_id , $fechainicio, $fechafin, $tipo)
+    public function scopelistar($query, $producto_id, $sucursal_id , $fechainicio, $fechafin, $tipo)
     {
         return $query->join('detalle_mov_almacen', 'detalle_mov_almacen.id', '=', 'kardex.detalle_mov_almacen_id')
                      ->join('movimiento', 'movimiento.id', '=', 'detalle_mov_almacen.movimiento_id')
                      ->join('producto', 'producto.id', '=', 'detalle_mov_almacen.producto_id')
                      //->join('lote', 'lote.id', '=', 'detalle_mov_almacen.lote_id')
-                    ->where(function($subquery) use($producto_id, $almacen_id , $fechainicio, $fechafin , $tipo)
+                    ->where(function($subquery) use($producto_id, $sucursal_id , $fechainicio, $fechafin , $tipo)
 		            {
 		            	if (!is_null($producto_id)) {
 		            		$subquery->where('producto.id', $producto_id );
 		            	}
-                        if (!is_null($almacen_id)) {
-		            		$subquery->where('kardex.almacen_id', $almacen_id);
+                        if (!is_null($sucursal_id)) {
+		            		$subquery->where('kardex.sucursal_id', $sucursal_id);
                         }
                         if (!is_null($tipo)) {
 		            		$subquery->where('kardex.tipo', $tipo);
@@ -41,11 +41,6 @@ class Kardex extends Model
     public function detallemovimiento()
     {
         return $this->belongsTo('App\Detallemovalmacen', 'detalle_mov_almacen_id');
-    }
-
-    public function lote()
-    {
-        return $this->belongsTo('App\Distribuidora', 'lote_id');
     }
 
 }

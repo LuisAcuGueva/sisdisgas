@@ -29,16 +29,16 @@ class Producto extends Model
         			->orderBy('descripcion', 'ASC');
     }
 
-    public function scopeinventario($query, $descripcion, $almacen_id)
+    public function scopeinventario($query, $descripcion, $sucursal_id)
     {
         return $query->leftjoin('stock', 'producto.id', '=', 'stock.producto_id')
-                    ->where(function($subquery) use($descripcion, $almacen_id)
+                    ->where(function($subquery) use($descripcion, $sucursal_id)
 		            {
 		            	if (!is_null($descripcion)) {
 		            		$subquery->where('producto.descripcion', 'LIKE', '%'.$descripcion.'%');
                         }
-                        if (!is_null($almacen_id)) {
-		            		$subquery->where('stock.almacen_id', $almacen_id);
+                        if (!is_null($sucursal_id)) {
+		            		$subquery->where('stock.sucursal_id', $sucursal_id);
 		            	}
                     })
         			->orderBy('producto.descripcion', 'ASC');

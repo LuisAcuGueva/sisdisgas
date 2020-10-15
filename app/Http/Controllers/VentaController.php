@@ -74,7 +74,7 @@ class VentaController extends Controller
 
         $productos = Stock::join('producto', 'stock.producto_id', '=', 'producto.id')
                                 ->where('frecuente',1)
-                                ->where('stock.almacen_id',1)
+                                ->where('stock.sucursal_id',1)
                                 ->orderBy('descripcion', 'ASC')->get();
         
         return view($this->folderview.'.admin')->with(compact('productos', 'empleados', 'cboTipoDocumento','anonimo' , 'cboSucursal' ,'entidad', 'title', 'titulo_cliente', 'ruta'));
@@ -309,9 +309,8 @@ class VentaController extends Controller
                             ->where('sucursal_id', $request->input('sucursal_id'))
                             ->max('id');
         $cantidad_servicios = $request->input('cantidad');
-        $almacen= Almacen::where('sucursal_id', $request->input('sucursal_id'))->first();
         foreach ($detalles->{"data"} as $detalle) {
-            $error = DB::transaction(function() use($request, $venta_id, $detalle,$cantidad_servicios, $almacen ){
+            $error = DB::transaction(function() use($request, $venta_id, $detalle,$cantidad_servicios ){
                 $cantidad           = $detalle->{"cantidad"};
                 $precio             = $detalle->{"precio"};
                 $subtotal           = round(($cantidad*$precio), 2);
@@ -352,10 +351,12 @@ class VentaController extends Controller
                 $stockanterior = 0;
                 $stockactual = 0;
 
+                $venta = Movimiento::find($venta_id);
+
                 $ultimokardex = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
                                         //->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
                                         ->where('detalle_mov_almacen.producto_id', '=', $producto_id)
-                                        ->where('kardex.almacen_id', '=',$almacen->id)
+                                        ->where('kardex.sucursal_id', '=',$venta->sucursal_id)
                                         ->orderBy('kardex.id', 'DESC')
                                         ->first();
 
@@ -368,7 +369,7 @@ class VentaController extends Controller
                     $kardex->stock_actual = $stockactual;
                     $kardex->cantidad = $cantidad;
                     $kardex->precio_venta = $precio;
-                    $kardex->almacen_id = $almacen->id;
+                    $kardex->sucursal_id = $venta->sucursal_id;
                     $kardex->detalle_mov_almacen_id = $detalleMovAlmacen->id;
                     if( $lote != null){
                         $kardex->lote_id = $lote->id;
@@ -385,7 +386,7 @@ class VentaController extends Controller
                     $kardex->stock_actual = $stockactual;
                     $kardex->cantidad = $cantidad;
                     $kardex->precio_compra = $precio;
-                    $kardex->almacen_id = $almacen->id;
+                    $kardex->sucursal_id = $venta->sucursal_id;
                     $kardex->detalle_mov_almacen_id = $detalleMovAlmacen->id;
                     if( $lote != null){
                         $kardex->lote_id = $lote->id;
@@ -396,11 +397,11 @@ class VentaController extends Controller
 
                 //Reducir Stock
 
-                $stock = Stock::where('producto_id', $producto_id )->where('almacen_id', $almacen->id)->first();
+                $stock = Stock::where('producto_id', $producto_id )->where('sucursal_id', $venta->sucursal_id)->first();
                 if (count($stock) == 0) {
                     $stock = new Stock();
                     $stock->producto_id = $producto_id;
-                    $stock->almacen_id = $almacen->id;
+                    $stock->sucursal_id = $venta->sucursal_id;
                 }
                 $stock->cantidad -= $cantidad;
                 $stock->save();

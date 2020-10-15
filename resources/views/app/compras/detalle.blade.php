@@ -11,10 +11,6 @@
 				{!! Form::text('sucursal', $compra->sucursal->nombre, array('class' => 'form-control input-sm', 'id' => 'sucursal', 'readOnly')) !!}
 			</div>
 			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
-				{!! Form::label('almacen', 'Almacén:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-				{!! Form::text('almacen', $compra->almacen->nombre, array('class' => 'form-control input-sm', 'id' => 'almacen', 'readOnly')) !!}
-			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 				{!! Form::label('tipodocumento', 'Tipo de Documento:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
 				{!! Form::text('tipodocumento', $compra->tipodocumento->descripcion , array('class' => 'form-control input-sm', 'id' => 'tipodocumento', 'readOnly')) !!}		
 			</div>
@@ -92,16 +88,11 @@
 			<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
 				<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DETALLE DE COMPRA</h4>
 				<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
-					<thead id="cabecera"><tr><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Lote</th><th style="font-size: 13px !important;">Cantidad</th><th style="font-size: 13px !important;">Precio Compra</th><th style="font-size: 13px !important;">Subtotal</th></tr></thead>
+					<thead id="cabecera"><tr><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Cantidad</th><th style="font-size: 13px !important;">Precio Compra</th><th style="font-size: 13px !important;">Subtotal</th></tr></thead>
 					<tbody id="detalle">
 						@foreach($detalles  as $key => $value)
 							<tr>
 							<td>{{ $value->producto->descripcion }} </td>
-							@if($value->lote_id != null)
-							<td align="center">{{ $value->lote->nombre }} </td>
-							@else
-							<td align="center"> - </td>
-							@endif
 							<td align="center">{{ $value->cantidad }} </td>
 							<td align="center">{{ $value->precio }} </td>
 							<td align="center">{{ number_format($value->cantidad * $value->precio, 2)}} </td>

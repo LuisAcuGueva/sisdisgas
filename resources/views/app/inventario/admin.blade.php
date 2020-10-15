@@ -12,14 +12,10 @@
 				{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
 				<div class="form-group">
 					{!! Form::label('sucursal_id', 'Sucursal:') !!}
-					{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'getAlmacenes1();')) !!}
+					{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'buscar("'. $entidad.'");')) !!}
 				</div>
 				<div class="form-group">
-					{!! Form::label('almacen_id', 'Almacén:') !!}
-					{!! Form::select('almacen_id', $cboAlmacenes, null, array('class' => 'form-control input-sm', 'id' => 'almacen_id' )) !!}
-				</div>
-				<div class="form-group">
-					{!! Form::label('name', 'Nombre:') !!}
+					{!! Form::label('name', 'Producto:') !!}
 					{!! Form::text('name', '', array('class' => 'form-control input-xs', 'id' => 'name')) !!}
 				</div>
 				<div class="form-group">
@@ -51,26 +47,6 @@
 	});
 
 	function pdf(entidad){
-			window.open('tipousuario/pdf?descripcion='+$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="name"]').val());
-	}
-
-	function getAlmacenes1(){
-		var almacenes = null;
-
-		var sucursal_id = $('#sucursal_id').val();
-
-		var serieajax = $.ajax({
-			"method": "POST",
-			"url": "{{ url('/compras/consultarAlmacenes') }}",
-			"data": {
-				"sucursal_id" : sucursal_id, 
-				"_token": "{{ csrf_token() }}",
-				}
-		}).done(function(info){
-			almacenes = info;
-		}).always(function(){
-			$('#almacen_id').html(almacenes);
-			buscar('{{ $entidad }}');
-		});
+		window.open('tipousuario/pdf?descripcion='+$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="name"]').val());
 	}
 </script>

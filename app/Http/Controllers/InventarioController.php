@@ -34,8 +34,8 @@ class InventarioController extends Controller
         $filas            = $request->input('filas');
         $entidad          = 'Producto';
         $descripcion      = Libreria::getParam($request->input('name'));
-        $almacen_id       = Libreria::getParam($request->input('almacen_id'));
-        $resultado        = Producto::inventario($descripcion, $almacen_id);
+        $sucursal_id       = Libreria::getParam($request->input('sucursal_id'));
+        $resultado        = Producto::inventario($descripcion, $sucursal_id);
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'NRO', 'numero' => '1');
@@ -70,12 +70,7 @@ class InventarioController extends Controller
         $title            = $this->tituloAdmin;
         $ruta             = $this->rutas;
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        $almacenes = Almacen::where('sucursal_id', 1)->get();
-        $cboAlmacenes = array();
-        foreach ($almacenes as $key => $value) {
-            $cboAlmacenes = $cboAlmacenes + array( $value->id => $value->nombre);
-        }
-        return view($this->folderview.'.admin')->with(compact('entidad', 'cboSucursal', 'cboAlmacenes','title', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'cboSucursal','title', 'ruta'));
     }
 
 }

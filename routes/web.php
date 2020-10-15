@@ -158,10 +158,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('sucursal/eliminar/{id}/{listarluego}','SucursalController@eliminar')->name('sucursal.eliminar');
     Route::resource('sucursal', 'SucursalController', array('except' => array('show')));
 
-    Route::post('almacen/buscar','AlmacenController@buscar')->name('almacen.buscar');
-    Route::get('almacen/eliminar/{id}/{listarluego}','AlmacenController@eliminar')->name('almacen.eliminar');
-    Route::resource('almacen', 'AlmacenController', array('except' => array('show')));
-
     Route::post('categoriaopcionmenu/buscar', 'CategoriaopcionmenuController@buscar')->name('categoriaopcionmenu.buscar');
     Route::get('categoriaopcionmenu/eliminar/{id}/{listarluego}', 'CategoriaopcionmenuController@eliminar')->name('categoriaopcionmenu.eliminar');
     Route::resource('categoriaopcionmenu', 'CategoriaopcionmenuController', array('except' => array('show')));

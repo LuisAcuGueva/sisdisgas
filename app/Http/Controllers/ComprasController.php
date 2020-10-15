@@ -51,7 +51,7 @@ class ComprasController extends Controller
         $filas            = $request->input('filas');
         $entidad          = 'Compras';
         $sucursal_id      = Libreria::getParam($request->input('sucursal_id'));
-        $proveedor_id     = Libreria::getParam($request->input('proveedor_id'));
+        $proveedor_id     = Libreria::getParam($request->input('proveedor_idb'));
         $fechainicio      = Libreria::getParam($request->input('fechai'));
         $fechafin         = Libreria::getParam($request->input('fechaf'));
         $resultado        = Movimiento::listarcompras($fechainicio,$fechafin, $sucursal_id ,$proveedor_id);
@@ -96,12 +96,7 @@ class ComprasController extends Controller
         $titulo_registrar = $this->tituloRegistrar;
         $ruta             = $this->rutas;
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        $almacenes = Almacen::where('sucursal_id', 1)->get();
-        $cboAlmacenes = array();
-        foreach ($almacenes as $key => $value) {
-            $cboAlmacenes = $cboAlmacenes + array( $value->id => $value->nombre);
-        }
-        return view($this->folderview.'.admin')->with(compact('entidad', 'cboSucursal', 'cboAlmacenes', 'title', 'titulo_registrar', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'cboSucursal', 'title', 'titulo_registrar', 'ruta'));
     }
 
     /**
@@ -120,15 +115,10 @@ class ComprasController extends Controller
         foreach ($listdocument as $key => $value) {
             $cboDocumento = $cboDocumento + array( $value->id => $value->abreviatura . " - " .$value->descripcion);
         }
-        $almacenes = Almacen::where('sucursal_id', 1)->get();
-        $cboAlmacenes = array();
-        foreach ($almacenes as $key => $value) {
-            $cboAlmacenes = $cboAlmacenes + array( $value->id => $value->nombre);
-        }
         $formData     = array('compras.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton        = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('compra', 'cboAlmacenes', 'cboSucursal','cboDocumento', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact('compra', 'cboSucursal','cboDocumento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -152,8 +142,6 @@ class ComprasController extends Controller
 
             $total = str_replace(',', '', $request->input('total'));
             
-            $almacen_id = $request->input('almacen');
-            
             $compra                 = new Movimiento();
             $compra->sucursal_id    = $sucursal_id; 
             $compra->tipodocumento_id = $request->input('tipodocumento_id');
@@ -171,7 +159,6 @@ class ComprasController extends Controller
             $user = Auth::user();
             $compra->usuario_id = $user->id;
             $compra->trabajador_id = $user->person_id;
-            $compra->almacen_id = $almacen_id;
             $compra->save();
 
             $compra_id = $compra->id;
@@ -196,30 +183,13 @@ class ComprasController extends Controller
                 $producto->precio_venta = $request->input('precioventa'.$i);
                 $producto->save();
 
-                $lote = null;
-              
-                if( $request->input('lote'.$i) != ""){
-                    // Creamos el lote para el producto
-                    $lote = new Lote();
-                    $lote->nombre  = $request->input('lote'.$i);
-                    $lote->fecha  = $request->input('fecha');
-                    $lote->cantidad = $cantidad;
-                    $lote->stock_restante = $cantidad;
-                    $lote->producto_id = $request->input('producto_id'.$i);
-                    $lote->almacen_id = $almacen_id;
-                    $lote->save();
-
-                    $detalleCompra->lote_id = $lote->id ;
-                    $detalleCompra->save();
-                }
-
                 $stockanterior = 0;
                 $stockactual = 0;
 
                 $ultimokardex = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
                                         //->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
                                         ->where('detalle_mov_almacen.producto_id', '=',$request->input('producto_id'.$i))
-                                        ->where('kardex.almacen_id', '=',$almacen_id)
+                                        ->where('kardex.sucursal_id', '=',$sucursal_id)
                                         ->orderBy('kardex.id', 'DESC')
                                         ->first();
 
@@ -235,11 +205,8 @@ class ComprasController extends Controller
                     $kardex->stock_actual = $stockactual;
                     $kardex->cantidad = $cantidad;
                     $kardex->precio_compra = $precio;
-                    $kardex->almacen_id = $almacen_id;
+                    $kardex->sucursal_id = $sucursal_id;
                     $kardex->detalle_mov_almacen_id = $detalleCompra->id;
-                    if( $lote != null){
-                        $kardex->lote_id = $lote->id;
-                    }
                     $kardex->save();
                     
                 }else{
@@ -252,22 +219,19 @@ class ComprasController extends Controller
                     $kardex->stock_actual = $stockactual;
                     $kardex->cantidad = $cantidad;
                     $kardex->precio_compra = $precio;
-                    $kardex->almacen_id = $almacen_id;
+                    $kardex->sucursal_id = $sucursal_id;
                     $kardex->detalle_mov_almacen_id = $detalleCompra->id;
-                    if( $lote != null){
-                        $kardex->lote_id = $lote->id;
-                    }
                     $kardex->save();    
 
                 }
 
                 //Reducir Stock
 
-                $stock = Stock::where('producto_id', $request->input('producto_id'.$i))->where('almacen_id', $almacen_id)->first();
+                $stock = Stock::where('producto_id', $request->input('producto_id'.$i))->where('sucursal_id', $sucursal_id)->first();
                 if (count($stock) == 0) {
                     $stock = new Stock();
                     $stock->producto_id = $request->input('producto_id'.$i);
-                    $stock->almacen_id = $almacen_id;
+                    $stock->sucursal_id = $sucursal_id;
                 }
                 $stock->cantidad += $cantidad;
                 $stock->save();
@@ -349,30 +313,12 @@ class ComprasController extends Controller
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $compra = Movimiento::find($id);
-
-        
-            $detalles = Detallemovalmacen::where('movimiento_id',$compra->id)->get();
-        
+        $detalles = Detallemovalmacen::where('movimiento_id',$compra->id)->get();
         $entidad  = 'Turnorepartidor';
         $formData = array('turno.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
         return view($this->folderview.'.detalle')->with(compact('compra', 'detalles','formData', 'entidad', 'boton', 'listar'));
-    }
-
-    public function consultarAlmacenes(Request $request)
-    {
-
-        $sucursal_id = $request->input('sucursal_id');
-
-        $almacenes = Almacen::where('sucursal_id',$sucursal_id)->get();
-
-        $html = "";
-        foreach($almacenes as $key => $value){
-            $html = $html . '<option value="'. $value->id .'">'. $value->nombre .'</option>';
-        }
-        return $html;
-        
     }
 
     /*
@@ -388,7 +334,7 @@ class ComprasController extends Controller
     public function buscandoproducto(Request $request)
     {
         $nombre = $request->input("nombre");
-        $almacen_id = $request->input('almacen');
+        $sucursal_id = $request->input('sucursal');
         $productos  = Producto::where('descripcion', 'LIKE', '%'.strtoupper($nombre).'%')->orderBy('descripcion', 'ASC')->get();
 
         if(count($productos)>0){
@@ -397,7 +343,7 @@ class ComprasController extends Controller
                 /*$currentstock = Kardex::leftjoin('detallemovimiento', 'kardex.detallemovimiento_id', '=', 'detallemovimiento.id')->leftjoin('movimiento', 'detallemovimiento.movimiento_id', '=', 'movimiento.id')->where('producto_id', '=', $value->id)->where('movimiento.almacen_id', '=',1)->orderBy('kardex.id', 'DESC')->first();*/
                 $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
                                         ->where('detalle_mov_almacen.producto_id', '=', $value->id)
-                                        ->where('kardex.almacen_id', '=', $almacen_id)
+                                        ->where('kardex.sucursal_id', '=', $sucursal_id)
                                         ->orderBy('kardex.id', 'DESC')
                                         ->first();
                 $stock = 0;
@@ -412,7 +358,6 @@ class ComprasController extends Controller
                     'precio_venta' => number_format($value->precio_venta,2,'.',''),
                     'precio_compra' => number_format($value->precio_compra,2,'.',''),
                     'idproducto' => $value->id,
-                    'lote' => $value->lote,
                 );
                 $c++;
             }            
@@ -424,16 +369,16 @@ class ComprasController extends Controller
 
     public function consultaproducto(Request $request)
     {
-        $almacen_id = $request->input('almacen_id');
+        $sucursal_id = $request->input('sucursal_id');
 
         $producto = Producto::find($request->input("idproducto"));
-        $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')->where('producto_id', '=', $producto->id)->where('movimiento.almacen_id', '=',$almacen_id)->orderBy('kardex.id', 'DESC')->first();
+        $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')->where('producto_id', '=', $producto->id)->where('movimiento.sucursal_id', '=',$sucursal_id)->orderBy('kardex.id', 'DESC')->first();
         $stock = 0;
         if ($currentstock !== null) {
             $stock=$currentstock->stock_actual;
         }
 
-        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->stock_seguridad.'@'.$producto->lote;
+        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->stock_seguridad;
     }
 
     public function agregarcarritocompra(Request $request)
@@ -456,17 +401,10 @@ class ComprasController extends Controller
                         <input type ="hidden" class="producto_id"  value="'.$producto_id.'">
                         <input type ="hidden" class="productonombre"  value="'.$producto->nombre.'">
                         <input type ="hidden" class="cantidad" value="'.$cantidad.'">
-                        <input type ="hidden" class="lote" value="'.$lote.'">
                         <input type ="hidden" class="precioventa" value="'.$precioventa.'">
                         <input type ="hidden" class="preciocompra" value="'.$precio.'">
                         <input type ="hidden" class="subtotal" value="'.$subtotal.'">
                     </td>';
-        if($lote == '') {
-            $lote = '-';
-        }
-        $cadena .= '<td class="text-center">
-                    <span style="display: block; font-size:.9em">'.$lote.'</span>                    
-                </td>';
         $cadena .= '<td class="text-center">
                     <span style="display: block; font-size:.9em">'.$cantidad.' UNIDADES</span>                    
                 </td>';

@@ -14,12 +14,6 @@ $hoy = date("Y-m-d");
 			</div>
 		</div>
 		<div class="form-group" style="height: 12px; margin: 25px 0px;">
-			{!! Form::label('almacen', 'Almacen:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
-			<div class="col-lg-8 col-md-8 col-sm-8">
-			{!! Form::select('almacen', $cboAlmacenes, null, array('style' => 'background-color: #b4ffb7;', 'class' => 'form-control input-sm', 'id' => 'almacen' )) !!}
-			</div>
-		</div>
-		<div class="form-group" style="height: 12px; margin: 25px 0px;">
 			{!! Form::label('tipodocumento_id', 'Documento:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 			<div class="col-lg-8 col-md-8 col-sm-8">
 				{!! Form::select('tipodocumento_id', $cboDocumento, null, array('style' => 'background-color: #D4F0FF;' ,'class' => 'form-control input-sm', 'id' => 'tipodocumento_id')) !!}
@@ -94,11 +88,10 @@ $hoy = date("Y-m-d");
 				<thead>
 					<tr>
 						<th class='text-center' style='width:300px;'><span style='display: block;'>Nombre</span></th>
-						<th class='text-center' style='width:100px;'><span style='display: block;'>Precio Compra</span></th>
-						<th class='text-center' style='width:100px;'><span style='display: block;'>Precio Venta</span></th>
-						<th class='text-center' style='width:100px;'><span style='display: block;'>Stock</span></th>
-						<th class='text-center' style='width:100px;'><span style='display: block;'>Stock Seguridad</span></th>
-						<th class='text-center' style='width:100px;'><span style='display: block;'>Lote</span></th>
+						<th class='text-center' style='width:110px;'><span style='display: block;'>Precio Compra</span></th>
+						<th class='text-center' style='width:110px;'><span style='display: block;'>Precio Venta</span></th>
+						<th class='text-center' style='width:110px;'><span style='display: block;'>Stock</span></th>
+						<th class='text-center' style='width:110px;'><span style='display: block;'>Stock Seguridad</span></th>
 					</tr>
 				</thead>
 				<tbody id='tablaProducto'>
@@ -111,21 +104,17 @@ $hoy = date("Y-m-d");
 			<table>
 			<tr>
 				<td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td>
-				<td><b>P. Compra</b></td>
+				<td><b>Precio Compra</b></td>
 				<td>&nbsp</td>
 				<td>{!! Form::text('precio_compra', null, array('class' => 'form-control input-sm', 'id' => 'precio_compra','size' => '6')) !!}</td>
 				<td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td>
-				<td><b>P.Venta</b></td>
+				<td><b>Precio Venta</b></td>
 				<td>&nbsp</td>
 				<td>{!! Form::text('precio_venta', null, array('class' => 'form-control input-sm', 'id' => 'precio_venta', 'size' => '6')) !!}</td>
 				<td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td>
 				<td><b>Cantidad</b></td>
 				<td>&nbsp</td>
 				<td>{!! Form::text('cantidad', null, array('class' => 'form-control input-sm', 'id' => 'cantidad', 'size' => '6', 'onkeyup' => "javascript:this.value=this.value.toUpperCase();")) !!}</td>
-				<td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td>
-				<td><b>Lote</b></td>
-				<td>&nbsp</td>
-				<td>{!! Form::text('lote', null, array('class' => 'form-control input-sm', 'id' => 'lote', 'size' => '6')) !!}</td>
 			</tr>
 			</table>
 		</div>
@@ -146,7 +135,6 @@ $hoy = date("Y-m-d");
 		                <tr>
 		                    <th bgcolor="#E0ECF8" class='text-center' style="width:50px;">N°</th>
 		                    <th bgcolor="#E0ECF8" class='text-center' style="width:350px;">Producto</th>
-		                    <th bgcolor="#E0ECF8" class='text-center' style="width:200px;">Lote</th>
 		                    <th bgcolor="#E0ECF8" class='text-center' style="width:250px;">Cantidad</th>
 		                    <th bgcolor="#E0ECF8" class="text-center" style="width:120px;">Precio Unit</th>
 		                    <th bgcolor="#E0ECF8" class="text-center" style="width:120px;">Subtotal</th>
@@ -201,7 +189,7 @@ $(document).on('keyup', '#ccruc', function(e) {
 $(document).ready(function() {
 	$('#detallesCompra').html('');
 	$('#cantproductos').val('0');
-	configurarAnchoModal('1300');
+	configurarAnchoModal('1200');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
 	$('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
@@ -238,20 +226,6 @@ $(document).ready(function() {
 	$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="cantidad"]').keydown( function(e) {
 		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
 		if(key == 13) {
-			e.preventDefault();
-			if($('#lote').attr('readonly') == 'readonly') {
-				addpurchasecart();
-			} else {
-				var inputs = $(this).closest('form').find(':input:visible:not([disabled]):not([readonly])');
-				inputs.eq( inputs.index(this)+ 1 ).focus();
-			}
-		}
-	});
-
-	//agregar producto con lote
-	$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="lote"]').keydown( function(e) {
-		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-		if(key == 13) {
 			if($(this).val() == '') {
 				return false;
 				$(this).focus();
@@ -263,35 +237,15 @@ $(document).ready(function() {
 			indice = -1;
 		}
 	});
-
 	
 }); 
-
-function getAlmacenes(){
-	var almacenes = null;
-
-	var sucursal_id = $('#sucursal').val();
-
-	var serieajax = $.ajax({
-		"method": "POST",
-		"url": "{{ url('/compras/consultarAlmacenes') }}",
-		"data": {
-			"sucursal_id" : sucursal_id, 
-			"_token": "{{ csrf_token() }}",
-			}
-	}).done(function(info){
-		almacenes = info;
-	}).always(function(){
-		$('#almacen').html(almacenes);
-	});
-}
 
 function buscarProducto(valor){
     if(valor.length >= 3){
         $.ajax({
             type: "POST",
             url: "compras/buscandoproducto",
-            data: "nombre="+$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="nombreproducto"]').val() + "&almacen="+$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[name="almacen"]').val() + "&_token="+$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[name="_token"]').val(),
+            data: "nombre="+$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="nombreproducto"]').val() + "&sucursal="+$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[name="sucursal"]').val() + "&_token="+$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[name="_token"]').val(),
             success: function(a) {
                 datos=JSON.parse(a);
                 //$("#divProductos").html("<table class='table table-bordered table-condensed table-hover' border='1' id='tablaProducto'><thead><tr><th class='text-center'>P. Activo</th><th class='text-center'>Nombre</th><th class='text-center'>Presentacion</th><th class='text-center'>Stock</th><th class='text-center'>P.Kayros</th><th class='text-center'>P.Venta</th></tr></thead></table>");
@@ -301,7 +255,7 @@ function buscarProducto(valor){
                 var a = '';
                 if(datos.length > 0) {
 	                for(c=0; c < datos.length; c++){
-	                    a +="<tr style='cursor:pointer' class='escogerFila' id='"+datos[c].idproducto+"' onclick=\"seleccionarProducto('"+datos[c].idproducto+"')\"><td><span style='display: block; font-size:.9em'>"+datos[c].nombre+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_compra+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_venta+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].stock+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].stock_seguridad+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].lote+"</span></td></tr>";
+	                    a +="<tr style='cursor:pointer' class='escogerFila' id='"+datos[c].idproducto+"' onclick=\"seleccionarProducto('"+datos[c].idproducto+"')\"><td><span style='display: block; font-size:.9em'>"+datos[c].nombre+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_compra+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_venta+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].stock+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].stock_seguridad+"</span></td></tr>";
 	                }	                
 	            } else {
 	            	a +="<tr><td align='center' colspan='8'>Productos no encontrados.</td></tr>";
@@ -333,11 +287,6 @@ function seleccionarProducto(idproducto){
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="precio_venta"]').val(datos[2]);
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="stock"]').val(datos[3]);
 		//$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="preciocompra"]').val(datos[4]);
-		if(datos[5] == 'SI') {
-			$('#lote').attr('readonly', false);
-		} else {
-			$('#lote').attr('readonly', true);
-		}
 	});
 	$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="cantidad"]').focus();
 }
@@ -347,7 +296,6 @@ function addpurchasecart(elemento){
 	var precio = $('#precio_compra').val();
 	var precioventa = $('#precio_venta').val();
 	var product_id = $('#producto_id').val();
-	var lote = $('#lote').val();
 	var stock = $('#stock').val();
 
 	var _token =$('input[name=_token]').val();
@@ -402,19 +350,13 @@ function addpurchasecart(elemento){
 			type: 'error',
 			title: 'EL PRECIO DE VENTA DEBE SER UN VALOR NÚMERICO',
 			});
-	/*}else if(lote == '' ){ LOTE DEBE VERIFICAR SI TIENE O NO, NO REGISTRAR LOTE VACIO
-		console.log("lote vacio");
-		swal({
-			type: 'error',
-			title: 'INGRESE NOMBRE DE LOTE',
-		});*/
 	}else if(product_id=="" || product_id=="0"){
 		swal({
 			type: 'error',
 			title: 'SELECCIONE UN PRODUCTO',
 			});
 	}else{
-		$.post('{{ URL::route("compras.agregarcarritocompra")}}', {cantidad: cantidad, precio: precio, producto_id: product_id, precioventa: precioventa, lote: lote, detalle: $('#detalle').val(),_token: _token} , function(data){
+		$.post('{{ URL::route("compras.agregarcarritocompra")}}', {cantidad: cantidad, precio: precio, producto_id: product_id, precioventa: precioventa, detalle: $('#detalle').val(),_token: _token} , function(data){
 			$('#detalle').val(true);
 			if(data === '0-0') {
 				swal({
@@ -442,7 +384,6 @@ function addpurchasecart(elemento){
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="cantidad"]').val('');
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_compra"]').val('');
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_venta"]').val('');
-				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="lote"]').val('');					
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="nombreproducto"]').focus();
 				$('.escogerFila').css('background-color', 'white');
 				$("#tablaProducto").html("<tr><td align='center' colspan='8'>Digite más de 3 caracteres.</td></tr>");
@@ -474,7 +415,6 @@ function calculatetotal () {
 		$(this).find('.producto_id').attr('name', '').attr('name', 'producto_id' + i);
 		$(this).find('.productonombre').attr('name', '').attr('name', 'productonombre' + i);
 		$(this).find('.cantidad').attr('name', '').attr('name', 'cantidad' + i);
-		$(this).find('.lote').attr('name', '').attr('name', 'lote' + i);
 		$(this).find('.preciocompra').attr('name', '').attr('name', 'preciocompra' + i);
 		$(this).find('.precioventa').attr('name', '').attr('name', 'precioventa' + i);
 		$(this).find('.subtotal').attr('name', '').attr('name', 'subtotal' + i);
@@ -498,8 +438,11 @@ function buscarEmpresa() {
         },
         success: function (a) {
             if(a == '')  {
-        		//buscarEmpresa2(ruc);
-				alert('No se encontró proveedor');
+				$("#ccruc").val(ruc);
+				swal({
+				title: 'NO SE ENCONTRÓ PROVEEDOR',
+				type: 'error',
+				});
         	} else {
         		var e = a.split(';;');
         		$("#ccruc").val(ruc);
