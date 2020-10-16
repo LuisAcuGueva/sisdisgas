@@ -25,11 +25,13 @@ class TurnoController extends Controller
     protected $tituloAdmin     = 'Repartidores en turno';
     protected $tituloMontoVuelto = 'Dar monto vuelto a repartidor';
     protected $tituloDescargaDinero = 'Ingreso de dinero a caja';
+    protected $tituloGastos= 'Gastos extras del repartidor';
     protected $tituloCierreTurno = 'Cerrar turno de repartidor';
     protected $tituloDetalle  = 'Detalle de pedido';
     protected $tituloAnulacion  = 'Anular pedido';
     protected $rutas           = array('detalle' => 'turno.detalle', 
             'vuelto'     => 'turno.vuelto', 
+            'gastos'     => 'turno.gastos', 
             'descargadinero'     => 'turno.descargadinero', 
             'cierre'   => 'turno.cierre',
             'search'   => 'turno.buscar',
@@ -101,14 +103,21 @@ class TurnoController extends Controller
                                                             })
                                                         ->sum('total');
 
+            $gastos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->where('estado',1)
+                                                        ->where('tipomovimiento_id',6)
+                                                        ->sum('total');
+
             round($ingresos_repartidor,2);
             round($ingresos_credito,2);
             round($vueltos_repartidor,2);
             round($egresos_repartidor,2);
+            round($gastos_repartidor,2);
 
             $total_ingresos = $ingresos_repartidor + $vueltos_repartidor + $ingresos_credito;
 
-            $saldo_repartidor = $ingresos_repartidor + $ingresos_credito + $vueltos_repartidor - $egresos_repartidor;
+            $saldo_repartidor = $ingresos_repartidor + $ingresos_credito + $vueltos_repartidor - $egresos_repartidor - $gastos_repartidor;
 
             round($saldo_repartidor,2);
 
@@ -137,7 +146,7 @@ class TurnoController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloAnulacion', 'tituloDetalle', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'gastos_repartidor','total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloAnulacion', 'tituloDetalle', 'ruta'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -154,6 +163,7 @@ class TurnoController extends Controller
         $tituloMontoVuelto = $this->tituloMontoVuelto;
         $tituloDescargaDinero = $this->tituloDescargaDinero;
         $tituloCierreTurno = $this->tituloCierreTurno;
+        $tituloGastos = $this->tituloGastos;
         $ruta             = $this->rutas;
         $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
         // TRABAJADORES EN TURNO
@@ -163,7 +173,7 @@ class TurnoController extends Controller
             array_push($empleados, $trabajador);
         }
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        return view($this->folderview.'.admin')->with(compact('entidad', 'turnos_iniciados', 'cboSucursal','title', 'tituloCierreTurno', 'tituloMontoVuelto', 'tituloDescargaDinero','ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'turnos_iniciados', 'cboSucursal','title', 'tituloCierreTurno', 'tituloGastos','tituloMontoVuelto', 'tituloDescargaDinero','ruta'));
     }
 
     /**
@@ -221,6 +231,43 @@ class TurnoController extends Controller
         return view($this->folderview.'.descargadinero')->with(compact('persona_id' , 'cboSucursal', 'trabajadores_iniciados' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
+    public function gastos(Request $request)
+    {
+        $listar       = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad      = 'Turnorepartidor';
+        $movimiento   = null;
+        $formData     = array('turno.store');
+        $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+
+        $num_caja   = null;
+
+        $concepto5 = Concepto::find(5);
+        $concepto7 = Concepto::find(7);
+        $concepto8 = Concepto::find(8);
+        $concepto9 = Concepto::find(9);
+
+        $cboConcepto = array(
+            "9" => $concepto9->concepto,
+            "5" => $concepto5->concepto,
+            "7" => $concepto7->concepto,
+            "8" => $concepto8->concepto,
+        );
+
+        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
+                                            ->where('turno_repartidor.estado','I')
+                                            ->where('person.sucursal_id', 1)
+                                            ->get();
+        // TRABAJADORES EN TURNO
+        $trabajadores_iniciados = array();
+        foreach ($turnos_iniciados as $key => $value) {
+            $trabajador = Person::find($value->trabajador_id);
+            array_push($trabajadores_iniciados, $trabajador);
+        }
+        $boton        = 'Guardar';
+        $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
+        return view($this->folderview.'.gastos')->with(compact('persona_id' , 'cboSucursal', 'cboConcepto','trabajadores_iniciados' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
+    }
+
     public function cierre(Request $request)
     {
         $listar       = Libreria::getParam($request->input('listar'), 'NO');
@@ -255,7 +302,7 @@ class TurnoController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $reglas     = array('num_caja' => 'required|numeric',
+        $reglas     = array(
                             'fecha'      => 'required',
                             'concepto_id'   => 'required',
                             'persona_id' => 'required',
@@ -267,59 +314,85 @@ class TurnoController extends Controller
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request){
-            $movimiento       = new Movimiento();
-            $movimiento->tipomovimiento_id = 1;
-            $movimiento->concepto_id    = $request->input('concepto_id');
-            $movimiento->num_caja   = $request->input('num_caja');
-            $movimiento->total             = $request->input('monto');
-            $movimiento->subtotal          = $request->input('monto');
-            $movimiento->estado         = 1;
-            $trabajador = Person::find($request->input('persona_id'));
             if($request->input('concepto_id') == 13 || $request->input('concepto_id') == 14 || $request->input('concepto_id') == 12){
-                if($trabajador->tipo_persona == "T"){
-                    $movimiento->trabajador_id     = $request->input('persona_id');
+                $movimiento       = new Movimiento();
+                $movimiento->tipomovimiento_id = 1;
+                $movimiento->concepto_id    = $request->input('concepto_id');
+                $movimiento->num_caja   = $request->input('num_caja');
+                $movimiento->total             = $request->input('monto');
+                $movimiento->subtotal          = $request->input('monto');
+                $movimiento->estado         = 1;
+                $trabajador = Person::find($request->input('persona_id'));
+                if($request->input('concepto_id') == 13 || $request->input('concepto_id') == 14 || $request->input('concepto_id') == 12){
+                    if($trabajador->tipo_persona == "T"){
+                        $movimiento->trabajador_id     = $request->input('persona_id');
+                    }
+                }else{
+                    $movimiento->persona_id     = $request->input('persona_id');
+                }
+                $user           = Auth::user();
+                $movimiento->usuario_id     = $user->id;
+                $movimiento->sucursal_id   = $request->input('sucursal_id');
+                $movimiento->comentario     = strtoupper($request->input('comentario'));
+                $movimiento->save();
+
+                if($request->input('concepto_id') == 13 || $request->input('concepto_id') == 14  || $request->input('concepto_id') == 12){
+
+                    $sucursal_id = $request->input('sucursal_id');
+                    
+                    $maxapertura = Movimiento::where('concepto_id', 1)
+                    ->where('sucursal_id', "=", $sucursal_id)
+                    ->where('estado', "=", 1)
+                    ->max('id');
+                    
+                    $apertura = Movimiento::find($maxapertura);
+                    
+                    $turno_repartidor_id = Turnorepartidor::where('trabajador_id', $request->input('persona_id'))
+                                                        ->where('estado', 'I')
+                                                        ->max("id");
+
+                    $turno_repartidor = Turnorepartidor::find($turno_repartidor_id);
+
+                    if(is_null($turno_repartidor)){
+                        $turno_repartidor = new Turnorepartidor();
+                        $turno_repartidor->estado    = "I";
+                        $turno_repartidor->apertura_id = $maxapertura;
+                        //$turno_repartidor->vuelto_id = $movimiento->id;
+                        $turno_repartidor->trabajador_id = $request->input('persona_id');
+                        $turno_repartidor->save();
+                    }else{
+                        if($request->input('concepto_id') == 14 ){
+                            $turno_repartidor->fin    = date('Y-m-d H:i:s');
+                            $turno_repartidor->estado    = "C";
+                            $turno_repartidor->save();
+                        }
+                    }
+
+                    $detalle_turno_pedido =  new Detalleturnopedido();
+                    $detalle_turno_pedido->pedido_id = $movimiento->id;
+                    $detalle_turno_pedido->turno_id = $turno_repartidor_id;
+                    $detalle_turno_pedido->save();
                 }
             }else{
-                $movimiento->persona_id     = $request->input('persona_id');
-            }
-            $user           = Auth::user();
-            $movimiento->usuario_id     = $user->id;
-            $movimiento->sucursal_id   = $request->input('sucursal_id');
-            $movimiento->comentario     = strtoupper($request->input('comentario'));
-            $movimiento->save();
+                $movimiento       = new Movimiento();
+                $movimiento->tipomovimiento_id = 6;
+                $movimiento->concepto_id    = $request->input('concepto_id');
+                $movimiento->total             = $request->input('monto');
+                $movimiento->subtotal          = $request->input('monto');
+                $movimiento->estado         = 1;
+                $movimiento->trabajador_id     = $request->input('persona_id');
+                $user           = Auth::user();
+                $movimiento->usuario_id     = $user->id;
+                $movimiento->sucursal_id   = $request->input('sucursal_id');
+                $movimiento->comentario     = strtoupper($request->input('comentario'));
+                $movimiento->save();
 
-            if($request->input('concepto_id') == 13 || $request->input('concepto_id') == 14  || $request->input('concepto_id') == 12){
-
-                $sucursal_id = $request->input('sucursal_id');
-                
-                $maxapertura = Movimiento::where('concepto_id', 1)
-                ->where('sucursal_id', "=", $sucursal_id)
-                ->where('estado', "=", 1)
-                ->max('id');
-                
-                $apertura = Movimiento::find($maxapertura);
-                
                 $turno_repartidor_id = Turnorepartidor::where('trabajador_id', $request->input('persona_id'))
-                                                    ->where('estado', 'I')
-                                                    ->max("id");
+                                                        ->where('estado', 'I')
+                                                        ->max("id");
 
                 $turno_repartidor = Turnorepartidor::find($turno_repartidor_id);
-
-                if(is_null($turno_repartidor)){
-                    $turno_repartidor = new Turnorepartidor();
-                    $turno_repartidor->estado    = "I";
-                    $turno_repartidor->apertura_id = $maxapertura;
-                    //$turno_repartidor->vuelto_id = $movimiento->id;
-                    $turno_repartidor->trabajador_id = $request->input('persona_id');
-                    $turno_repartidor->save();
-                }else{
-                    if($request->input('concepto_id') == 14 ){
-                        $turno_repartidor->fin    = date('Y-m-d H:i:s');
-                        $turno_repartidor->estado    = "C";
-                        $turno_repartidor->save();
-                    }
-                }
-
+                
                 $detalle_turno_pedido =  new Detalleturnopedido();
                 $detalle_turno_pedido->pedido_id = $movimiento->id;
                 $detalle_turno_pedido->turno_id = $turno_repartidor_id;
@@ -428,7 +501,13 @@ class TurnoController extends Controller
                                                             })
                                                         ->sum('total');
 
-            $saldo_repartidor = $ingresos_repartidor - $egresos_repartidor;
+            $gastos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->where('estado',1)
+                                                        ->where('tipomovimiento_id',6)
+                                                        ->sum('total');
+
+            $saldo_repartidor = $ingresos_repartidor - $egresos_repartidor - $gastos_repartidor;
 
         }
         return $saldo_repartidor;

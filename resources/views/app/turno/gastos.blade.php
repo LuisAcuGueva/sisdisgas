@@ -10,7 +10,7 @@
 			{!! Form::label('sucursal_id', 'Sucursal:')!!}
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
-			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id', 'onchange' => 'generarNumeroCaja();permisoRegistrar();generarEmpleados();')) !!}		
+			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id', 'style' => 'margin-top:8px;','onchange' => 'generarNumeroCaja();permisoRegistrar();generarEmpleados();')) !!}		
 		</div>
 	</div>
 	<div class="form-group">
@@ -18,7 +18,7 @@
 			{!! Form::label('fecha', 'Fecha:')!!}
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
-			{!! Form::text('fecha', '', array('class' => 'form-control input-xs', 'id' => 'fecha', 'readOnly')) !!}
+			{!! Form::text('fecha', '', array('class' => 'form-control input-xs', 'style' => 'margin-top:8px;', 'id' => 'fecha', 'readOnly')) !!}
 		</div>
 	</div>
 	<div class="form-group" onload="mueveReloj()">
@@ -26,33 +26,9 @@
 			{!! Form::label('hora', 'Hora:')!!}
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
-			{!! Form::text('hora', '', array('class' => 'form-control input-xs', 'id' => 'hora', 'readOnly')) !!}
+			{!! Form::text('hora', '', array('class' => 'form-control input-xs', 'style' => 'margin-top:8px;', 'id' => 'hora', 'readOnly')) !!}
 		</div>
 	</div>
-	<div class="form-group">	
-		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
-			{!! Form::label('num_caja', 'Nro caja:')!!}
-		</div>
-		<div class="col-lg-4 col-md-4 col-sm-4">
-			{!! Form::text('num_caja', '', array('class' => 'form-control input-xs', 'id' => 'num_caja', 'readOnly')) !!}
-		</div>
-	</div>
-	<div class="form-group" style="display:none;">	
-		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
-			{!! Form::label('concepto', 'Concepto:')!!}
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-6">
-			{!! Form::text('concepto', '', array('class' => 'form-control input-xs', 'id' => 'concepto', 'readOnly')) !!}
-			{!! Form::hidden('concepto_id',null,array('id'=>'concepto_id')) !!}
-		</div>
-	</div>
-	<!--div class="form-group">
-		{!! Form::label('nombrepersona', 'Trabajador:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
-		{!! Form::hidden('persona_id', null, array('id' => 'persona_id')) !!}
-		<div class="col-lg-8 col-md-8 col-sm-8">
-			{!! Form::text('nombrepersona', null, array('class' => 'form-control input-xs', 'id' => 'nombrepersona', 'placeholder' => 'Seleccione persona')) !!}
-		</div>
-	</div-->
 	@if(empty($trabajadores_iniciados))
 	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">NINGÚN REPARTIDOR EN TURNO</h4>
 	<div id="empleados_mant" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
@@ -72,12 +48,20 @@
 	{!! Form::hidden('persona_id',null,array('id'=>'persona_id')) !!}
 	{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 	@endif
+	<div class="form-group">	
+		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
+			{!! Form::label('concepto', 'Concepto:')!!}
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6">
+			{!! Form::select('concepto_id', $cboConcepto, "", array('class' => 'form-control input-sm', 'style' => 'margin-top:8px;' , 'id' => 'concepto_id')) !!}		
+		</div>
+	</div>
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('monto', 'Monto:')!!}<div class="" style="display: inline-block;color: red;">*</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
-			{!! Form::text('monto', '' , array('class' => 'form-control input-xs', 'id' => 'monto')) !!}
+			{!! Form::text('monto', '' , array('class' => 'form-control input-xs', 'style' => 'margin-top:8px;', 'id' => 'monto')) !!}
 		</div>
 	</div>
 	<div class="form-group">
@@ -123,19 +107,6 @@ $(document).ready(function() {
 
 	$('#fecha').val(fecha);
 
-	//CONCEPTO
-	$('#concepto').val('VUELTO PARA TURNO DEL REPARTIDOR');
-	$('#concepto_id').val(12);
-
-	//NRO MOVIMIENTO
-	$('#num_caja').val({{$num_caja}});
-
-	//TIPO PAGO
-	$('#tipopago').val(1);
-
-	//TOTAL
-	//$('#monto').val(0);
-
 	$('#monto').focus();
 
 	generarNumeroCaja();
@@ -145,32 +116,6 @@ $(document).ready(function() {
 }); 
 
 $(document).ready(function() {
-
-	var personas = new Bloodhound({
-		datumTokenizer: function (d) {
-			return Bloodhound.tokenizers.whitespace(d.value);
-		},
-		queryTokenizer: Bloodhound.tokenizers.whitespace,
-		remote: {
-			url: 'trabajador/trabajadorautocompleting/%QUERY',
-			filter: function (personas) {
-				return $.map(personas, function (movie) {
-					return {
-						value: movie.value,
-						id: movie.id,
-						registro: movie.registro
-					};
-				});
-			}
-		}
-	});
-	personas.initialize();
-	$('#nombrepersona').typeahead(null,{
-		displayKey: 'value',
-		source: personas.ttAdapter()
-	}).on('typeahead:selected', function (object, datum) {
-		$('#persona_id').val(datum.id);
-	});
 
 	$(".empleadomv").on('click', function(){
 		var idempleado = $(this).attr('id');

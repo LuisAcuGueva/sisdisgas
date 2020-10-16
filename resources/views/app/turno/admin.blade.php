@@ -34,6 +34,7 @@
 				</div>
 				{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Dar monto para vuelto', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["vuelto"], array('listar'=>'SI')).'\', \''.$tituloMontoVuelto.'\', this);')) !!}
 				{!! Form::button('<i class="glyphicon glyphicon-download-alt"></i> Descargar dinero', array('class' => 'btn btn-warning waves-effect waves-light m-l-10 btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["descargadinero"], array('listar'=>'SI')).'\', \''.$tituloDescargaDinero.'\', this);')) !!}
+				{!! Form::button('<i class="glyphicon glyphicon-download-alt"></i> Gastos extras', array('class' => 'btn btn-dark waves-effect waves-light m-l-10 btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["gastos"], array('listar'=>'SI')).'\', \''.$tituloGastos.'\', this);')) !!}
 				{!! Form::button('<i class="glyphicon glyphicon-remove"></i> Cerrar turno', array('class' => 'btn btn-danger waves-effect waves-light m-l-10 btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnNuevo', 'onclick' => 'modal (\''.URL::route($ruta["cierre"], array('listar'=>'SI')).'\', \''.$tituloCierreTurno.'\', this);')) !!}
 				{!! Form::close() !!}
 				

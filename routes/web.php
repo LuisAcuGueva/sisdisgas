@@ -110,6 +110,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::post('turno/buscar','TurnoController@buscar')->name('turno.buscar');
     Route::get('turno/vuelto', 'TurnoController@vuelto')->name('turno.vuelto');
+    Route::get('turno/gastos', 'TurnoController@gastos')->name('turno.gastos');
     Route::get('turno/descargadinero', 'TurnoController@descargadinero')->name('turno.descargadinero');
     Route::get('turno/cierre', 'TurnoController@cierre')->name('turno.cierre');
     Route::get('turno/detalle/{id}/', 'TurnoController@detalle')->name('turno.detalle');

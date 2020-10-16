@@ -23,7 +23,7 @@
 		@endif
 			@if($value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5)
 				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
-			@elseif($value->pedido->tipomovimiento_id == 1) 
+			@elseif($value->pedido->tipomovimiento_id == 1 || $value->pedido->tipomovimiento_id == 6) 
 				<td align="center"> - </td>
 			@endif	
 
@@ -35,7 +35,7 @@
 					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloAnulacion.'\', this);', 'disabled', 'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-remove')) !!}</td>	
 				@endif
 				
-			@elseif($value->pedido->tipomovimiento_id == 1 && ( $value->pedido->concepto_id == 12 || $value->pedido->concepto_id == 13 ) ) 
+			@elseif(($value->pedido->tipomovimiento_id == 1 || $value->pedido->tipomovimiento_id == 6) && ( $value->pedido->concepto_id == 12 || $value->pedido->concepto_id == 13 || $value->pedido->concepto_id == 5 || $value->pedido->concepto_id == 7 || $value->pedido->concepto_id == 8 || $value->pedido->concepto_id == 9  ) ) 
 				@if($value->pedido->estado == 1)
 					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloAnulacion.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
 				@elseif($value->pedido->estado == 0)
@@ -85,8 +85,10 @@
 				<td> {{ $value->pedido->comentario }} | Anulado por: {{ $value->pedido->comentario_anulado }} </td>
 			@endif
 			
-			@if($value->pedido->concepto->tipo != 0 || $value->pedido->concepto_id == 3 || $value->pedido->concepto_id == 16 )
+			@if(($value->pedido->tipomovimiento_id == 1 || $value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5) && $value->pedido->concepto->tipo != 0 || $value->pedido->concepto_id == 3 || $value->pedido->concepto_id == 16 )
 				<td align="center" style="color:green;font-weight: bold;"> {{ $value->pedido->total }} </td>
+			@elseif($value->pedido->tipomovimiento_id == 6)
+				<td align="center" style="color:red;font-weight: bold;"> {{ $value->pedido->total }} </td>
 			@else
 				<td align="center" style="color:red;font-weight: bold;"> {{ $value->pedido->total }} </td>
 			@endif
@@ -124,6 +126,10 @@
             <th class="text-right"><div id ="total_ingresos"> {{ $total_ingresos }} </div></th>
         </tr>
         <tr>
+            <th>GASTOS DEL REPARTIDOR:</th>
+            <th class="text-right"><div id ="gastos"> {{ $gastos_repartidor }} </div></th>
+        </tr>
+        <tr>
             <th>EGRESOS A CAJA:</th>
             <th class="text-right"><div id ="egresos"> {{ $egresos_repartidor }} </div></th>
         </tr>
@@ -143,6 +149,7 @@
 	var ingresos_credito = {{$ingresos_credito}};
 	var total_ingresos = {{$total_ingresos}};
 	var egresos_repartidor = {{$egresos_repartidor}};
+	var gastos_repartidor = {{$gastos_repartidor}};
 	var saldo_repartidor = {{$saldo_repartidor}};
 	
 	$(document).ready(function () {
@@ -155,6 +162,7 @@
 		$('#ingresopedidos').html(ingresos_repartidor.toFixed(2));
 		$('#ingresos_credito').html(ingresos_credito.toFixed(2));
 		$('#egresos').html(egresos_repartidor.toFixed(2));
+		$('#gastos').html(gastos_repartidor.toFixed(2));
 		$('#saldo').html(saldo_repartidor.toFixed(2));
 		$('#total_ingresos').html(total_ingresos.toFixed(2));
 	});
