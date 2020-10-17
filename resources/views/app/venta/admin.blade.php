@@ -89,14 +89,14 @@ operaciones
 						<input class="balon" name="balon_nuevo" type="checkbox" id="balon_nuevo">
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12">
-						{!! Form::label('balon_a_cuenta', 'Balón a crédito:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+						{!! Form::label('balon_a_cuenta', 'Pedido a crédito:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
 						<input class="balon" name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
 						{!! Form::hidden('credito', 0 ,array('id'=>'credito')) !!}
 					</div>
 				</div>
 
 				<div class="col-lg-8 col-md-8 col-sm-8 m-b-15 vales">
-					{{-- !! Form::hidden('activar_checkbox', 0 ,array('id'=>'activar_checkbox')) !!--}}
+					{!! Form::hidden('activar_checkbox', 0 ,array('id'=>'activar_checkbox')) !!}
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<div class="col-lg-4 col-md-4 col-sm-2 vales" style="margin-top: 10px;">
 							{!! Form::label('', 'Vale FISE:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
@@ -339,12 +339,9 @@ $(document).ready(function(){
 	$('#fecha').val(fecha);
 
 
-	//$('#activar_checkbox').val(0);
-
-	var activar_checkbox = 0;//$('#activar_checkbox').val();
-	//console.log("activar checks = "+ activar_checkbox);	
-
-	activarVales();
+	$('#activar_checkbox').val(0);
+	var activar_checkbox = $('#activar_checkbox').val();
+	clickVales();
 
 	mostrarultimo();
 
@@ -593,12 +590,9 @@ function agregarProducto(){
 		var existe = false;
 
 		if(idservicio_frecuente == 4 || idservicio_frecuente == 5 ){
-			//$('#activar_checkbox').val(1);
-
-			activar_checkbox = 1;//$('#activar_checkbox').val();
-			//console.log("activar checks = "+ activar_checkbox);
-
-			activarVales();
+			$('#activar_checkbox').val(1);
+			activar_checkbox = $('#activar_checkbox').val();
+			clickVales();
 
 			$("#detalle tr").each(function(){
 				var id = parseInt($(this).attr('id'));
@@ -644,7 +638,9 @@ function agregarProducto(){
 			$('#balon_nuevo').parent().removeClass('disabled');
 			$('#balon_a_cuenta').parent().removeClass('disabled');
 			$('#balon_nuevo').parent().removeClass('checked');
-			$('#balon_a_cuenta').parent().removeClass('checked');
+			
+			//$('#balon_a_cuenta').parent().removeClass('checked');
+			
 			$('#balon_nuevo').prop('checked', false);
 			$('#balon_a_cuenta').prop('checked', false)
 			$('#codigo_vale_monto').prop('readOnly', true);
@@ -837,8 +833,9 @@ function agregarProducto(){
 	});
 }
 
-function activarVales(){
+function clickVales(){
 
+	activar_checkbox = $('#activar_checkbox').val();
 	console.log("activar checks = "+ activar_checkbox);	
 
 	$('.vales .iCheck-helper').on('click', function(){
@@ -846,13 +843,10 @@ function activarVales(){
 		var divpadre = $(this).parent();
 		var input = divpadre.find('input');
 
-		//activar_checkbox = $('#activar_checkbox').val();
-		
 		if(activar_checkbox == 1){
-			console.log("entro");	
 			if( input.attr('id') == 'vale_balon_monto' ){
 				if( divpadre.hasClass('checked')) { 
-					console.log('seleccionar balon monto');
+					//console.log('seleccionar balon monto');
 					$("#detalle tr").each(function(){
 						var id = parseInt($(this).attr('id'));
 						var cantidad = $(this).attr('cantidad');
@@ -925,7 +919,7 @@ function activarVales(){
 				}
 			}else if( input.attr('id') == 'vale_balon_fise'){
 				if( divpadre.hasClass('checked')) { 
-					console.log('seleccionar balon fise');
+					//console.log('seleccionar balon fise');
 					//modificar precio del balon normal
 					var sucursal_id = $("#sucursal_id").val();
 					var primero = true;
@@ -1013,7 +1007,7 @@ function activarVales(){
 				}
 			}else if( input.attr('id') == 'vale_balon_subcafae'){ //codigo_vale_subcafae
 				if( divpadre.hasClass('checked')) { 
-					console.log('seleccionar balon subcafae');
+					//console.log('seleccionar balon subcafae');
 					var primero = true;
 					$("#detalle tr").each(function(){
 						var id = parseInt($(this).attr('id'));
@@ -1153,9 +1147,13 @@ function generarProductos(){
 
 		$("#cant").val(0);
 
-		activar_checkbox = 0;
-		console.log("activar checks = "+ activar_checkbox);	
-		activarVales();
+		desactivarVales();
+
+		$('#activar_checkbox').val(0);
+		activar_checkbox = $('#activar_checkbox').val();
+		clickVales();
+
+		calcularTotal();
 
 	});
 
@@ -1277,6 +1275,49 @@ function permisoRegistrar(){
 	return aperturaycierre;
 }
 
+function desactivarVales(){
+	//desactibar checkbox
+	$('#vale_balon_subcafae').prop('disabled', true);
+	$('#vale_balon_monto').prop('disabled', true);
+	$('#vale_balon_fise').prop('disabled', true);
+
+	$('#vale_balon_subcafae').prop('checked', false);
+	$('#vale_balon_monto').prop('checked', false);
+	$('#vale_balon_fise').prop('checked', false);
+
+	//desactivar inputs
+	$('#monto_vale_balon').val('');
+	$('#monto_vale_fise').val('');
+	$('#codigo_vale_monto').val('');
+	$('#codigo_vale_fise').val('');
+	$('#codigo_vale_subcafae').val('');
+
+	$('#codigo_vale_subcafae').prop('disabled', true);
+	$('#codigo_vale_monto').prop('disabled', true);
+	$('#codigo_vale_fise').prop('disabled', true);
+	$('#monto_vale_balon').prop('disabled', true);
+	$('#monto_vale_fise').prop('disabled', true);
+
+	$('#vale_balon_subcafae').parent().removeClass('checked');
+	$('#vale_balon_monto').parent().removeClass('checked');
+	$('#vale_balon_fise').parent().removeClass('checked');
+
+	$('#vale_balon_subcafae').parent().addClass('disabled');
+	$('#vale_balon_monto').parent().addClass('disabled');
+	$('#vale_balon_fise').parent().addClass('disabled');
+
+	$('#balon_nuevo').prop('disabled', true);
+	//$('#balon_a_cuenta').prop('disabled', true);
+
+	$('#balon_nuevo').parent().removeClass('checked');
+	//$('#balon_a_cuenta').parent().removeClass('checked');
+	$('#balon_nuevo').parent().addClass('disabled');
+
+	$('#balon_nuevo').prop('checked', false);
+	$('#balon_a_cuenta').prop('checked', false);
+
+}
+
 var clientes = new Bloodhound({
 	datumTokenizer: function (d) {
 		return Bloodhound.tokenizers.whitespace(d.value);
@@ -1335,8 +1376,9 @@ function eliminarDetalle(comp){
 	var idproducto = $(comp).attr('idproducto');
 	if(idproducto == 4 || idproducto == 5 ){
 			//$('#activar_checkbox').val(0);
-			activar_checkbox = 0;// $('#activar_checkbox').val();
-			console.log("activar checks = "+ activar_checkbox);
+			$('#activar_checkbox').val(0);
+			activar_checkbox = $('#activar_checkbox').val();
+			clickVales();
 			//desactibar checkbox
 			$('#vale_balon_subcafae').prop('disabled', true);
 			$('#vale_balon_monto').prop('disabled', true);
@@ -1353,15 +1395,21 @@ function eliminarDetalle(comp){
 			$('#codigo_vale_fise').prop('disabled', true);
 			$('#monto_vale_fise').prop('disabled', true);
 
+			$('#vale_balon_subcafae').parent().addClass('disabled');
+			$('#vale_balon_monto').parent().addClass('disabled');
+			$('#vale_balon_fise').parent().addClass('disabled');
+
 			$('#vale_balon_subcafae').parent().removeClass('checked');
 			$('#vale_balon_monto').parent().removeClass('checked');
 			$('#vale_balon_fise').parent().removeClass('checked');
 
 			$('#balon_nuevo').prop('disabled', true);
-			$('#balon_a_cuenta').prop('disabled', true);
+			//$('#balon_a_cuenta').prop('disabled', true);
 
 			$('#balon_nuevo').parent().removeClass('checked');
-			$('#balon_a_cuenta').parent().removeClass('checked');
+			//$('#balon_a_cuenta').parent().removeClass('checked'); // aqui
+
+			$('#balon_nuevo').parent().addClass('disabled');
 
 			$('#balon_nuevo').prop('checked', false);
 			$('#balon_a_cuenta').prop('checked', false);
@@ -1378,21 +1426,32 @@ function eliminarDetalle(comp){
 	var total = parseFloat($("#total").val());
 	total -= precioeliminar;
 	$("#total").val(total.toFixed(2));
+	
 	$("#montoefectivo").val("");
 	$("#montovisa").val("");
 	$("#montomaster").val("");
 	$("#vuelto").val((0).toFixed(2));
 
 	(($(comp).parent()).parent()).remove();
+
+	
+	$('#monto_vale_balon').val('');
+	$('#monto_vale_fise').val('');
+	$('#codigo_vale_monto').val('');
+	$('#codigo_vale_fise').val('');
+	$('#codigo_vale_subcafae').val('');
+			
+
+	calcularTotal();
 	
 	$("#detalle tr").each(function(){
 		var element = $(this); // <-- en la variable element tienes tu elemento
 		var id = element.attr('id');
 
 		if(id == 4 || id == 5 ){
-			//$('#activar_checkbox').val(1);
-			activar_checkbox = 1;//$('#activar_checkbox').val();
-			console.log("activar checks = "+ activar_checkbox);
+			$('#activar_checkbox').val(1);
+			activar_checkbox = $('#activar_checkbox').val();
+			clickVales();
 			//console.log(activar_checkbox);
 			$('#balon_nuevo').prop('disabled', false);
 			$('#balon_a_cuenta').prop('disabled', false);
@@ -1412,10 +1471,16 @@ function eliminarDetalle(comp){
 			$('#monto_vale_fise').prop('readOnly', true);
 			
 			$('#balon_nuevo').parent().removeClass('checked');
-			$('#balon_a_cuenta').parent().removeClass('checked');
+			//$('#balon_a_cuenta').parent().removeClass('checked');
 			$('#vale_balon_subcafae').parent().removeClass('checked');
 			$('#vale_balon_monto').parent().removeClass('checked');
 			$('#vale_balon_fise').parent().removeClass('checked');
+
+			$('#vale_balon_subcafae').parent().removeClass('disabled');
+			$('#vale_balon_monto').parent().removeClass('disabled');
+			$('#vale_balon_fise').parent().removeClass('disabled');
+			$('#balon_nuevo').parent().removeClass('disabled');
+
 		}
 
 	});
