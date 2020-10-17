@@ -555,4 +555,15 @@ class VentaController extends Controller
         });
         return is_null($error) ? "OK" : $error;
     }
+
+    public function cargarproductos(Request $request){
+        $sucursal_id  = $request->input('sucursal_id');
+
+        $productos = Stock::join('producto', 'stock.producto_id', '=', 'producto.id')
+                                ->where('frecuente',1)
+                                ->where('stock.sucursal_id', $sucursal_id)
+                                ->orderBy('descripcion', 'ASC')->get();
+
+        return $productos;
+    }
 }

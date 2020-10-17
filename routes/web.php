@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('venta/clienteautocompletar/{searching}', 'VentaController@clienteautocompletar')->name('venta.clienteautocompletar');
     //Route::get('venta/servicioautocompletar/{searching}', 'VentaController@servicioautocompletar')->name('venta.servicioautocompletar');
     //Route::get('venta/productoautocompletar/{searching}', 'VentaController@productoautocompletar')->name('venta.productoautocompletar');
+    Route::post('venta/cargarproductos', 'VentaController@cargarproductos')->name('venta.cargarproductos');
     Route::post('venta/guardarventa', 'VentaController@guardarventa')->name('venta.guardarventa');
     Route::post('venta/guardardetalle', 'VentaController@guardardetalle')->name('venta.guardardetalle');
     Route::get('venta/cliente', 'VentaController@cliente')->name('venta.cliente');
