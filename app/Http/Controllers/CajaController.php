@@ -1125,14 +1125,14 @@ class CajaController extends Controller
         $conceptos = Concepto::where('tipo', '=' , $tipoconcepto_id)
                                 ->where('id','!=',1)
                                 ->where('id','!=',2)
-                                ->where('id','!=',3)
+                                //->where('id','!=',3)
                                 ->where('id','!=',12)
                                 ->where('id','!=',13)
                                 ->where('id','!=',14)
                                 ->where('id','!=',15)
                                 ->where('id','!=',17)
-                                ->where('id','!=',16)
-                                ->orderBy('id','ASC')->get();
+                                //->where('id','!=',16)
+                                ->orderBy('concepto','ASC')->get();
         $html = "";
         foreach($conceptos as $key => $value){
             $html = $html . '<option value="'. $value->id .'">'. $value->concepto .'</option>';

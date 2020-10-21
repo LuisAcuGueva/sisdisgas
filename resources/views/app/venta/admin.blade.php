@@ -88,7 +88,7 @@ operaciones
 						{!! Form::label('balon_nuevo', 'Balón nuevo:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
 						<input class="balon" name="balon_nuevo" type="checkbox" id="balon_nuevo">
 					</div>
-					<div class="col-lg-12 col-md-12 col-sm-12">
+					<div class="col-lg-12 col-md-12 col-sm-12 vales">
 						{!! Form::label('balon_a_cuenta', 'Pedido a crédito:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
 						<input class="balon" name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
 						{!! Form::hidden('credito', 0 ,array('id'=>'credito')) !!}
@@ -272,7 +272,6 @@ $(document).ready(function(){
 	$('[data-toggle="tooltip"]').tooltip({trigger: 'hover'}); 
 
 	//colocar total 0.00
-
 	$("#total").val((0).toFixed(2));
 	$("#vuelto").val((0).toFixed(2));
 
@@ -289,37 +288,26 @@ $(document).ready(function(){
 	$("#codigo_vale_fise").inputmask({"mask": "99999999*************"});
 
 	$("#monto_vale_balon").keyup(function(){
-		calcularTotal();
-		if( $("#monto_vale_balon").val() == ""){
-			calcularTotal();
-		}else{ 
-
+		if( $("#monto_vale_balon").val() != ""){
 			if( is_numeric( $("#monto_vale_balon").val())){
+				var total = 0;
+				$("#detalle tr").each(function(){
+					var cantidad = parseInt($(this).attr('cantidad'));
+					var precio = parseFloat($(this).attr('precio'));
+					total += precio*cantidad;
+				});
+				$("#total").val(total.toFixed(2));
 				var monto_vale_balon = parseFloat($("#monto_vale_balon").val());
-				var total = parseFloat($("#total").val());
 				if(monto_vale_balon < 0 ||  monto_vale_balon > total){
 					$("#monto_vale_balon").val("");
 				}else{
-					$("#total").val((total - monto_vale_balon).toFixed(2));
+					calcularTotal();
 				}
 			}else{
 				$("#monto_vale_balon").val("");
 			}
-		}
-	}); 
-
-	$("#monto_vale_fise").keyup(function(){
-		calcularTotal();
-		if( $("#monto_vale_fise").val() == ""){
+		}else{
 			calcularTotal();
-		}else{ 
-			var monto_vale_fise = parseFloat($("#monto_vale_fise").val());
-			var total = parseFloat($("#total").val());
-			if(monto_vale_fise < 0 ||  monto_vale_fise > total){
-				$("#monto_vale_fise").val("");
-			}else{
-				$("#total").val((total - monto_vale_fise).toFixed(2));
-			}
 		}
 	}); 
 
@@ -337,7 +325,6 @@ $(document).ready(function(){
 	//juntamos todos los datos en una variable
 	var fecha = ndia + "/" + mes + "/" + año
 	$('#fecha').val(fecha);
-
 
 	$('#activar_checkbox').val(0);
 	var activar_checkbox = $('#activar_checkbox').val();
@@ -526,6 +513,38 @@ $(document).ready(function(){
 		}
 	});
 
+	$('.vales .iCheck-helper').on('click', function(){
+		var divpadre = $(this).parent();
+		var input = divpadre.find('input');
+
+		if( input.attr('id') == 'balon_a_cuenta'){ //codigo_vale_subcafae
+			if( divpadre.hasClass('checked')) { 
+				console.log("credito");
+				$("#credito").val("1");
+
+				$("#montoefectivo").val("");
+				$("#vuelto").val((0).toFixed(2));
+
+				$("#btnGuardar").prop('disabled',false);
+				$('#balon_a_cuenta').prop('checked',true);
+				$('#divMensajeErrorVenta').html("");
+
+			}else{
+
+				console.log("sin credito");
+
+				$("#montoefectivo").val("");
+				$("#credito").val("0");
+
+				$("#btnGuardar").prop('disabled',true);
+				$('#balon_a_cuenta').prop('checked',false);
+			}
+		}
+		calcularTotal();
+
+	});
+
+
 });
 
 function generarEmpleados(){
@@ -618,7 +637,7 @@ function agregarProducto(){
 				}
 			});
 			$('#balon_nuevo').prop('disabled', false);
-			$('#balon_a_cuenta').prop('disabled', false);
+			//$('#balon_a_cuenta').prop('disabled', false);
 			$('#vale_balon_subcafae').prop('disabled', false);
 			$('#vale_balon_monto').prop('disabled', false);
 			$('#codigo_vale_monto').prop('disabled', false);
@@ -636,13 +655,13 @@ function agregarProducto(){
 			$('#vale_balon_monto').parent().removeClass('checked');
 			$('#vale_balon_fise').parent().removeClass('checked');
 			$('#balon_nuevo').parent().removeClass('disabled');
-			$('#balon_a_cuenta').parent().removeClass('disabled');
+			//$('#balon_a_cuenta').parent().removeClass('disabled');
 			$('#balon_nuevo').parent().removeClass('checked');
 			
 			//$('#balon_a_cuenta').parent().removeClass('checked');
 			
 			$('#balon_nuevo').prop('checked', false);
-			$('#balon_a_cuenta').prop('checked', false)
+			//$('#balon_a_cuenta').prop('checked', false)
 			$('#codigo_vale_monto').prop('readOnly', true);
 			$('#codigo_vale_subcafae').prop('readOnly', true);
 			$('#codigo_vale_fise').prop('readOnly', true);
@@ -1054,7 +1073,7 @@ function clickVales(){
 					$('#codigo_vale_monto').val('');
 					$('#codigo_vale_fise').val('');
 					$('#divMensajeErrorVenta').html("");
-					$('#btnGuardar').prop('disabled', false);
+					//$('#btnGuardar').prop('disabled', false);
 				}else {
 					$("#detalle tr").each(function(){
 						var id = parseInt($(this).attr('id'));
@@ -1090,9 +1109,9 @@ function clickVales(){
 					$('#vale_balon_monto').prop('checked',false);
 					$('#vale_balon_subcafae').parent().removeClass('checked');
 				}
-			}else if( input.attr('id') == 'balon_a_cuenta'){ //codigo_vale_subcafae
+			}/*else if( input.attr('id') == 'balon_a_cuenta'){ //codigo_vale_subcafae
 				if( divpadre.hasClass('checked')) { 
-
+					console.log("credito");
 					$("#credito").val("1");
 
 					$("#montoefectivo").val("");
@@ -1104,13 +1123,15 @@ function clickVales(){
 
 				}else{
 
+					console.log("sin credito");
+
 					$("#montoefectivo").val("");
 					$("#credito").val("0");
 
 					$("#btnGuardar").prop('disabled',true);
 					$('#balon_a_cuenta').prop('checked',false);
 				}
-			}
+			}*/
 			calcularTotal();
 		}
 	});
@@ -1454,7 +1475,7 @@ function eliminarDetalle(comp){
 			clickVales();
 			//console.log(activar_checkbox);
 			$('#balon_nuevo').prop('disabled', false);
-			$('#balon_a_cuenta').prop('disabled', false);
+			//$('#balon_a_cuenta').prop('disabled', false);
 			$('#vale_balon_subcafae').prop('disabled', false);
 			$('#vale_balon_monto').prop('disabled', false);
 			$('#codigo_vale_monto').prop('disabled', false);
@@ -1643,11 +1664,39 @@ function calcularTotal(){
 	});
 	var fise = parseFloat($('#monto_vale_fise').val());
 	var monto = parseFloat($('#monto_vale_balon').val());
+	var subcafae = null;
+	var checksubcafae = $('#vale_balon_subcafae').parent();
+	if( checksubcafae.hasClass('checked')) { 
+		var primero = true;
+		$("#detalle tr").each(function(){
+			var id = parseInt($(this).attr('id'));
+			if( id == "5"  && primero == true){
+				subcafae = 36;
+				primero = false;
+			}else if( id == "4"  && primero == true ){
+				subcafae = 37;
+				primero = false;
+			}
+		});
+	}
 	if(is_numeric(fise)){
 		total -= fise;
 	}
 	if(is_numeric(monto)){
 		total -= monto;
+	}
+	if(is_numeric(subcafae)){
+		total -= subcafae;
+	}
+	/**/
+	if(total == 0){
+		$('#btnGuardar').prop('disabled', false);
+	}else{
+		if($("#credito").val() == 1){
+			$('#btnGuardar').prop('disabled', false);
+		}else{
+			$('#btnGuardar').prop('disabled', true);
+		}
 	}
 	$("#total").val(total.toFixed(2));
 }

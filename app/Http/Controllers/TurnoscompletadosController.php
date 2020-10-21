@@ -184,14 +184,22 @@ class TurnoscompletadosController extends Controller
                                                             })
                                                         ->sum('total');
 
+
+            $gastos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->where('estado',1)
+                                                        ->where('tipomovimiento_id',6)
+                                                        ->sum('total');
+
             round($ingresos_repartidor,2);
             round($ingresos_credito,2);
             round($vueltos_repartidor,2);
             round($egresos_repartidor,2);
+            round($gastos_repartidor,2);
 
             $total_ingresos = $ingresos_repartidor + $vueltos_repartidor + $ingresos_credito;
 
-            $saldo_repartidor = $ingresos_repartidor + $ingresos_credito + $vueltos_repartidor - $egresos_repartidor;
+            $saldo_repartidor = $ingresos_repartidor + $ingresos_credito + $vueltos_repartidor - $egresos_repartidor - $gastos_repartidor;
 
             round($saldo_repartidor,2);
 
@@ -218,7 +226,7 @@ class TurnoscompletadosController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.listdetalle')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloDetalle', 'ruta'));
+            return view($this->folderview.'.listdetalle')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'gastos_repartidor','total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloDetalle', 'ruta'));
         }
         return view($this->folderview.'.listdetalle')->with(compact('lista', 'entidad'));
     }
@@ -270,14 +278,21 @@ class TurnoscompletadosController extends Controller
                     })
                 ->sum('total');
 
+        $gastos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
+                ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                ->where('estado',1)
+                ->where('tipomovimiento_id',6)
+                ->sum('total');
+
         round($ingresos_repartidor,2);
         round($ingresos_credito,2);
         round($vueltos_repartidor,2);
         round($egresos_repartidor,2);
+        round($gastos_repartidor,2);
 
         $total_ingresos = $ingresos_repartidor + $vueltos_repartidor + $ingresos_credito;
 
-        $saldo_repartidor = $ingresos_repartidor + $ingresos_credito + $vueltos_repartidor - $egresos_repartidor;
+        $saldo_repartidor = $ingresos_repartidor + $ingresos_credito + $vueltos_repartidor - $egresos_repartidor - $gastos_repartidor;
 
         round($saldo_repartidor,2);
 
@@ -359,10 +374,14 @@ class TurnoscompletadosController extends Controller
 
                 if($row->pedido->estado == 1) {
 
-                    if($row->pedido->concepto->tipo != 0 || $row->pedido->concepto_id == 3 || $row->pedido->concepto_id == 16 ){
+                    if(($row->pedido->tipomovimiento_id == 1 || $row->pedido->tipomovimiento_id == 2 || $row->pedido->tipomovimiento_id == 5) && $row->pedido->concepto->tipo != 0 || $row->pedido->concepto_id == 3 || $row->pedido->concepto_id == 16  ){
                         $pdf::Cell(15,7,number_format($row->pedido->total,2,'.',''),1,0,'C');
                         $totalvuelto += number_format($row->pedido->total,2,'.','');
                         $pdf::Cell(15,7,"",1,0,'R');
+                    }else if( $row->pedido->tipomovimiento_id == 6 ){
+                        $pdf::Cell(15,7,"",1,0,'R');
+                        $pdf::Cell(15,7,number_format($row->pedido->total,2,'.',''),1,0,'C');
+                        $totalvuelto += number_format($row->pedido->total,2,'.','');
                     }else{
                         $pdf::Cell(15,7,"",1,0,'R');
                         $pdf::Cell(15,7,number_format($row->pedido->total,2,'.',''),1,0,'C');
@@ -379,7 +398,6 @@ class TurnoscompletadosController extends Controller
         }
         
         
-
         $pdf::SetFont('helvetica','',7);   
         $pdf::Ln();
 
@@ -405,6 +423,10 @@ class TurnoscompletadosController extends Controller
         $pdf::Cell(100,7,utf8_decode(""),0,0,'C');
         $pdf::Cell(60,7,utf8_decode("TOTAL INGRESOS:"),1,0,'L');
         $pdf::Cell(20,7,number_format($total_ingresos,2,'.',''),1,0,'R');
+        $pdf::Ln();
+        $pdf::Cell(100,7,utf8_decode(""),0,0,'C');
+        $pdf::Cell(60,7,utf8_decode("GASTOS DEL REPARTIDOR:"),1,0,'L');
+        $pdf::Cell(20,7,number_format($gastos_repartidor ,2,'.',''),1,0,'R');
         $pdf::Ln();
         $pdf::Cell(100,7,utf8_decode(""),0,0,'C');
         $pdf::Cell(60,7,utf8_decode("EGRESOS A CAJA:"),1,0,'L');

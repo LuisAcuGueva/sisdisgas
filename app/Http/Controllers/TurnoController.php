@@ -56,6 +56,7 @@ class TurnoController extends Controller
         $vueltos_repartidor = 0.00;
         $total_ingresos = 0.00;
         $egresos_repartidor = 0.00;
+        $gastos_repartidor = 0.00;
         $saldo_repartidor = 0.00;
         if($turno_id != null){
             $resultado        = Detalleturnopedido::where('turno_id', '=', $turno_id)

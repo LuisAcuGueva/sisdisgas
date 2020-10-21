@@ -56,7 +56,7 @@
 						@endif
 					</div>
 					<div class="col-lg-6 col-md-6 col-sm-6">
-						{!! Form::label('balon_a_cuenta', 'Balón a crédito:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
+						{!! Form::label('balon_a_cuenta', 'Pedido a crédito:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
 						@if($pedido->balon_a_cuenta == 1)
 							SI
 						@else
