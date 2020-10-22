@@ -10,7 +10,7 @@ $hoy = date("Y-m-d");
 		<div class="form-group" style="height: 12px; margin: 25px 0px;">
 			{!! Form::label('sucursal', 'Sucursal:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 			<div class="col-lg-8 col-md-8 col-sm-8">
-			{!! Form::select('sucursal', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal' , 'onchange' => 'getAlmacenes();')) !!}
+			{!! Form::select('sucursal', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal')) !!}
 			</div>
 		</div>
 		<div class="form-group" style="height: 12px; margin: 25px 0px;">
@@ -68,6 +68,12 @@ $hoy = date("Y-m-d");
 				{!! Form::text('total', number_format(0, 2, '.', ''), array('style' => 'background-color: #FFEEC5;', 'readOnly' ,'class' => 'form-control input-sm', 'id' => 'total' )) !!}
 			</div>
 		</div>
+		<div class="form-group" style="height: 12px; margin: 25px 0px;">
+			{!! Form::label('a_cuenta', 'Compra a crédito:' ,array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label'))!!}
+			<div class="col-lg-4 col-md-4 col-sm-4"style ="margin-top: 15px;">
+				<input name="a_cuenta" type="checkbox" id="a_cuenta">
+			</div>
+		</div>
 	</div>
 	<div class="col-lg-8 col-md-8 col-sm-8">
 		<div class="form-group col-lg-12 col-md-12 col-sm-12" style="height: 12px;">
@@ -119,8 +125,22 @@ $hoy = date("Y-m-d");
 			</table>
 		</div>
 
+		<hr>
+
 		<div class="form-group">
-			<div class="col-lg-12 col-md-12 col-sm-12 text-right">
+			<div class="col-lg-2 col-md-2 col-sm-2 credito">
+				{!! Form::label('pago', 'Monto a pagar:', array('class' => 'control-label')) !!}
+			</div>
+			<div class="col-lg-2 col-md-2 col-sm-2 credito">
+				{!! Form::text('pago', null, array('class' => 'form-control input-sm', 'id' => 'pago','size' => '6')) !!}
+			</div>
+			<div class="col-lg-2 col-md-2 col-sm-2 credito">
+				{!! Form::label('credito', 'Por pagar (S/.):', array('class' => 'control-label')) !!}
+			</div>
+			<div class="col-lg-2 col-md-2 col-sm-2 credito">
+				{!! Form::text('credito', null, array('class' => 'form-control input-sm', 'id' => 'credito','size' => '6', 'disabled')) !!}
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-4 text-right">
 				{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarCompra(\''.$entidad.'\', this)')) !!}
 				{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 			</div>
@@ -186,6 +206,11 @@ $(document).on('keyup', '#ccruc', function(e) {
 	}
 });
 
+$('input').iCheck({
+	checkboxClass: 'icheckbox_flat-green',
+	radioClass: 'iradio_flat-green'
+});
+
 $(document).ready(function() {
 	$('#detallesCompra').html('');
 	$('#cantproductos').val('0');
@@ -203,6 +228,8 @@ $(document).ready(function() {
 		$("#ccrazon").prop('disabled',false);
 		$('#ccruc').focus();
 	});
+
+	$(".credito").css('display','none');
 	
 	$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_compra"]').keydown( function(e) {
 		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
@@ -235,6 +262,40 @@ $(document).ready(function() {
 			inputs.eq( inputs.index(this)+ 1 ).focus();*/
 			addpurchasecart();
 			indice = -1;
+		}
+	});
+
+	$("#pago").keyup(function(){
+		if( $("#pago").val() != ""){
+			if( is_numeric( $("#pago").val())){
+				var total = $("#totalcompra").val()
+				var pago = parseFloat($("#pago").val());
+				if(pago < 0 ||  pago > total){
+					$("#pago").val("");
+					$("#credito").val( $("#totalcompra").val() );
+				}else{
+					var credito = total-pago;
+					$("#credito").val(credito.toFixed(2));
+				}
+			}else{
+				$("#pago").val("");
+			}
+		}else{
+			$("#credito").val( $("#totalcompra").val() );
+		}
+	});  
+
+	$('.iCheck-helper').on('click', function(){
+		var divpadre = $(this).parent();
+		var input = divpadre.find('input');
+		if( input.attr('id') == 'a_cuenta'){ //codigo_vale_subcafae
+			if( divpadre.hasClass('checked')) { 
+				$(".credito").css('display','');
+				$('#credito').prop('checked',true);
+			}else{
+				$(".credito").css('display','none');
+				$('#credito').prop('checked',false);
+			}
 		}
 	});
 	
@@ -424,6 +485,7 @@ function calculatetotal () {
 	$('#cantproductos').val(i-1);
 	$('#totalcompra2').html(total.toFixed(2));
 	$('#totalcompra').val(total.toFixed(2));
+	$("#credito").val(total.toFixed(2));
 	$('#total').val(total.toFixed(2));
 }
 

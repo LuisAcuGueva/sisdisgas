@@ -96,6 +96,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('baloncredito/eliminar/{id}/{listarluego}','BaloncreditoController@eliminar')->name('baloncredito.eliminar');
     Route::resource('baloncredito', 'BaloncreditoController', array('except' => array('show')));
 
+    Route::post('compraspagar/buscar','CompraspagarController@buscar')->name('compraspagar.buscar');
+    Route::get('compraspagar/detalle/{id}/', 'CompraspagarController@detalle')->name('compraspagar.detalle');
+    Route::get('compraspagar/pagos/{id}/', 'CompraspagarController@pagos')->name('compraspagar.pagos');
+    Route::get('compraspagar/pagar/{id}/', 'CompraspagarController@pagar')->name('compraspagar.pagar');
+    Route::post('compraspagar/pagardeuda/', 'CompraspagarController@pagardeuda')->name('compraspagar.pagardeuda');
+    Route::get('compraspagar/eliminar/{id}/{listarluego}','CompraspagarController@eliminar')->name('compraspagar.eliminar');
+    Route::resource('compraspagar', 'CompraspagarController', array('except' => array('show')));
+
     Route::post('inventario/buscar','InventarioController@buscar')->name('inventario.buscar');
     Route::get('inventario/eliminar/{id}/{listarluego}','InventarioController@eliminar')->name('inventario.eliminar');
     Route::resource('inventario', 'InventarioController', array('except' => array('show')));

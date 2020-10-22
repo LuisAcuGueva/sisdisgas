@@ -15,6 +15,7 @@ use App\Stock;
 use App\Lote;
 use App\Tipodocumento;
 use App\Detallemovalmacen;
+use App\Detallepagos;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
@@ -162,6 +163,51 @@ class ComprasController extends Controller
             $compra->save();
 
             $compra_id = $compra->id;
+
+            //registrar movimiento caja
+
+            $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
+
+            $movimientocaja = new Movimiento();
+            $movimientocaja->sucursal_id        = $sucursal_id; 
+            $movimientocaja->compra_id          = $compra_id;
+            $movimientocaja->tipomovimiento_id  = 1;
+            $movimientocaja->concepto_id        = 4;
+            $movimientocaja->num_caja           = $num_caja;
+            $movimientocaja->total              = $request->input('totalcompra');
+            $movimientocaja->subtotal           = $request->input('totalcompra');
+            $movimientocaja->estado             = 1;
+            $movimientocaja->persona_id         = $request->input('proveedor_id');
+            $user           = Auth::user();
+            $movimientocaja->usuario_id     = $user->id;
+            $movimientocaja->save();
+
+            $a_cuenta                = $request->input('a_cuenta');
+            if($a_cuenta == true){
+                $pago   = $request->input('pago');
+                $compra->balon_a_cuenta    = 1;
+                $compra->save();
+                if($pago == 0 || $pago == "" ){
+                    $movimientocaja->total              = 0;
+                    $movimientocaja->subtotal           = 0;
+                }else{
+                    $movimientocaja->total              = $request->input('pago');
+                    $movimientocaja->subtotal           = $request->input('pago');
+
+                    $detalle_pagos = new Detallepagos();
+                    $detalle_pagos->pedido_id = $compra_id;
+                    $detalle_pagos->pago_id = $movimientocaja->id;
+                    $detalle_pagos->monto   = $request->input('pago');
+                    $detalle_pagos->tipo   =  'C';
+                    $detalle_pagos->save();
+                }
+                $movimientocaja->save();
+            }else{
+                $compra->balon_a_cuenta    = 0;
+                $compra->save();
+            }
+
+            //registrar si es compra a credito
             
             $lista = (int) $request->input('cantproductos');
 

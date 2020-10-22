@@ -128,6 +128,11 @@ $(document).ready(function() {
 	$("#monto").keyup(function(){
 		var monto = parseFloat($("#monto").val());
 
+		if( !is_numeric(monto) ){
+			$("#monto").val("");
+			return false;
+		}
+
 		if( monto <= 0){
 			$('#btnGuardar').prop('disabled', true);
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
@@ -141,7 +146,9 @@ $(document).ready(function() {
 	}); 
 }); 
 
-
+function is_numeric(value) {
+	return !isNaN(parseFloat(value)) && isFinite(value);
+}
 
 function permisoRegistrar(){
 

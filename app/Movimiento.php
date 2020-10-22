@@ -75,7 +75,7 @@ class Movimiento extends Model
 					})
 					->where('sucursal_id', "=", $sucursal_id)
 					->where('tipomovimiento_id', "=", 3)
-        			->orderBy('fecha', 'DESC');
+        			->orderBy('fecha', 'DESC')->orderBy('id', 'DESC');
 	}
 
 	public function scopebalonescredito($query, $fechainicio, $fechafin)
@@ -87,6 +87,21 @@ class Movimiento extends Model
 		            	}
 					})
 					->where('balon_a_cuenta', "=", 1)
+					->where('tipomovimiento_id', "=", 2)
+					->where('credito_cancelado', "!=", 1)
+        			->orderBy('num_caja','DESC')->orderBy('fecha', 'ASC');
+	}
+
+	public function scopecomprascredito($query, $fechainicio, $fechafin)
+    {
+		return $query->where(function($subquery) use($fechainicio, $fechafin)
+		            {
+		            	if (!is_null($fechainicio) && !is_null($fechafin)) {
+							$subquery->whereBetween(DB::raw('CONVERT(fecha,date)'),[$fechainicio,$fechafin]);
+		            	}
+					})
+					->where('balon_a_cuenta', "=", 1)
+					->where('tipomovimiento_id', "=", 3)
 					->where('credito_cancelado', "!=", 1)
         			->orderBy('num_caja','DESC')->orderBy('fecha', 'ASC');
 	}
