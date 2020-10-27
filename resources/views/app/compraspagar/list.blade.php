@@ -22,13 +22,13 @@ use App\Detallepagos;
 		@foreach ($lista as $key => $value)
 		<tr>
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
-			<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->fecha )) }}</td>
+			<td align="center">{{ $fechaformato = date("d/m/Y",strtotime($value->fecha )) }}</td>
 			@if(!is_null($value->persona->dni))
 			<td>{{ $value->persona->apellido_pat.' '.$value->persona->apellido_mat.' '.$value->persona->nombres  }}</td>
 			@else
 			<td>{{ $value->persona->razon_social  }}</td>
 			@endif
-			<td>{{ $value->persona->direccion  }}</td>
+			<td>{{ $value->tipodocumento->abreviatura . '' .$value->num_compra }}</td>
 			<td> {{ $value->sucursal->nombre }} </td>
 			<td align="center" style="color:black; font-weight: bold;">  {{ number_format($value->total,2) }} </td>
 			<?php

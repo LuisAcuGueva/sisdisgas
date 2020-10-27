@@ -46,7 +46,11 @@
 			@if( $value->tipo == "I")
 				<td align="center"> {{ $tipodocumento->abreviatura }}-{{ $value->num_compra }}</td>
 			@else
-				<td align="center"> {{ $tipodocumento->abreviatura }}-{{ $value->num_venta }}</td> 
+				@if($value->tipomovimiento_id == 4)
+					<td align="center"> {{ $tipodocumento->abreviatura }}-{{ $value->num_compra }}</td> 
+				@else
+					<td align="center"> {{ $tipodocumento->abreviatura }}-{{ $value->num_venta }}</td> 
+				@endif
 			@endif
 			<td>{{ $value->descripcion }}</td>
 			<td align="center">{{ $value->cantidad }}</td>

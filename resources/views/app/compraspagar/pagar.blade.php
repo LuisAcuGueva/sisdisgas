@@ -3,37 +3,9 @@
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 	{!! Form::hidden('pedido_id',$pedido->id,array('id'=>'pedido_id')) !!}
 	<div class="col-lg-12 col-md-12 col-sm-12 tipopago">
-		<div class="col-lg-6 col-md-6 col-sm-6">
-			<input class="balon" name="tipo_pago" value="S" type="radio" id="pago_sucursal" checked>
-			{!! Form::label('', 'Pago en sucursal' ,array('class' => 'input-lg', 'style' => 'margin-top: 5px;'))!!}
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-6">
-			<input class="balon" name="tipo_pago" value="R" type="radio" id="pago_repartidor">
-			{!! Form::label('', 'Pago con repartidor' ,array('class' => 'input-lg', 'style' => 'margin-top: 5px;'))!!}
-		</div>
 		<div class="col-lg-6 col-md-6 col-sm-6 sucursal">
 			{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
 			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'permisoRegistrar();')) !!}		
-		</div>
-		<div class="col-lg-12 col-md-12 col-sm-12 repartidor" style="display:none;">
-			@if(!empty($turnos_iniciados))
-			<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
-				@foreach($turnos_iniciados  as $key => $value)
-					<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
-						<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
-						<?php
-							$nombre_completo = $value->person->nombres.' '.$value->person->apellido_pat.' '.$value->person->apellido_mat;
-						?>
-						<label style="font-size: 11px;  color: #2a3f54;">{{ $nombre_completo }}</label>
-					</div>
-				@endforeach
-				{!! Form::hidden('repartidor',null,array('id'=>'repartidor')) !!}
-				{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
-			</div>
-			@else
-			<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES EN TURNO</h4>
-			@endif
-		
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-3"></div>
 		<div class="col-lg-6 col-md-6 col-sm-6" style="margin-bottom: 30px;">

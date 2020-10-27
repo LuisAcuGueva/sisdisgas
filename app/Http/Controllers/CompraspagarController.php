@@ -9,6 +9,7 @@ use App\Movimiento;
 use App\Detalleventa;
 use App\Detallepagos;
 use App\Detalleturnopedido;
+use App\Detallemovalmacen;
 use App\Turnorepartidor;
 use App\Sucursal;
 use App\Librerias\Libreria;
@@ -49,13 +50,13 @@ class CompraspagarController extends Controller
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'PROVEEDOR', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'NRO DOC', 'numero' => '1');
         $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'DEBE', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'PAGÓ', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DEBO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'PAGUÉ', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DETALLE DE PAGOS', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PAGAR', 'numero' => '1');
         
@@ -97,13 +98,13 @@ class CompraspagarController extends Controller
             return $existe;
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
-        $pedido = Movimiento::find($id);
-        $detalles = Detalleventa::where('venta_id',$pedido->id)->get();
+        $compra = Movimiento::find($id);
+        $detalles = Detallemovalmacen::where('movimiento_id',$compra->id)->get();
         $entidad  = 'Movimiento';
-        $formData = array('turno.store', $id);
+        $formData = array('compraspagar.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        return view($this->folderview.'.detalle')->with(compact('pedido', 'detalles','formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.detalle')->with(compact('compra', 'detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function pagos(Request $request, $id)
@@ -119,7 +120,7 @@ class CompraspagarController extends Controller
                     ->where('estado',1)
                     ->get();    
         $entidad  = 'Movimiento';
-        $formData = array('turno.store', $id);
+        $formData = array('compraspagar.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
         return view($this->folderview.'.pagos')->with(compact('pedido', 'detalles','formData', 'entidad', 'boton', 'listar'));
@@ -143,8 +144,7 @@ class CompraspagarController extends Controller
         round($saldo,2);
         $entidad  = 'Movimiento';
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
-        $formData = array('baloncredito.pagardeuda', $id);
+        $formData = array('compraspagar.pagardeuda', $id);
         $formData = array('route' => $formData, 'method' => 'POST', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Pagar';
         return view($this->folderview.'.pagar')->with(compact( 'turnos_iniciados', 'saldo','pedido', 'cboSucursal', 'detalles','formData', 'entidad', 'boton', 'listar'));
@@ -156,94 +156,41 @@ class CompraspagarController extends Controller
             return $existe;
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
-        $tipo_pago = $request->input('tipo_pago');
-        if($tipo_pago == "R"){
-        $reglas     = array(
-                            'repartidor'      => 'required',    
-                            'monto'      => 'required|numeric',
-                        );
-        }else if($tipo_pago == "S"){                
         $reglas     = array(
                             'monto'      => 'required|numeric',
                         );
-        }
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
         }
-        $pedido = Movimiento::find($request->input('pedido_id'));
-        $error = DB::transaction(function() use($request, $pedido){
+        $compra = Movimiento::find($request->input('pedido_id'));
+        $error = DB::transaction(function() use($request, $compra){
 
-          /*  if($request->input('total') == 0 ){
-                $pedido->credito_cancelado = 1;
-                $pedido->save();
-            }*/
-            $tipo_pago = $request->input('tipo_pago');
-            if($tipo_pago == "R"){
-                $repartidor = $request->input('repartidor');
+            $sucursal_id = $request->input('sucursal_id');
 
-                $turno = Turnorepartidor::find($repartidor);
+            $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
 
-                $movimiento                       = new Movimiento();
-                $movimiento->tipomovimiento_id    = 5;
-                $movimiento->concepto_id          = 16;
-                $movimiento->total                = $request->input('monto');
-                $movimiento->subtotal             = $request->input('monto');
-                $movimiento->estado               = 1;
-                $movimiento->persona_id           = $pedido->persona_id;
-                $movimiento->trabajador_id        = $turno->person->id;
-                $user           = Auth::user();
-                $movimiento->usuario_id           = $user->id;
-                $movimiento->sucursal_id          = $pedido->sucursal_id;
-                $movimiento->venta_id             = $pedido->id;
-                $movimiento->comentario             = "Pago de pedido a crédito: ". $pedido->tipodocumento->abreviatura."-". $pedido->num_venta;
-                $movimiento->save();
+            $movimientocaja = new Movimiento();
+            $movimientocaja->sucursal_id        = $sucursal_id; 
+            $movimientocaja->compra_id          = $compra->id;
+            $movimientocaja->tipomovimiento_id  = 1;
+            $movimientocaja->concepto_id        = 4;
+            $movimientocaja->num_caja           = $num_caja;
+            $movimientocaja->total              = $request->input('monto');
+            $movimientocaja->subtotal           = $request->input('monto');
+            $movimientocaja->estado             = 1;
+            $movimientocaja->persona_id         = $compra->persona->id;
+            $user           = Auth::user();
+            $movimientocaja->usuario_id     = $user->id;
+            $movimientocaja->save();
 
-                $detalle_turno_pedido =  new Detalleturnopedido();
-                $detalle_turno_pedido->pedido_id = $movimiento->id;
-                $detalle_turno_pedido->turno_id = $repartidor;
-                $detalle_turno_pedido->save();
-
-                $detalle_pagos = new Detallepagos();
-                $detalle_pagos->pedido_id = $pedido->id;
-                $detalle_pagos->pago_id = $movimiento->id;
-                $detalle_pagos->monto   = $request->input('monto');
-                $detalle_pagos->tipo   = $tipo_pago;
-                $detalle_pagos->save();
-                
-            }else if($tipo_pago == "S"){
-                $sucursal_id = $request->input('sucursal_id');
-
-                $num_caja = Movimiento::where('tipomovimiento_id', 1)
-                                    ->where('sucursal_id', $sucursal_id)
-                                    //->where('estado', "=", 1)
-                                    ->max('num_caja');
-                $num_caja = $num_caja + 1;
-
-                $movimientocaja                       = new Movimiento();
-                $movimientocaja->tipomovimiento_id    = 1;
-                $movimientocaja->concepto_id          = 16;
-                $movimientocaja->num_caja             = $num_caja;
-                $movimientocaja->total                = $request->input('monto');
-                $movimientocaja->subtotal             = $request->input('monto');
-                $movimientocaja->estado               = 1;
-                $movimientocaja->persona_id           = $pedido->persona_id;
-                $movimientocaja->trabajador_id        = $pedido->trabajador_id;
-                $user           = Auth::user();
-                $movimientocaja->usuario_id           = $user->id;
-                $movimientocaja->sucursal_id          = $sucursal_id;
-                $movimientocaja->venta_id             = $pedido->id;
-                $movimientocaja->comentario             = "Pago de pedido a crédito: ". $pedido->tipodocumento->abreviatura."-". $pedido->num_venta;
-                $movimientocaja->save();
-
-                $detalle_pagos = new Detallepagos();
-                $detalle_pagos->pedido_id = $pedido->id;
-                $detalle_pagos->pago_id = $movimientocaja->id;
-                $detalle_pagos->monto   = $request->input('monto');
-                $detalle_pagos->tipo   = $tipo_pago;
-                $detalle_pagos->save();
-            }
+            $detalle_pagos = new Detallepagos();
+            $detalle_pagos->pedido_id = $compra->id;
+            $detalle_pagos->pago_id = $movimientocaja->id;
+            $detalle_pagos->monto   = $request->input('monto');
+            $detalle_pagos->tipo   =  'C';
+            $detalle_pagos->save();
             
         });
         return is_null($error) ? "OK" : $error;

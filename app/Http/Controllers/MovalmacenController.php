@@ -22,23 +22,21 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class ComprasController extends Controller
+class MovalmacenController extends Controller
 {
 
-    protected $folderview      = 'app.compras';
-    protected $tituloAdmin     = 'Compras';
+    protected $folderview      = 'app.movalmacen';
+    protected $tituloAdmin     = 'Movimiento de Almacén';
     protected $tituloDetalle  = 'Detalle de compra';
-    protected $tituloRegistrar = 'Registrar compra';
+    protected $tituloRegistrar = 'Registrar movimiento de almacén';
     protected $tituloModificar = 'Modificar compra';
     protected $tituloEliminar  = 'Anular compra';
-    protected $rutas           = array('create' => 'compras.create', 
-            'edit'     => 'compras.edit', 
-            'delete'   => 'compras.eliminar',
-            'search'   => 'compras.buscar',
-            'index'    => 'compras.index',
-            'detalle'     => 'compras.detalle',
-            'proveedor'            => 'compras.proveedor',
-            'guardarproveedor'     => 'compras.guardarproveedor',
+    protected $rutas           = array('create' => 'movalmacen.create', 
+            'edit'     => 'movalmacen.edit', 
+            'delete'   => 'movalmacen.eliminar',
+            'search'   => 'movalmacen.buscar',
+            'index'    => 'movalmacen.index',
+            'detalle'     => 'movalmacen.detalle',
         );
 
     public function __construct()
@@ -50,22 +48,22 @@ class ComprasController extends Controller
     {
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
-        $entidad          = 'Compras';
+        $entidad          = 'MovAlmacen';
         $sucursal_id      = Libreria::getParam($request->input('sucursal_id'));
         $proveedor_id     = Libreria::getParam($request->input('proveedor_idb'));
         $fechainicio      = Libreria::getParam($request->input('fechai'));
         $fechafin         = Libreria::getParam($request->input('fechaf'));
-        $resultado        = Movimiento::listarcompras($fechainicio,$fechafin, $sucursal_id ,$proveedor_id);
+        $resultado        = Movimiento::listarmovalmacen($fechainicio,$fechafin, $sucursal_id ,$proveedor_id);
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ANUL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'PROVEEDOR', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NRO DOC', 'numero' => '1');
         //$cabecera[]       = array('valor' => 'TIPO DOC', 'numero' => '1');
         //$cabecera[]       = array('valor' => 'RESPONSABLE', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'CRÉDITO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
         
         $tituloDetalle    = $this->tituloDetalle;
@@ -92,7 +90,7 @@ class ComprasController extends Controller
      */
     public function index()
     {
-        $entidad          = 'Compras';
+        $entidad          = 'MovAlmacen';
         $title            = $this->tituloAdmin;
         $titulo_registrar = $this->tituloRegistrar;
         $ruta             = $this->rutas;
@@ -108,7 +106,7 @@ class ComprasController extends Controller
     public function create(Request $request)
     {
         $listar       = Libreria::getParam($request->input('listar'), 'NO');
-        $entidad      = 'Compras';
+        $entidad      = 'MovAlmacen';
         $compra  = null;
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
         $cboDocumento = array();
@@ -116,10 +114,14 @@ class ComprasController extends Controller
         foreach ($listdocument as $key => $value) {
             $cboDocumento = $cboDocumento + array( $value->id => $value->abreviatura . " - " .$value->descripcion);
         }
-        $formData     = array('compras.store');
+        $formData     = array('movalmacen.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton        = 'Registrar'; 
-        return view($this->folderview.'.mant')->with(compact('compra', 'cboSucursal','cboDocumento', 'formData', 'entidad', 'boton', 'listar'));
+        $cboTipo = array(
+            'I' => 'INGRESO',
+            'E' => 'SALIDA',
+        );
+        return view($this->folderview.'.mant')->with(compact('compra', 'cboTipo','cboSucursal','cboDocumento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -142,72 +144,37 @@ class ComprasController extends Controller
         $error = DB::transaction(function() use($request,$sucursal_id,&$dat){
 
             $total = str_replace(',', '', $request->input('total'));
+
+            $tipo =  $request->input('tipo');
             
-            $compra                 = new Movimiento();
-            $compra->sucursal_id    = $sucursal_id; 
-            $compra->tipodocumento_id = $request->input('tipodocumento_id');
-            $compra->tipomovimiento_id = 3;
-            $compra->persona_id =  $request->input('proveedor_id');
-            $compra->concepto_id = 4;
-            $compra->num_compra = $request->input('serie') . '-' . $request->input('numerodocumento');
-            $compra->fecha  = $request->input('fecha');
-            $compra->estado = 1;
-            $compra->total = $total;
-            //$compra->igv = $igv;
-            //$compra->subtotal = $total - $igv;
-            //$compra->estadopago = 'P';
-            
-            $user = Auth::user();
-            $compra->usuario_id = $user->id;
-            $compra->trabajador_id = $user->person_id;
-            $compra->save();
+            $movalmacen                 = new Movimiento();
+            $movalmacen->sucursal_id    = $sucursal_id; 
+            $movalmacen->tipodocumento_id = $request->input('tipodocumento_id');
+            $movalmacen->tipomovimiento_id = 4;
+            //$movalmacen->persona_id =  $request->input('proveedor_id');
+            //$movalmacen->concepto_id = 4;
+            $movalmacen->num_compra = $request->input('serie') . '-' . $request->input('numerodocumento');
+            $movalmacen->fecha  = $request->input('fecha');
+            $movalmacen->estado = 1;
+            $movalmacen->total = $total;
+            //$movalmacen->igv = $igv;
+            //$movalmacen->subtotal = $total - $igv;
+            //$movalmacen->estadopago = 'P';
 
-            $compra_id = $compra->id;
-
-            //registrar movimiento caja
-
-            $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
-
-            $movimientocaja = new Movimiento();
-            $movimientocaja->sucursal_id        = $sucursal_id; 
-            $movimientocaja->compra_id          = $compra_id;
-            $movimientocaja->tipomovimiento_id  = 1;
-            $movimientocaja->concepto_id        = 4;
-            $movimientocaja->num_caja           = $num_caja;
-            $movimientocaja->total              = $request->input('totalcompra');
-            $movimientocaja->subtotal           = $request->input('totalcompra');
-            $movimientocaja->estado             = 1;
-            $movimientocaja->persona_id         = $request->input('proveedor_id');
-            $user           = Auth::user();
-            $movimientocaja->usuario_id     = $user->id;
-            $movimientocaja->save();
-
-            $a_cuenta                = $request->input('a_cuenta');
-            if($a_cuenta == true){
-                $pago   = $request->input('pago');
-                $compra->balon_a_cuenta    = 1;
-                $compra->save();
-                if($pago == 0 || $pago == "" ){
-                    $movimientocaja->total              = 0;
-                    $movimientocaja->subtotal           = 0;
-                }else{
-                    $movimientocaja->total              = $request->input('pago');
-                    $movimientocaja->subtotal           = $request->input('pago');
-
-                    $detalle_pagos = new Detallepagos();
-                    $detalle_pagos->pedido_id = $compra_id;
-                    $detalle_pagos->pago_id = $movimientocaja->id;
-                    $detalle_pagos->monto   = $request->input('pago');
-                    $detalle_pagos->tipo   =  'C';
-                    $detalle_pagos->save();
-                }
-                $movimientocaja->save();
+            if($tipo == "I"){
+                $movalmacen->concepto_id = 11;
             }else{
-                $compra->balon_a_cuenta    = 0;
-                $compra->save();
+                $movalmacen->concepto_id = 18;
             }
 
-            //registrar si es compra a credito
+            $movalmacen->comentario = $request->input('comentario');
+            
+            $user = Auth::user();
+            $movalmacen->usuario_id = $user->id;
+            $movalmacen->trabajador_id = $user->person_id;
+            $movalmacen->save();
+
+            $movalmacen_id = $movalmacen->id;
             
             $lista = (int) $request->input('cantproductos');
 
@@ -216,13 +183,13 @@ class ComprasController extends Controller
                 $precio    = $request->input('preciocompra'.$i);
                 $subtotal  = round(($cantidad*$precio), 2);
 
-                $detalleCompra = new Detallemovalmacen();
-                $detalleCompra->cantidad = $cantidad;
-                $detalleCompra->precio = $precio;
-                $detalleCompra->subtotal = $subtotal;
-                $detalleCompra->movimiento_id = $compra_id;
-                $detalleCompra->producto_id = $request->input('producto_id'.$i);
-                $detalleCompra->save();
+                $detalleMovalmacen = new Detallemovalmacen();
+                $detalleMovalmacen->cantidad = $cantidad;
+                $detalleMovalmacen->precio = $precio;
+                $detalleMovalmacen->subtotal = $subtotal;
+                $detalleMovalmacen->movimiento_id = $movalmacen_id;
+                $detalleMovalmacen->producto_id = $request->input('producto_id'.$i);
+                $detalleMovalmacen->save();
                 //Editamos valores del producto
                 $producto = Producto::find($request->input('producto_id'.$i));
                 $producto->precio_compra = $request->input('preciocompra'.$i);
@@ -241,50 +208,89 @@ class ComprasController extends Controller
 
                 //$ultimokardex = Kardex::join('detallemovimiento', 'kardex.detallemovimiento_id', '=', 'detallemovimiento.id')->where('promarlab_id', '=', $lista[$i]['promarlab_id'])->where('kardex.almacen_id', '=',1)->orderBy('kardex.id', 'DESC')->first();
 
-                // ingresamos nuevo kardex
-                if ($ultimokardex === NULL) {
-                    $stockactual = $cantidad;
-                    $kardex = new Kardex();
-                    $kardex->tipo = 'I';
-                    $kardex->fecha =  $request->input('fecha');
-                    $kardex->stock_anterior = $stockanterior;
-                    $kardex->stock_actual = $stockactual;
-                    $kardex->cantidad = $cantidad;
-                    $kardex->precio_compra = $precio;
-                    $kardex->sucursal_id = $sucursal_id;
-                    $kardex->detalle_mov_almacen_id = $detalleCompra->id;
-                    $kardex->save();
-                    
+                if($tipo == "I"){
+                  
+                    // ingresamos nuevo kardex
+                    if ($ultimokardex === NULL) {
+                        $stockactual = $cantidad;
+                        $kardex = new Kardex();
+                        $kardex->tipo = 'I';
+                        $kardex->fecha =  $request->input('fecha');
+                        $kardex->stock_anterior = $stockanterior;
+                        $kardex->stock_actual = $stockactual;
+                        $kardex->cantidad = $cantidad;
+                        $kardex->precio_compra = $precio;
+                        $kardex->sucursal_id = $sucursal_id;
+                        $kardex->detalle_mov_almacen_id = $detalleMovalmacen->id;
+                        $kardex->save();
+                        
+                    }else{
+                        $stockanterior = $ultimokardex->stock_actual;
+                        $stockactual = $ultimokardex->stock_actual + $cantidad;
+                        $kardex = new Kardex();
+                        $kardex->tipo = 'I';
+                        $kardex->fecha =  $request->input('fecha');
+                        $kardex->stock_anterior = $stockanterior;
+                        $kardex->stock_actual = $stockactual;
+                        $kardex->cantidad = $cantidad;
+                        $kardex->precio_compra = $precio;
+                        $kardex->sucursal_id = $sucursal_id;
+                        $kardex->detalle_mov_almacen_id = $detalleMovalmacen->id;
+                        $kardex->save();    
+
+                    }
+
+                    //Aumentar Stock
+
+                    $stock = Stock::where('producto_id', $request->input('producto_id'.$i))->where('sucursal_id', $sucursal_id)->first();
+                    if (count($stock) == 0) {
+                        $stock = new Stock();
+                        $stock->producto_id = $request->input('producto_id'.$i);
+                        $stock->sucursal_id = $sucursal_id;
+                    }
+                    $stock->cantidad += $cantidad;
+                    $stock->save();
+
                 }else{
-                    $stockanterior = $ultimokardex->stock_actual;
-                    $stockactual = $ultimokardex->stock_actual + $cantidad;
-                    $kardex = new Kardex();
-                    $kardex->tipo = 'I';
-                    $kardex->fecha =  $request->input('fecha');
-                    $kardex->stock_anterior = $stockanterior;
-                    $kardex->stock_actual = $stockactual;
-                    $kardex->cantidad = $cantidad;
-                    $kardex->precio_compra = $precio;
-                    $kardex->sucursal_id = $sucursal_id;
-                    $kardex->detalle_mov_almacen_id = $detalleCompra->id;
-                    $kardex->save();    
+
+                     // ingresamos nuevo kardex
+                     if ($ultimokardex === NULL) {
+
+                        //$dat[0]=array("respuesta"=>"NS","movalmacen_id"=>$movalmacen->id, "ind" => 0, "second_id" => 0);
+                        
+                    }else{
+                        $stockanterior = $ultimokardex->stock_actual;
+                        $stockactual = $ultimokardex->stock_actual - $cantidad;
+                        $kardex = new Kardex();
+                        $kardex->tipo = 'E';
+                        $kardex->fecha =  $request->input('fecha');
+                        $kardex->stock_anterior = $stockanterior;
+                        $kardex->stock_actual = $stockactual;
+                        $kardex->cantidad = $cantidad;
+                        $kardex->precio_compra = $precio;
+                        $kardex->sucursal_id = $sucursal_id;
+                        $kardex->detalle_mov_almacen_id = $detalleMovalmacen->id;
+                        $kardex->save();    
+
+                    }
+
+                    //Reducir Stock
+
+                    $stock = Stock::where('producto_id', $request->input('producto_id'.$i))->where('sucursal_id', $sucursal_id)->first();
+                    if (count($stock) == 0) {
+                        $stock = new Stock();
+                        $stock->producto_id = $request->input('producto_id'.$i);
+                        $stock->sucursal_id = $sucursal_id;
+                    }
+                    $stock->cantidad -= $cantidad;
+                    $stock->save();
 
                 }
-
-                //Reducir Stock
-
-                $stock = Stock::where('producto_id', $request->input('producto_id'.$i))->where('sucursal_id', $sucursal_id)->first();
-                if (count($stock) == 0) {
-                    $stock = new Stock();
-                    $stock->producto_id = $request->input('producto_id'.$i);
-                    $stock->sucursal_id = $sucursal_id;
-                }
-                $stock->cantidad += $cantidad;
-                $stock->save();
 
             }
 
-            $dat[0]=array("respuesta"=>"OK","compra_id"=>$compra->id, "ind" => 0, "second_id" => 0);
+            $dat[0]=array("respuesta"=>"OK","movalmacen_id"=>$movalmacen->id, "ind" => 0, "second_id" => 0);
+
         });
         return is_null($error) ? json_encode($dat) : $error;
 
@@ -345,8 +351,8 @@ class ComprasController extends Controller
             $listar = $listarLuego;
         }
         $modelo   = Movimiento::find($id);
-        $entidad  = 'Compras';
-        $formData = array('route' => array('compras.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $entidad  = 'MovAlmacen';
+        $formData = array('route' => array('movalmacen.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Eliminar';
         return view('app.caja.confirmarAnular')->with(compact('modelo', 'formData', 'entidad', 'boton', 'listar'));
     }
@@ -420,12 +426,19 @@ class ComprasController extends Controller
     public function consultaproducto(Request $request)
     {
         $sucursal_id = $request->input('sucursal_id');
+        $producto_id = $request->input('idproducto');
 
         $producto = Producto::find($request->input("idproducto"));
-        $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')->where('producto_id', '=', $producto->id)->where('movimiento.sucursal_id', '=',$sucursal_id)->orderBy('kardex.id', 'DESC')->first();
+
+        $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                                ->where('detalle_mov_almacen.producto_id', '=', $producto_id)
+                                ->where('kardex.sucursal_id', '=', $sucursal_id)
+                                ->orderBy('kardex.id', 'DESC')
+                                ->first();
+
         $stock = 0;
-        if ($currentstock !== null) {
-            $stock=$currentstock->stock_actual;
+        if ($currentstock != null) {
+            $stock = $currentstock->stock_actual;
         }
 
         return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->stock_seguridad;
@@ -470,56 +483,5 @@ class ComprasController extends Controller
                 </td>';
 
         return $cadena; 
-    }
-
-    
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function proveedor(Request $request)
-    {
-        $listar         = Libreria::getParam($request->input('listar'), 'NO');
-        $entidad        = 'Proveedor'; 
-        $proveedor     = null;
-        $formData       = array('compras.guardarproveedor');
-        $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
-        $accion = 0;
-        return view($this->folderview.'.proveedor')->with(compact('accion' ,'proveedor', 'formData', 'entidad', 'boton', 'listar'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function guardarproveedor(Request $request)
-    {
-        $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $documento = $request->input('dni');
-        $reglas = array(
-            'ruc'       => 'required|max:11|unique:person,ruc,NULL,id,deleted_at,NULL',
-            'razon_social'    => 'required|max:100',
-            'direccion'    => 'required|max:400',
-            'celular'       => 'required|numeric|digits:9',
-            );
-        $validacion = Validator::make($request->all(),$reglas);
-        if ($validacion->fails()) {
-            return $validacion->messages()->toJson();
-        }
-        $error = DB::transaction(function() use($request){
-            $proveedor                = new Person();
-            $proveedor->ruc           = $request->input('ruc');
-            $proveedor->razon_social       = strtoupper($request->input('razon_social'));
-            $proveedor->tipo_persona  = "P";
-            $proveedor->direccion  = $request->input('direccion');
-            $proveedor->celular  = $request->input('celular');
-            $proveedor->save();
-            
-        });
-        return is_null($error) ? "OK" : $error;
     }
 }

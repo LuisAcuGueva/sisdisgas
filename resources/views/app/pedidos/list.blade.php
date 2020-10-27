@@ -54,16 +54,6 @@
 			@else
 				<td align="center"> NO </td>
 			@endif
-
-			@if($value->estado == 1)
-				@if (!is_null($value->comentario))
-					<td> {{ $value->comentario }} </td>
-				@else
-					<td align="center"> - </td>
-				@endif
-			@elseif($value->estado == 0)
-				<td> {{ $value->comentario }} | Anulado por: {{ $value->comentario_anulado }} </td>
-			@endif
 			
 			@if($value->concepto->tipo != 0 || $value->concepto_id == 3 || $value->concepto_id == 16 )
 				<td align="center" style="color:green;font-weight: bold;"> {{ $value->total }} </td>

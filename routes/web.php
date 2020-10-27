@@ -65,10 +65,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('compras', 'ComprasController', array('except' => array('show')));
     Route::get('compras/proveedor', 'ComprasController@proveedor')->name('compras.proveedor');
     Route::post('compras/guardarproveedor', 'ComprasController@guardarproveedor')->name('compras.guardarproveedor');
-    Route::post('compras/consultarAlmacenes', 'ComprasController@consultarAlmacenes')->name('compras.consultarAlmacenes');
     Route::post('compras/buscandoproducto','ComprasController@buscandoproducto')->name('compras.buscandoproducto');
     Route::post('compras/consultaproducto','ComprasController@consultaproducto')->name('compras.consultaproducto');
     Route::post('compras/agregarcarritocompra','ComprasController@agregarcarritocompra')->name('compras.agregarcarritocompra');
+
+    Route::post('movalmacen/buscar','MovalmacenController@buscar')->name('movalmacen.buscar');
+    Route::get('movalmacen/eliminar/{id}/{listarluego}','MovalmacenController@eliminar')->name('movalmacen.eliminar');
+    Route::get('movalmacen/detalle/{id}/', 'MovalmacenController@detalle')->name('movalmacen.detalle');
+    Route::resource('movalmacen', 'MovalmacenController', array('except' => array('show')));
+    Route::post('movalmacen/buscandoproducto','MovalmacenController@buscandoproducto')->name('movalmacen.buscandoproducto');
+    Route::post('movalmacen/consultaproducto','MovalmacenController@consultaproducto')->name('movalmacen.consultaproducto');
+    Route::post('movalmacen/agregarcarritocompra','MovalmacenController@agregarcarritocompra')->name('movalmacen.agregarcarritocompra');
 
     Route::get('caja/pdfDetalleCierre', 'CajaController@pdfDetalleCierre')->name('caja.pdfDetalleCierre');
     Route::get('caja/clienteautocompletar/{searching}', 'CajaController@clienteautocompletar')->name('caja.clienteautocompletar');

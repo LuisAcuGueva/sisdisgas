@@ -6,7 +6,7 @@
 	?>
 	<div class="col-lg-12 col-md-12 col-sm-12">
 		<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
-			<thead id="cabecera"><tr><th style="font-size: 13px !important;">#</th><th style="font-size: 13px !important;">Fecha</th><th style="font-size: 13px !important;">Tipo de pago</th><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Monto</th></tr></thead>
+			<thead id="cabecera"><tr><th style="font-size: 13px !important;">#</th><th style="font-size: 13px !important;">Fecha</th><th style="font-size: 13px !important;">Monto</th></tr></thead>
 			<tbody id="detalle">
 				@foreach($detalles  as $key => $value)
 					<tr>
@@ -36,7 +36,7 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	configurarAnchoModal('800');
+	configurarAnchoModal('600');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
 	$('input').iCheck({

@@ -570,10 +570,10 @@ class CajaController extends Controller
         $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PERSONA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TRABAJADOR', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'INGRESOS', 'numero' => '1');
         $cabecera[]       = array('valor' => 'EGRESOS', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'USUARIO', 'numero' => '1');
+        //$cabecera[]       = array('valor' => 'USUARIO', 'numero' => '1');
         
         $tituloTurnoRepartidor = $this->tituloTurnoRepartidor;
         $titulo_eliminar  = $this->tituloEliminar;

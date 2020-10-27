@@ -204,17 +204,6 @@ $container = "'container'";
 			<td>{{ $trabajador->nombres . ' ' .$trabajador->apellido_pat. ' ' .$trabajador->apellido_mat }}</td>
 		@endif
 		
-
-		@if($concepto->tipo == 0)
-		<td align="center" style="color:green;font-weight: bold;">{{ $value->total }}</td>
-		<td align="center">0.00</td>
-		@elseif($concepto->tipo == 1)
-		<td align="center">0.00</td>
-		<td align="center" style="color:red;font-weight: bold;">{{ $value->total }}</td>
-		@endif
-
-	
-
 		@if($value->estado == 1)
 			@if (!is_null($value->comentario))
 				<td> {{ $value->comentario }} </td>
@@ -224,14 +213,21 @@ $container = "'container'";
 		@elseif($value->estado == 0)
 			<td> {{ $value->comentario }} | Anulado por: {{ $value->comentario_anulado }} </td>
 		@endif
-			
+
+		@if($concepto->tipo == 0)
+		<td align="center" style="color:green;font-weight: bold;">{{ $value->total }}</td>
+		<td align="center">0.00</td>
+		@elseif($concepto->tipo == 1)
+		<td align="center">0.00</td>
+		<td align="center" style="color:red;font-weight: bold;">{{ $value->total }}</td>
+		@endif
 
 		<?php
 			$usuario = User::find($value->usuario_id);
 			$persona_usuario = Person::find($usuario->person_id);
 		?>
 
-		<td>{{ $persona_usuario->nombres . ' ' .$persona_usuario->apellido_pat. ' ' .$persona_usuario->apellido_mat }}</td>
+		<!--td>{{ $persona_usuario->nombres . ' ' .$persona_usuario->apellido_pat. ' ' .$persona_usuario->apellido_mat }}</td-->
 
 		</tr>
 		@endforeach
