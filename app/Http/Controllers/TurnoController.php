@@ -13,6 +13,8 @@ use App\Movimiento;
 use App\Detalleturnopedido;
 use App\Detalleventa;
 use App\Detallepagos;
+use App\Kardex;
+use App\Stock;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -531,6 +533,16 @@ class TurnoController extends Controller
             $movimiento->estado = 0;
             $movimiento->comentario_anulado  = strtoupper($request->input('motivo'));  
 
+            $kardexs = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                            ->where('detalle_mov_almacen.movimiento_id', $id)
+                            ->get();
+
+            foreach ($kardexs as $key => $value) {
+                $stock = Stock::where('producto_id', $value->producto_id )->where('sucursal_id', $movimiento->sucursal_id)->first();
+                $stock->cantidad = $value->stock_anterior;
+                $stock->save();
+            }
+
             if($movimiento->concepto_id == 15){
                 $detalle_turno = Detalleturnopedido::where('pedido_id',$movimiento->id)->first();
                 $turno = Turnorepartidor::find($detalle_turno->turno_id);
@@ -550,6 +562,16 @@ class TurnoController extends Controller
                     $movimientoventa->estado = 0;
                     $movimientoventa->comentario_anulado  = strtoupper($request->input('motivo'));  
                     $movimientoventa->save();
+
+                    $kardexs = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                            ->where('detalle_mov_almacen.movimiento_id', $movimientoventa->id)
+                            ->get();
+
+                    foreach ($kardexs as $key => $value) {
+                        $stock = Stock::where('producto_id', $value->producto_id )->where('sucursal_id', $movimientoventa->sucursal_id)->first();
+                        $stock->cantidad = $value->stock_anterior;
+                        $stock->save();
+                    }
 
                 }
             }

@@ -336,6 +336,16 @@ class ComprasController extends Controller
                 $pago->comentario_anulado  = strtoupper($request->input('motivo'));  
                 $pago->save();
             }
+
+            $kardexs = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                            ->where('detalle_mov_almacen.movimiento_id', $id)
+                            ->get();
+
+            foreach ($kardexs as $key => $value) {
+                $stock = Stock::where('producto_id', $value->producto_id )->where('sucursal_id', $compra->sucursal_id)->first();
+                $stock->cantidad = $value->stock_anterior;
+                $stock->save();
+            }
         });
         return is_null($error) ? "OK" : $error;
     }
