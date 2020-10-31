@@ -438,79 +438,102 @@ $(document).ready(function(){
 		var cant = parseInt($("#cant"). val());
 		var tipo = $('#tipodocumento_id').val();
 		var total = parseFloat($("#total").val());
+
+		var montoefectivo = "";
+		if( $("#montoefectivo").val() == "" ){
+			montoefectivo = 0;
+		}else{
+			montoefectivo = parseFloat($("#montoefectivo").val());
+		}
+
 		var letra = "";
 		if(tipo == 1){
-			letra ="B";
+			letra ="BV";
 		}else if(tipo == 2){
-			letra ="F";
+			letra ="FV";
 		}else if(tipo == 3){
-			letra ="T";
+			letra ="TK";
 		}
 
 
-		var negativo = false;
-		$(".precioeditable").each(function(){
-			var precioeditable = parseFloat($(this).val());
-			if(precioeditable >= 0){
-				negativo = false;
-			}else{
-				negativo = true;
-			}
-		});
-		//console.log("hay negativos = " + negativo);
-
-		if(!negativo){
-			if(!empleado || cant==0 || !cliente || ( $("#vale_balon_fise").parent().hasClass('checked') && $("#codigo_vale_fise").val() == "" ) || ( $("#vale_balon_subcafae").parent().hasClass('checked') && $("#codigo_vale_subcafae").val() == "" ) || ( $("#vale_balon_monto").parent().hasClass('checked') && ( $("#codigo_vale_monto").val() == "" || $("#monto_vale_balon").val()  == "" ))  ){  // $("balon_a_cuenta").prop('checked') 
-				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-				if(!empleado){
-					cadenaError += ' <li> El campo Empleado es obligatorio.</li>';
-				}
-				if(!cliente){
-					cadenaError += ' <li> El campo Cliente es obligatorio.</li>';
-				}
-				if(cant ==0){
-					cadenaError += '<li>Debe agregar mínimo un producto.</li>';
-				}
-				if( $("#vale_balon_fise").parent().hasClass('checked') && $("#codigo_vale_fise").val() == "" ){
-					cadenaError += '<li>Ingresa Código de vale FISE.</li>';
-				}
-				if( $("#vale_balon_subcafae").parent().hasClass('checked') && $("#codigo_vale_subcafae").val() == "" ){
-					cadenaError += '<li>Ingresa Código de vale SUBCAFAE.</li>';
-				}
-				if( $("#vale_balon_monto").parent().hasClass('checked') && ( $("#codigo_vale_monto").val() == "" || $("#monto_vale_balon").val()  == "" )){
-					if($("#codigo_vale_monto").val() == "" ){
-					cadenaError += '<li>Ingresa Código de vale monto.</li>';
-					}
-					if($("#monto_vale_balon").val() == "" ){
-					cadenaError += '<li>Ingresa Monto de descuento de vale monto.</li>';
-					}
-				}
-				cadenaError += "</ul></div>";
-				$('#divMensajeErrorVenta').html(cadenaError);
-			}else{
-				swal({
-					title: 'Confirmar Guardado',
-					html: "<p><label>Sucursal:  </label>  "+ sucursal.options[sucursal.selectedIndex].text +"</p><p><label>N° Venta: </label>  "+ letra+ $('#serieventa').val()+"</p><p><label>Cliente:  </label>  "+ $('#cliente').val()+"</p><p><label>Empleado:  </label>  "+ $('#empleado_nombre').val()+"</p><p><label>Total:  </label>  S/."+  total.toFixed(2) +"</p>",
-					type: 'question',
-					showCancelButton: true,
-					confirmButtonColor: '#54b359',
-					cancelButtonColor: '#d33',
-					confirmButtonText: 'Guardar Venta'
-					}).then((result) => {
-						if (result.value) {
-							guardarventa();
-							setTimeout(function(){
-								cargarRutaMenu('pedidos', 'container', '15');
-							},1000);
-						}
-					});
-			}
-		}else{
+		if(!empleado || cant==0 || !cliente || ( $("#vale_balon_fise").parent().hasClass('checked') && $("#codigo_vale_fise").val() == "" ) || ( $("#vale_balon_subcafae").parent().hasClass('checked') && $("#codigo_vale_subcafae").val() == "" ) || ( $("#vale_balon_monto").parent().hasClass('checked') && ( $("#codigo_vale_monto").val() == "" || $("#monto_vale_balon").val()  == "" ))  ){  // $("balon_a_cuenta").prop('checked') 
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-			cadenaError += '<li>Los campos de precios editables no deben ser negativos.</li></ul></div>';
+			if(!empleado){
+				cadenaError += ' <li> El campo Empleado es obligatorio.</li>';
+			}
+			if(!cliente){
+				cadenaError += ' <li> El campo Cliente es obligatorio.</li>';
+			}
+			if(cant ==0){
+				cadenaError += '<li>Debe agregar mínimo un producto.</li>';
+			}
+			if( $("#vale_balon_fise").parent().hasClass('checked') && $("#codigo_vale_fise").val() == "" ){
+				cadenaError += '<li>Ingresa Código de vale FISE.</li>';
+			}
+			if( $("#vale_balon_subcafae").parent().hasClass('checked') && $("#codigo_vale_subcafae").val() == "" ){
+				cadenaError += '<li>Ingresa Código de vale SUBCAFAE.</li>';
+			}
+			if( $("#vale_balon_monto").parent().hasClass('checked') && ( $("#codigo_vale_monto").val() == "" || $("#monto_vale_balon").val()  == "" )){
+				if($("#codigo_vale_monto").val() == "" ){
+				cadenaError += '<li>Ingresa Código de vale monto.</li>';
+				}
+				if($("#monto_vale_balon").val() == "" ){
+				cadenaError += '<li>Ingresa Monto de descuento de vale monto.</li>';
+				}
+			}
+			cadenaError += "</ul></div>";
 			$('#divMensajeErrorVenta').html(cadenaError);
-			$('#btnGuardar').prop('disabled', true);
+		}else{
+
+			var mensaje = "<div style='text-align: left; padding: 20px; font-size: 15;'><p><label>Sucursal:  </label>  "+ sucursal.options[sucursal.selectedIndex].text 
+							+"</p><p><label>N° Venta: </label>  "+ letra+ $('#serieventa').val() ;
+
+			if( $("#vale_balon_fise").prop('checked') ){
+				mensaje += "</p><p><label>Vale:  </label>  "+ "FISE"
+				+"</p><p><label>Código FISE:  </label>  "+ $('#codigo_vale_fise').val()
+			}
+			if( $("#vale_balon_subcafae").prop('checked') ){
+				mensaje += "</p><p><label>Vale:  </label>  "+ "SUBCAFAE"
+				+"</p><p><label>Código SUBCAFAE:  </label>  "+ $('#codigo_vale_subcafae').val()
+			}
+			if( $("#vale_balon_monto").prop('checked') ){
+				mensaje += "</p><p><label>Vale:  </label>  "+ "VALE MONTO"
+				+"</p><p><label>Código MONTO:  </label>  "+ $('#codigo_vale_monto').val()
+				+"</p><p><label>Monto del Vale:  </label>  S/."+ parseFloat($('#monto_vale_balon').val()).toFixed(2)
+			}
+
+			mensaje +="</p><p><label>Empleado:  </label>  "+ $('#empleado_nombre').val()
+					+"</p><p><label>Cliente:  </label>  "+ $('#cliente').val()
+					+"</p><p><label>Dirección:  </label>  "+ $('#cliente_direccion').val()
+					+"</p><p><label>Total:  </label>  S/."+  total.toFixed(2);
+
+			
+			if( $("#balon_a_cuenta").prop('checked') ){
+				mensaje += "</p><p><label>Pedido a crédito:  </label>  "+ "SI"
+						+ "</p><p><label>Monto a cobrar:  </label>  S/."+  montoefectivo.toFixed(2)
+						+ "</p><p><label>Cuenta por cobrar:  </label>  S/."+  (total-montoefectivo).toFixed(2);
+			}
+
+			mensaje += "</p></div>" ;
+
+			swal({
+				title: 'Confirmar Guardado',
+				html: mensaje,
+				type: 'question',
+				showCancelButton: true,
+				confirmButtonColor: '#54b359',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Guardar Venta'
+				}).then((result) => {
+					if (result.value) {
+						guardarventa();
+						setTimeout(function(){
+							cargarRutaMenu('pedidos', 'container', '15');
+						},1000);
+					}
+				});
 		}
+	
 	});
 
 	$('.vales .iCheck-helper').on('click', function(){

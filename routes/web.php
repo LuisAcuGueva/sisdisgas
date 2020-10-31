@@ -90,6 +90,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('caja/ingresarcierres', 'CajaController@ingresarcierres')->name('caja.ingresarcierres');
     Route::get('caja/persona', 'CajaController@persona')->name('caja.persona');
     Route::post('caja/guardarpersona', 'CajaController@guardarpersona')->name('caja.guardarpersona');
+    Route::post('caja/saldoCaja', 'CajaController@saldoCaja')->name('caja.saldoCaja');
     //Route::get('caja/repetido/{id}/{listarluego}','CajaController@repetido')->name('caja.repetido');
     //Route::post('caja/guardarrepetido','CajaController@guardarrepetido')->name('caja.guardarrepetido');
     //Route::get('caja/aperturaycierre', 'CajaController@aperturaycierre')->name('caja.aperturaycierre');

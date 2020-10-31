@@ -190,9 +190,11 @@ class ComprasController extends Controller
                 if($pago == 0 || $pago == "" ){
                     $movimientocaja->total              = 0;
                     $movimientocaja->subtotal           = 0;
+                    $movimientocaja->delete();
                 }else{
                     $movimientocaja->total              = $request->input('pago');
                     $movimientocaja->subtotal           = $request->input('pago');
+                    $movimientocaja->save();
 
                     $detalle_pagos = new Detallepagos();
                     $detalle_pagos->pedido_id = $compra_id;
@@ -201,7 +203,6 @@ class ComprasController extends Controller
                     $detalle_pagos->tipo   =  'C';
                     $detalle_pagos->save();
                 }
-                $movimientocaja->save();
             }else{
                 $compra->balon_a_cuenta    = 0;
                 $compra->save();
@@ -283,10 +284,8 @@ class ComprasController extends Controller
                 $stock->save();
 
             }
-
-            $dat[0]=array("respuesta"=>"OK","compra_id"=>$compra->id, "ind" => 0, "second_id" => 0);
         });
-        return is_null($error) ? json_encode($dat) : $error;
+        return is_null($error) ? "OK" : $error;
 
     }
 
@@ -320,10 +319,23 @@ class ComprasController extends Controller
             return $validacion->messages()->toJson();
         }
         $error = DB::transaction(function() use($request, $id){
-            $movimiento = Movimiento::find($id);
-            $movimiento->estado = 0;
-            $movimiento->comentario_anulado  = strtoupper($request->input('motivo'));  
-            $movimiento->save();
+            $compra = Movimiento::find($id);
+            $compra->estado = 0;
+            $compra->comentario_anulado  = strtoupper($request->input('motivo'));  
+            $compra->save();
+
+            $movcaja = Movimiento::where('compra_id', $id)->first();
+            $movcaja->estado = 0;
+            $movcaja->comentario_anulado  = strtoupper($request->input('motivo'));  
+            $movcaja->save();
+
+            $pagos = Detallepagos::where('pedido_id', $id)->get();
+            foreach ($pagos as $key => $value) {
+                $pago = Movimiento::find($value->pago_id);
+                $pago->estado = 0;
+                $pago->comentario_anulado  = strtoupper($request->input('motivo'));  
+                $pago->save();
+            }
         });
         return is_null($error) ? "OK" : $error;
     }

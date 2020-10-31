@@ -43,9 +43,10 @@ class BaloncreditoController extends Controller
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
         $entidad          = 'Movimiento';
+        $sucursal_id         = Libreria::getParam($request->input('sucursal_id'));
         $desde            = Libreria::getParam($request->input('desde'));
         $hasta            = Libreria::getParam($request->input('hasta'));
-        $resultado        = Movimiento::balonescredito($desde, $hasta);
+        $resultado        = Movimiento::balonescredito($desde, $hasta, $sucursal_id);
         $lista            = $resultado->get();
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
@@ -87,7 +88,8 @@ class BaloncreditoController extends Controller
         $entidad          = 'Movimiento';
         $title            = $this->tituloAdmin;
         $ruta             = $this->rutas;
-        return view($this->folderview.'.admin')->with(compact('entidad', 'title', 'ruta'));
+        $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
+        return view($this->folderview.'.admin')->with(compact('entidad', 'cboSucursal','title', 'ruta'));
     }
 
     public function detalle(Request $request, $id)

@@ -131,6 +131,8 @@ $(document).ready(function() {
 
 	//$('#monto').focus();
 
+	permisoRegistrar();
+
 	generarNumeroCaja();
 
 	mueveReloj();

@@ -14,6 +14,10 @@ $desde = date( 'Y-m-d' , $desde );
 				{!! Form::open(['route' => $ruta["search"], 'method' => 'POST' ,'onsubmit' => 'return false;', 'class' => 'form-inline', 'role' => 'form', 'autocomplete' => 'off', 'id' => 'formBusqueda'.$entidad]) !!}
 				{!! Form::hidden('page', 1, array('id' => 'page')) !!}
 				{!! Form::hidden('accion', 'listar', array('id' => 'accion')) !!}
+				<div class="form-group">			
+					{!! Form::label('sucursal_id', 'Sucursal:') !!}
+					{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-xs', 'id' => 'sucursal_id' , 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+				</div>
 				<div class="form-group">
 					{!! Form::label('desde', 'Desde:', array('class' => 'col-sm-3 col-xs-12 input-md', 'style' => 'margin-top: 8px;')) !!}
 					<div class="col-sm-9 col-xs-12">

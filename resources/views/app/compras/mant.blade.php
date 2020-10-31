@@ -10,7 +10,7 @@ $hoy = date("Y-m-d");
 		<div class="form-group" style="height: 12px; margin: 25px 0px;">
 			{!! Form::label('sucursal', 'Sucursal:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 			<div class="col-lg-8 col-md-8 col-sm-8">
-			{!! Form::select('sucursal', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal')) !!}
+			{!! Form::select('sucursal', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal', 'onchange' => 'permisoRegistrar();generarSaldoCaja();')) !!}
 			</div>
 		</div>
 		<div class="form-group" style="height: 12px; margin: 25px 0px;">
@@ -60,6 +60,12 @@ $hoy = date("Y-m-d");
 				<div class='input-group input-group-sm' id='divfecha'>
 					<input class="form-control input-sm" id="fecha" placeholder="Ingrese Fecha" name="fecha" type="date" value="{{ $hoy }}">
 				</div>
+			</div>
+		</div>
+		<div class="form-group" style="height: 12px; margin: 25px 0px;">
+			{!! Form::label('saldo_caja', 'Saldo en caja:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
+			<div class="col-lg-4 col-md-4 col-sm-4">
+				{!! Form::text('saldo_caja', number_format(0, 2, '.', ''), array('style' => 'background-color: #c3ffd6 ;', 'readOnly' ,'class' => 'form-control input-sm', 'id' => 'saldo_caja' )) !!}
 			</div>
 		</div>
 		<div class="form-group" style="height: 12px; margin: 25px 0px;">
@@ -121,6 +127,7 @@ $hoy = date("Y-m-d");
 				<td><b>Cantidad</b></td>
 				<td>&nbsp</td>
 				<td>{!! Form::text('cantidad', null, array('class' => 'form-control input-sm', 'id' => 'cantidad', 'size' => '6', 'onkeyup' => "javascript:this.value=this.value.toUpperCase();")) !!}</td>
+				<td>{!! Form::button('<i class="glyphicon glyphicon-plus"></i>', array('class' => 'btn btn-success btn-sm', 'style' => 'height: 30px; margin-left: 10px; margin-bottom: 1px;', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'AGREGAR PRODUCTO', 'id' => 'agregarProducto')) !!}</td>
 			</tr>
 			</table>
 		</div>
@@ -217,6 +224,15 @@ $(document).ready(function() {
 	configurarAnchoModal('1200');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
+	permisoRegistrar();
+
+	generarSaldoCaja();
+
+	$('#agregarProducto').on('click', function(){
+		addpurchasecart(); 
+		indice = -1;
+	});
+
 	$('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
 
 	$('.btnBorrar').on('click', function(){
@@ -270,7 +286,11 @@ $(document).ready(function() {
 			if( is_numeric( $("#pago").val())){
 				var total = $("#totalcompra").val()
 				var pago = parseFloat($("#pago").val());
+				var saldo_caja = parseFloat($("#saldo_caja").val());
 				if(pago < 0 ||  pago > total){
+					$("#pago").val("");
+					$("#credito").val( $("#totalcompra").val() );
+				}else if(pago > saldo_caja){
 					$("#pago").val("");
 					$("#credito").val( $("#totalcompra").val() );
 				}else{
@@ -300,6 +320,48 @@ $(document).ready(function() {
 	});
 	
 }); 
+
+function permisoRegistrar(){
+
+	var aperturaycierre = null;
+
+	var sucursal_id = $('#sucursal').val();
+
+	var ajax = $.ajax({
+		"method": "POST",
+		"url": "{{ url('/venta/permisoRegistrar') }}",
+		"data": {
+			"sucursal_id" : sucursal_id, 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		aperturaycierre = info;
+	}).always(function(){
+		if(aperturaycierre == 0){
+			$("#btnGuardar").prop('disabled',true);
+			$("#comentario").prop('disabled',true);
+
+			$('#divMensajeErrorCompras').html("");
+
+			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
+
+			var surcursal_id = $('#sucursal_id').val();
+
+			if(sucursal_id != null){
+				$('#divMensajeErrorCompras').html(cadenaError);
+			}
+
+		}else if(aperturaycierre == 1){
+			$("#btnGuardar").prop('disabled',false);
+			$("#comentario").prop('disabled',false);
+
+			$('#divMensajeErrorCompras').html("");
+
+		}
+	});
+
+	return aperturaycierre;
+}
 
 function buscarProducto(valor){
     if(valor.length >= 3){
@@ -335,6 +397,25 @@ $(document).on('click', '.escogerFila', function(){
 	$('.escogerFila').css('background-color', 'white');
 	$(this).css('background-color', 'yellow');
 });
+
+function generarSaldoCaja(){
+	var saldocaja = null;
+
+	var sucursal_id = $('#sucursal').val();
+
+	var serieajax = $.ajax({
+		"method": "POST",
+		"url": "{{ url('/caja/saldoCaja') }}",
+		"data": {
+			"sucursal_id" : sucursal_id, 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		saldocaja = info;
+	}).always(function(){
+		$('#saldo_caja').val(saldocaja);
+	});
+}
 
 function seleccionarProducto(idproducto){
 	//alert(idproducto);
@@ -601,94 +682,101 @@ function guardarCompra(entidad, idboton) {
 			title: 'DEBE INGRESAR SERIE Y NÚMERO',
 			type: 'error',
 			});
-		$(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="ccruc"]').focus();
+		$(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="serie"]').focus();
 		return false;
 	}else if($(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="total"]').val()== 0){
 		swal({
 			title: 'EL TOTAL DEBE SER MAYOR QUE 0 SOLES , INGRESE PRODUCTOS AL DETALLE DE LA COMPRA',
 			type: 'error',
 			});
-		$(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="ccruc"]').focus();
+		$(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="nombreproducto"]').focus();
 		return false;
-	}else{
-		var total = $(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="total"]').val();
-		total = total.replace(',','');
-		var mensaje = '<h3 align = "center">Total = '+total+'</h3>';
-		/*if (typeof mensajepersonalizado != 'undefined' && mensajepersonalizado !== '') {
-			mensaje = mensajepersonalizado;
-		}*/
-		bootbox.confirm({
-			message : mensaje,
-			buttons: {
-				'cancel': {
-					label: 'Cancelar',
-					className: 'btn btn-default btn-sm'
-				},
-				'confirm':{
-					label: 'Aceptar',
-					className: 'btn btn-success btn-sm'
-				}
-			}, 
-			callback: function(result) {
-				if (result) {
-					var idformulario = IDFORMMANTENIMIENTO + entidad;
-					var data         = submitForm(idformulario);
-					var respuesta    = '';
-					var listar       = 'NO';
-					
-					var btn = $(idboton);
-					btn.button('loading');
-					data.done(function(msg) {
-						respuesta = msg;
-					}).fail(function(xhr, textStatus, errorThrown) {
-						respuesta = 'ERROR';
-					}).always(function() {
-						btn.button('reset');
-						if(respuesta === 'ERROR'){
-						}else{
-							var dat = JSON.parse(respuesta);
-				            if(dat[0]!==undefined){
-				                resp=dat[0].respuesta;    
-				            }else{
-				                resp='VALIDACION';
-				            }
-				            
-							if (resp === 'OK') {
-								cerrarModal();
-				                buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-				                /*if(dat[0].pagohospital!="0"){
-				                    window.open('/juanpablo/ticket/pdfComprobante?ticket_id='+dat[0].ticket_id,'_blank')
-				                }else{
-				                    window.open('/juanpablo/ticket/pdfPrefactura?ticket_id='+dat[0].ticket_id,'_blank')
-				                }*/
-				                //alert('hola');
-				                /*if (dat[0].ind == 1) {
-				                	window.open('/juanpablo/venta/pdfComprobante?venta_id='+dat[0].venta_id,'_blank');
-				                	window.open('/juanpablo/venta/pdfComprobante?venta_id='+dat[0].second_id,'_blank');
-				                }else{
-				                	window.open('/juanpablo/venta/pdfComprobante?venta_id='+dat[0].venta_id,'_blank');
-				                }*/
-				                
-							} else if(resp === 'ERROR') {
-								//bootbox.alert(dat[0].msg);
-								swal({
-									title: dat[0].msg,
-									type: 'error',
-									});
-							} else {
-								mostrarErrores(respuesta, idformulario, entidad);
-							}
-						}
-					});
-				};
-			}            
-		}).find("div.modal-content").addClass("bootboxConfirmWidth");
-		setTimeout(function () {
-			if (contadorModal !== 0) {
-				$('.modal' + (contadorModal-1)).css('pointer-events','auto');
-				$('body').addClass('modal-open');
+	}else if($(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="a_cuenta"]').prop('checked') == false ){
+
+		var total = parseFloat($('#total').val());
+		var saldo_caja = parseFloat($('#saldo_caja').val());
+
+		if( total > saldo_caja ){
+			swal({
+				title: 'NO HAY SUFICIENTE SALDO EN CAJA PARA LA COMPRA',
+				type: 'error',
+				});
+			return false;
+		}else{
+
+			var sucursal = document.getElementById("sucursal");
+			var tipo = $('#tipodocumento_id').val();
+			var total = parseFloat($("#total").val());
+			var letra = "";
+			if(tipo == 4){
+				letra ="FC";
+			}else if(tipo == 5){
+				letra ="BC";
 			}
-		},2000);
+
+			var mensaje = "<div style='text-align: left; padding: 20px; font-size: 15;'><p><label>Sucursal:  </label>  "+ sucursal.options[sucursal.selectedIndex].text 
+						+"</p><p><label>N° Compra: </label>  "+ letra + $('#serie').val() + "-"+ $('#numerodocumento').val() 
+						+ "</p><p><label>Proveedor:  </label>  "+ $('#ccrazon').val() 
+						+ "</p><p><label>Total:  </label>  S/."+  total.toFixed(2) +"</p><div>" ;
+
+			swal({
+				title: 'Confirmar Guardado',
+				html: mensaje,
+				type: 'question',
+				showCancelButton: true,
+				confirmButtonColor: '#54b359',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Guardar Compra'
+			}).then((result) => {
+				if (result.value) {
+					guardar("{{$entidad}}");
+				}
+			});
+
+		}
+
+	}else{
+
+		var sucursal = document.getElementById("sucursal");
+		var tipo = $('#tipodocumento_id').val();
+		var total = parseFloat($("#total").val());
+		var pago = "";
+		if( $("#pago").val() == "" ){
+			pago = 0;
+		}else{
+			pago = parseFloat($("#pago").val());
+		}
+		
+		var credito = parseFloat($("#credito").val());
+		var letra = "";
+		if(tipo == 4){
+			letra ="FC";
+		}else if(tipo == 5){
+			letra ="BC";
+		}
+
+		var mensaje = "<div style='text-align: left; padding: 20px; font-size: 15;'><p><label>Sucursal:  </label>  "+ sucursal.options[sucursal.selectedIndex].text 
+					+"</p><p><label>N° Compra: </label>  "+ letra + $('#serie').val() + "-"+ $('#numerodocumento').val() 
+					+ "</p><p><label>Proveedor:  </label>  "+ $('#ccrazon').val() 
+					+ "</p><p><label>Total:  </label>  S/."+  total.toFixed(2) 
+					+ "</p><p><label>Compra a crédito:  </label>  "+ "SI"
+					+ "</p><p><label>Monto a pagar:  </label>  S/."+  pago.toFixed(2)
+					+ "</p><p><label>Cuenta por pagar:  </label>  S/."+  credito.toFixed(2)+"</p><div>";
+
+		swal({
+			title: 'Confirmar Guardado',
+			html: mensaje,
+			type: 'question',
+			showCancelButton: true,
+			confirmButtonColor: '#54b359',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Guardar Compra'
+		}).then((result) => {
+			if (result.value) {
+				guardar("{{$entidad}}");
+			}
+		});
+
 	}	
 }
 

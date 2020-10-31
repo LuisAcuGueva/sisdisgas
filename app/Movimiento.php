@@ -94,7 +94,7 @@ class Movimiento extends Model
         			->orderBy('fecha', 'DESC')->orderBy('id', 'DESC');
 	}
 
-	public function scopebalonescredito($query, $fechainicio, $fechafin)
+	public function scopebalonescredito($query, $fechainicio, $fechafin, $sucursal_id )
     {
 		return $query->where(function($subquery) use($fechainicio, $fechafin)
 		            {
@@ -102,23 +102,27 @@ class Movimiento extends Model
 							$subquery->whereBetween(DB::raw('CONVERT(fecha,date)'),[$fechainicio,$fechafin]);
 		            	}
 					})
+					->where('sucursal_id', "=", $sucursal_id)
 					->where('balon_a_cuenta', "=", 1)
 					->where('tipomovimiento_id', "=", 2)
-					->where('credito_cancelado', "!=", 1)
         			->orderBy('num_caja','DESC')->orderBy('fecha', 'ASC');
 	}
 
-	public function scopecomprascredito($query, $fechainicio, $fechafin)
+	public function scopecomprascredito($query, $fechainicio, $fechafin, $sucursal_id , $proveedor_id)
     {
-		return $query->where(function($subquery) use($fechainicio, $fechafin)
+		return $query->where(function($subquery) use($fechainicio, $fechafin, $proveedor_id)
 		            {
 		            	if (!is_null($fechainicio) && !is_null($fechafin)) {
 							$subquery->whereBetween(DB::raw('CONVERT(fecha,date)'),[$fechainicio,$fechafin]);
+						}
+						
+						if (!is_null($proveedor_id)) {
+		            		$subquery->where('persona_id', $proveedor_id );
 		            	}
 					})
+					->where('sucursal_id', "=", $sucursal_id)
 					->where('balon_a_cuenta', "=", 1)
 					->where('tipomovimiento_id', "=", 3)
-					->where('credito_cancelado', "!=", 1)
         			->orderBy('num_caja','DESC')->orderBy('fecha', 'ASC');
 	}
 

@@ -83,10 +83,6 @@ use App\Sucursal;
 		});
 	});
 
-	function pdf(entidad){
-			window.open('tipousuario/pdf?descripcion='+$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="name"]').val());
-	}
-
 	var personas = new Bloodhound({
 		datumTokenizer: function (d) {
 			return Bloodhound.tokenizers.whitespace(d.value);

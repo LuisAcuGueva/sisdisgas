@@ -530,7 +530,6 @@ class TurnoController extends Controller
             $movimiento = Movimiento::find($id);
             $movimiento->estado = 0;
             $movimiento->comentario_anulado  = strtoupper($request->input('motivo'));  
-            $movimiento->save();
 
             if($movimiento->concepto_id == 15){
                 $detalle_turno = Detalleturnopedido::where('pedido_id',$movimiento->id)->first();
@@ -539,11 +538,24 @@ class TurnoController extends Controller
             }
 
             if($movimiento->venta_id != null){
-                $movimientoventa = Movimiento::find($movimiento->venta_id);
-                $movimientoventa->estado = 0;
-                $movimientoventa->comentario_anulado  = strtoupper($request->input('motivo'));  
-                $movimientoventa->save();
+
+                $pagos = Detallepagos::where('pedido_id', $movimiento->venta_id)
+                                        ->leftjoin('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')                       
+                                        ->where('movimiento.estado', 1)
+                                        ->get();
+
+                if( count($pagos) == 1 ) {
+
+                    $movimientoventa = Movimiento::find($movimiento->venta_id);
+                    $movimientoventa->estado = 0;
+                    $movimientoventa->comentario_anulado  = strtoupper($request->input('motivo'));  
+                    $movimientoventa->save();
+
+                }
             }
+
+            $movimiento->save();
+
         });
         return is_null($error) ? "OK" : $error;
     }

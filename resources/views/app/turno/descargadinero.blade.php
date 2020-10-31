@@ -141,6 +141,8 @@ $(document).ready(function() {
 
 	generarNumeroCaja();
 
+	permisoRegistrar();
+
 	mueveReloj();
 
 }); 
@@ -302,9 +304,9 @@ function generarNumeroCaja(){
 		$('#num_caja').val(num_caja);
 	});
 
-	}
+}
 
-	function generarSaldoRepartidor(){
+function generarSaldoRepartidor(){
 
 	var saldo_repartidor = null;
 

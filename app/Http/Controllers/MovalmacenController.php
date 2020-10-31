@@ -26,8 +26,8 @@ class MovalmacenController extends Controller
 {
 
     protected $folderview      = 'app.movalmacen';
-    protected $tituloAdmin     = 'Movimiento de Almacén';
-    protected $tituloDetalle  = 'Detalle de compra';
+    protected $tituloAdmin     = 'Movimientos de Almacén';
+    protected $tituloDetalle   = 'Detalle de movimiento de almacén';
     protected $tituloRegistrar = 'Registrar movimiento de almacén';
     protected $tituloModificar = 'Modificar compra';
     protected $tituloEliminar  = 'Anular compra';

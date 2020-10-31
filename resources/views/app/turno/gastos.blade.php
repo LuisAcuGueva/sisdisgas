@@ -48,6 +48,14 @@
 	{!! Form::hidden('persona_id',null,array('id'=>'persona_id')) !!}
 	{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 	@endif
+	<div class="form-group">
+		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
+			{!! Form::label('totalrepartidor', 'Saldo:')!!}
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-4">
+			{!! Form::text('totalrepartidor', '' , array('class' => 'form-control input-xs', 'style' => 'margin-top:8px;', 'id' => 'totalrepartidor', 'readonly' => 'true')) !!}
+		</div>
+	</div>
 	<div class="form-group">	
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('concepto', 'Concepto:')!!}
@@ -111,6 +119,8 @@ $(document).ready(function() {
 
 	generarNumeroCaja();
 
+	permisoRegistrar();
+	
 	mueveReloj();
 
 }); 
@@ -123,20 +133,30 @@ $(document).ready(function() {
 		$(this).css('background', 'rgb(179,188,237)');
 		$('#persona_id').attr('value',idempleado);
 		$("#empleado_nombre").val($(this).children('label').html());
+		generarSaldoRepartidor();
 	});
 
 	$("#monto").keyup(function(){
 		var monto = parseFloat($("#monto").val());
+		var saldo = parseFloat($("#totalrepartidor").val());
 
 		if( !is_numeric(monto) ){
 			$("#monto").val("");
 			return false;
 		}
 
-		if( monto <= 0){
+		console.log("saldo" + saldo);
+		console.log("monto" + monto);
+
+		if( monto > saldo){
 			$('#btnGuardar').prop('disabled', true);
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-			cadenaError += '<li>El monto a ingresar debe ser mayor a 0.</li></ul></div>';
+			cadenaError += '<li>El monto de gasto no puede ser mayor al saldo del repartidor.</li></ul></div>';
+			$('#divMensajeErrorTurnorepartidor').html(cadenaError);
+		}else if( monto <= 0){
+			$('#btnGuardar').prop('disabled', true);
+			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+			cadenaError += '<li>El monto de gasto debe ser mayor a 0.</li></ul></div>';
 			$('#divMensajeErrorTurnorepartidor').html(cadenaError);
 		}else{
 			$('#btnGuardar').prop('disabled', false);
@@ -152,46 +172,46 @@ function is_numeric(value) {
 
 function permisoRegistrar(){
 
-var aperturaycierre = null;
+	var aperturaycierre = null;
 
-var sucursal_id = $('#sucursal_id').val();
+	var sucursal_id = $('#sucursal_id').val();
 
-var ajax = $.ajax({
-	"method": "POST",
-	"url": "{{ url('/venta/permisoRegistrar') }}",
-	"data": {
-		"sucursal_id" : sucursal_id, 
-		"_token": "{{ csrf_token() }}",
+	var ajax = $.ajax({
+		"method": "POST",
+		"url": "{{ url('/venta/permisoRegistrar') }}",
+		"data": {
+			"sucursal_id" : sucursal_id, 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		aperturaycierre = info;
+	}).always(function(){
+		if(aperturaycierre == 0){
+			$("#btnGuardar").prop('disabled',true);
+			$("#comentario").prop('disabled',true);
+			$("#monto").prop('disabled',true);
+
+			$('#divMensajeErrorTurnorepartidor').html("");
+
+			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
+
+			var surcursal_id = $('#sucursal_id').val();
+
+			if(sucursal_id != null){
+				$('#divMensajeErrorTurnorepartidor').html(cadenaError);
+			}
+
+		}else if(aperturaycierre == 1){
+			$("#btnGuardar").prop('disabled',false);
+			$("#comentario").prop('disabled',false);
+			$("#monto").prop('disabled',false);
+
+			$('#divMensajeErrorTurnorepartidor').html("");
+
 		}
-}).done(function(info){
-	aperturaycierre = info;
-}).always(function(){
-	if(aperturaycierre == 0){
-		$("#btnGuardar").prop('disabled',true);
-		$("#comentario").prop('disabled',true);
-		$("#monto").prop('disabled',true);
+	});
 
-		$('#divMensajeErrorTurnorepartidor').html("");
-
-		var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
-
-		var surcursal_id = $('#sucursal_id').val();
-
-		if(sucursal_id != null){
-			$('#divMensajeErrorTurnorepartidor').html(cadenaError);
-		}
-
-	}else if(aperturaycierre == 1){
-		$("#btnGuardar").prop('disabled',false);
-		$("#comentario").prop('disabled',false);
-		$("#monto").prop('disabled',false);
-
-		$('#divMensajeErrorTurnorepartidor').html("");
-
-	}
-});
-
-return aperturaycierre;
+	return aperturaycierre;
 }
 
 function generarNumeroCaja(){
@@ -217,83 +237,106 @@ function generarNumeroCaja(){
 
 function generarEmpleados(){
 
-//$('#empleados_mant').html("");
+	//$('#empleados_mant').html("");
 
-var empleados = null;
+	var empleados = null;
 
-var tabla = "";
+	var tabla = "";
 
-var sucursal_id = $('#sucursal_id').val();
+	var sucursal_id = $('#sucursal_id').val();
 
-$.ajax({
-	"method": "POST",
-	"url": "{{ url('/turno/cargarempleados') }}",
-	"data": {
-		"sucursal_id" : sucursal_id, 
-		"_token": "{{ csrf_token() }}",
+	$.ajax({
+		"method": "POST",
+		"url": "{{ url('/turno/cargarempleados') }}",
+		"data": {
+			"sucursal_id" : sucursal_id, 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		empleados = info;
+	}).always(function(){
+
+		if( empleados != ""){
+			$('.page-venta').html("SELECCIONE REPARTIDOR");
+			$('.page-venta').css("color","black");
+		}else{
+			$('.page-venta').html("NINGÚN REPARTIDOR EN TURNO");
+			$('.page-venta').css("color","red");
 		}
-}).done(function(info){
-	empleados = info;
-}).always(function(){
-
-	if( empleados != ""){
-		$('.page-venta').html("SELECCIONE REPARTIDOR");
-		$('.page-venta').css("color","black");
-	}else{
-		$('.page-venta').html("NINGÚN REPARTIDOR EN TURNO");
-		$('.page-venta').css("color","red");
-	}
 
 
-	$.each(empleados, function(i, item) {
-		tabla =  tabla +'<div class="empleadomv" id="' + item.id + '" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;"><img src="assets/images/empleado.png" style="width: 50px; height: 50px"><label style="font-size: 11px;  color: #2a3f54;">' + item.nombres + ' ' + item.apellido_pat  + ' ' + item.apellido_mat +'</label></div>';   
+		$.each(empleados, function(i, item) {
+			tabla =  tabla +'<div class="empleadomv" id="' + item.id + '" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;"><img src="assets/images/empleado.png" style="width: 50px; height: 50px"><label style="font-size: 11px;  color: #2a3f54;">' + item.nombres + ' ' + item.apellido_pat  + ' ' + item.apellido_mat +'</label></div>';   
+		});
+
+		$('#empleados_mant').html(tabla);
+		
+		$(".empleadomv").on('click', function(){
+			var idempleado = $(this).attr('id');
+			$(".empleadomv").css('background', 'rgb(255,255,255)');
+			$(this).css('background', 'rgb(179,188,237)');
+			$('#persona_id').attr('value',idempleado);
+			$("#empleado_nombre").val($(this).children('label').html());
+			generarSaldoRepartidor();
+		});
+		
 	});
 
-	$('#empleados_mant').html(tabla);
-	
-	$(".empleadomv").on('click', function(){
-		var idempleado = $(this).attr('id');
-		$(".empleadomv").css('background', 'rgb(255,255,255)');
-		$(this).css('background', 'rgb(179,188,237)');
-		$('#persona_id').attr('value',idempleado);
-		$("#empleado_nombre").val($(this).children('label').html());
+}
+
+
+function generarSaldoRepartidor(){
+
+	var saldo_repartidor = null;
+
+	var persona_id = $('#persona_id').val();
+
+	$.ajax({
+		"method": "POST",
+		"url": "{{ url('/turno/generarSaldoRepartidor') }}",
+		"data": {
+			"persona_id" : persona_id, 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		saldo_repartidor = info;
+	}).always(function(){
+		$('#totalrepartidor').val(saldo_repartidor);
 	});
-	
-});
 
 }
 	
 /*Script del Reloj */
 function mueveReloj() {
-marcacion = new Date()
-Hora = marcacion.getHours()
-Minutos = marcacion.getMinutes()
-Segundos = marcacion.getSeconds()
+	marcacion = new Date()
+	Hora = marcacion.getHours()
+	Minutos = marcacion.getMinutes()
+	Segundos = marcacion.getSeconds()
 
-/*variable para el apóstrofe de am o pm*/
-if (Hora < 12) {
-	dn = "a.m"
-}else{
-	dn = "p.m"
-	Hora = Hora - 12
-}
-if (Hora == 0)
-Hora = 12
+	/*variable para el apóstrofe de am o pm*/
+	if (Hora < 12) {
+		dn = "a.m"
+	}else{
+		dn = "p.m"
+		Hora = Hora - 12
+	}
+	if (Hora == 0)
+	Hora = 12
 
-/* Si la Hora, los Minutos o los Segundos son Menores o igual a 9, le añadimos un 0 */
-if (Hora <= 9) Hora = "0" + Hora
-if (Minutos <= 9) Minutos = "0" + Minutos
-if (Segundos <= 9) Segundos = "0" + Segundos
-/* Termina el Script del Reloj */
+	/* Si la Hora, los Minutos o los Segundos son Menores o igual a 9, le añadimos un 0 */
+	if (Hora <= 9) Hora = "0" + Hora
+	if (Minutos <= 9) Minutos = "0" + Minutos
+	if (Segundos <= 9) Segundos = "0" + Segundos
+	/* Termina el Script del Reloj */
 
-horaImprimible = Hora + ":" + Minutos + ":" + Segundos + " " + dn
+	horaImprimible = Hora + ":" + Minutos + ":" + Segundos + " " + dn
 
-$('#hora').val(horaImprimible);
+	$('#hora').val(horaImprimible);
 
-//La función se tendrá que llamar así misma para que sea dinámica, 
-//de esta forma:
+	//La función se tendrá que llamar así misma para que sea dinámica, 
+	//de esta forma:
 
-setTimeout(mueveReloj,1000)
+	setTimeout(mueveReloj,1000)
 
 }
 </script>
