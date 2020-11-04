@@ -58,7 +58,7 @@ $hoy = date("Y-m-d");
 			{!! Form::label('fecha', 'Fecha:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 			<div class="col-lg-8 col-md-8 col-sm-8">
 				<div class='input-group input-group-sm' id='divfecha'>
-					<input class="form-control input-sm" id="fecha" placeholder="Ingrese Fecha" name="fecha" type="date" value="{{ $hoy }}">
+					<input class="form-control input-sm" id="fecha" placeholder="Ingrese Fecha" name="fecha" readOnly="readOnly" type="date" value="{{ $hoy }}">
 				</div>
 			</div>
 		</div>
@@ -132,7 +132,16 @@ $hoy = date("Y-m-d");
 			</table>
 		</div>
 
-		<hr>
+		<hr style="height: 1px; border: 0; color: #666; background-color: #a4a4a4;">
+
+		<div class="form-group">
+			{!! Form::label('comentario', 'Comentario:', array('class' => 'col-lg-2 col-md-2 col-sm-2')) !!}
+			<div class="col-lg-10 col-md-10 col-sm-10">
+				<textarea class="form-control input-xs" id="comentario" cols="10" rows="2" name="comentario"></textarea>
+			</div>
+		</div>
+		
+		<hr style="height: 1px; border: 0; color: #666; background-color: #a4a4a4;">
 
 		<div class="form-group">
 			<div class="col-lg-2 col-md-2 col-sm-2 credito">

@@ -64,7 +64,7 @@ class ComprasController extends Controller
         $cabecera[]       = array('valor' => 'PROVEEDOR', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NRO DOC', 'numero' => '1');
         //$cabecera[]       = array('valor' => 'TIPO DOC', 'numero' => '1');
-        //$cabecera[]       = array('valor' => 'RESPONSABLE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CRÉDITO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
         
@@ -150,13 +150,14 @@ class ComprasController extends Controller
             $compra->persona_id =  $request->input('proveedor_id');
             $compra->concepto_id = 4;
             $compra->num_compra = $request->input('serie') . '-' . $request->input('numerodocumento');
-            $compra->fecha  = $request->input('fecha');
+            //$compra->fecha  = $request->input('fecha');
             $compra->estado = 1;
             $compra->total = $total;
             //$compra->igv = $igv;
             //$compra->subtotal = $total - $igv;
             //$compra->estadopago = 'P';
-            
+
+            $compra->comentario =  strtoupper ($request->input('comentario') );
             $user = Auth::user();
             $compra->usuario_id = $user->id;
             $compra->trabajador_id = $user->person_id;
@@ -178,7 +179,8 @@ class ComprasController extends Controller
             $movimientocaja->subtotal           = $request->input('totalcompra');
             $movimientocaja->estado             = 1;
             $movimientocaja->persona_id         = $request->input('proveedor_id');
-            $user           = Auth::user();
+            $movimientocaja->comentario         = "PAGO DE COMPRA: ". $compra->tipodocumento->abreviatura."-". $compra->num_compra;
+            $user           = Auth::user();    
             $movimientocaja->usuario_id     = $user->id;
             $movimientocaja->save();
 
@@ -324,10 +326,10 @@ class ComprasController extends Controller
             $compra->comentario_anulado  = strtoupper($request->input('motivo'));  
             $compra->save();
 
-            $movcaja = Movimiento::where('compra_id', $id)->first();
+          /*  $movcaja = Movimiento::where('compra_id', $id)->first();
             $movcaja->estado = 0;
             $movcaja->comentario_anulado  = strtoupper($request->input('motivo'));  
-            $movcaja->save();
+            $movcaja->save();*/
 
             $pagos = Detallepagos::where('pedido_id', $id)->get();
             foreach ($pagos as $key => $value) {
@@ -343,7 +345,11 @@ class ComprasController extends Controller
 
             foreach ($kardexs as $key => $value) {
                 $stock = Stock::where('producto_id', $value->producto_id )->where('sucursal_id', $compra->sucursal_id)->first();
-                $stock->cantidad = $value->stock_anterior;
+                if( $value->tipo == "I"){
+                    $stock->cantidad -= $value->cantidad;
+                }else{
+                    $stock->cantidad += $value->cantidad;
+                }
                 $stock->save();
             }
         });
@@ -414,23 +420,35 @@ class ComprasController extends Controller
             foreach ($productos as $key => $value){
                 /*$currentstock = Kardex::leftjoin('detallemovimiento', 'kardex.detallemovimiento_id', '=', 'detallemovimiento.id')->leftjoin('movimiento', 'detallemovimiento.movimiento_id', '=', 'movimiento.id')->where('producto_id', '=', $value->id)->where('movimiento.almacen_id', '=',1)->orderBy('kardex.id', 'DESC')->first();*/
                 $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                                        ->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
                                         ->where('detalle_mov_almacen.producto_id', '=', $value->id)
                                         ->where('kardex.sucursal_id', '=', $sucursal_id)
+                                        ->where('movimiento.estado', '=', 1)
                                         ->orderBy('kardex.id', 'DESC')
                                         ->first();
-                $stock = 0;
-                if ($currentstock != null) {
-                    $stock = $currentstock->stock_actual;
-                }
 
-                $data[$c] = array(
-                    'nombre' => $value->descripcion,
-                    'stock' => number_format($stock, 0, '.', ''),
-                    'stock_seguridad' => number_format($value->stock_seguridad, 0, '.', ''),
-                    'precio_venta' => number_format($value->precio_venta,2,'.',''),
-                    'precio_compra' => number_format($value->precio_compra,2,'.',''),
-                    'idproducto' => $value->id,
-                );
+                $stock = Stock::where('producto_id', $value->id )->where('sucursal_id', $sucursal_id)->first();
+
+                if( $stock == null){
+                    $data[$c] = array(
+                        'nombre' => $value->descripcion,
+                        'stock' => number_format(0, 0, '.', ''),
+                        'stock_seguridad' => number_format($value->stock_seguridad, 0, '.', ''),
+                        'precio_venta' => number_format($value->precio_venta,2,'.',''),
+                        'precio_compra' => number_format($value->precio_compra,2,'.',''),
+                        'idproducto' => $value->id,
+                    );
+                }else{
+                    $data[$c] = array(
+                        'nombre' => $value->descripcion,
+                        'stock' => number_format($stock->cantidad, 0, '.', ''),
+                        'stock_seguridad' => number_format($value->stock_seguridad, 0, '.', ''),
+                        'precio_venta' => number_format($value->precio_venta,2,'.',''),
+                        'precio_compra' => number_format($value->precio_compra,2,'.',''),
+                        'idproducto' => $value->id,
+                    );
+                }
+                
                 $c++;
             }            
         }else{
@@ -444,7 +462,14 @@ class ComprasController extends Controller
         $sucursal_id = $request->input('sucursal_id');
 
         $producto = Producto::find($request->input("idproducto"));
-        $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')->where('producto_id', '=', $producto->id)->where('movimiento.sucursal_id', '=',$sucursal_id)->orderBy('kardex.id', 'DESC')->first();
+        
+        $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                                ->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
+                                ->where('detalle_mov_almacen.producto_id', '=', $producto->id)
+                                ->where('kardex.sucursal_id', '=',$sucursal_id)
+                                ->where('movimiento.estado', '=', 1)
+                                ->orderBy('kardex.id', 'DESC')->first();
+        
         $stock = 0;
         if ($currentstock !== null) {
             $stock=$currentstock->stock_actual;

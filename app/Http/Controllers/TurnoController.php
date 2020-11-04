@@ -539,7 +539,11 @@ class TurnoController extends Controller
 
             foreach ($kardexs as $key => $value) {
                 $stock = Stock::where('producto_id', $value->producto_id )->where('sucursal_id', $movimiento->sucursal_id)->first();
-                $stock->cantidad = $value->stock_anterior;
+                if( $value->tipo == "I"){
+                    $stock->cantidad -= $value->cantidad;
+                }else{
+                    $stock->cantidad += $value->cantidad;
+                }
                 $stock->save();
             }
 
@@ -569,7 +573,11 @@ class TurnoController extends Controller
 
                     foreach ($kardexs as $key => $value) {
                         $stock = Stock::where('producto_id', $value->producto_id )->where('sucursal_id', $movimientoventa->sucursal_id)->first();
-                        $stock->cantidad = $value->stock_anterior;
+                        if( $value->tipo == "I"){
+                            $stock->cantidad -= $value->cantidad;
+                        }else{
+                            $stock->cantidad += $value->cantidad;
+                        }
                         $stock->save();
                     }
 

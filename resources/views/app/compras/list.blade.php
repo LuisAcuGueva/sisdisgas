@@ -33,10 +33,20 @@ use App\OperacionMenu;
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloEliminar.'\', this);', 'disabled', 'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-remove')) !!}</td>
 		@endif
-			<td align="center">{{ $fechaformato = date("d/m/Y",strtotime($value->fecha))}}</td>	
+			<td align="center">{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->fecha))}}</td>	
 			<td>{{ $value->persona->razon_social }}</td>
 			<td>{{ $value->tipodocumento->abreviatura . '' .$value->num_compra }}</td>
 			<!--td>{{ $value->trabajador->nombres .' '. $value->trabajador->apellido_pat .' '. $value->trabajador->apellido_mat}}</td-->
+			@if($value->estado == 1)
+				@if (!is_null($value->comentario))
+					<td> {{ $value->comentario }} </td>
+				@else
+					<td align="center"> - </td>
+				@endif
+			@elseif($value->estado == 0)
+				<td> {{ $value->comentario }} | Anulado por: {{ $value->comentario_anulado }} </td>
+			@endif
+
 			@if($value->balon_a_cuenta == 1)
 				<td align="center"> SI </td>
 			@else

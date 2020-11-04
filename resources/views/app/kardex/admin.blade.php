@@ -4,8 +4,7 @@ $desde = strtotime ( '-30 day' , strtotime ( $hasta ) ) ;
 $desde = date( 'Y-m-d' , $desde );
 ?>
 <div class="row">
-	<div class="col-lg-1 col-md-1"></div>
-	<div class="col-lg-10 col-md-10 col-sm-12 col-xs-12" style="margin-bottom: 45px;">
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 45px;">
 		<div class="x_panel">
 			<div class="x_title">
 				<h2><i class="fa fa-gears"></i> {{ $title }}</h2>
@@ -54,7 +53,6 @@ $desde = date( 'Y-m-d' , $desde );
 			</div>
 		</div>
 	</div>
-<div class="col-lg-1 col-md-1"></div>
 </div>
 <script>
 	$(document).ready(function () {

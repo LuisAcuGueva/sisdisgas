@@ -26,7 +26,7 @@ use App\Detallepagos;
 			<tr style ="background-color: #ffc8cb !important">
 		@endif
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
-			<td align="center">{{ $fechaformato = date("d/m/Y",strtotime($value->fecha )) }}</td>
+			<td align="center">{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->fecha )) }}</td>
 			@if(!is_null($value->persona->dni))
 			<td>{{ $value->persona->apellido_pat.' '.$value->persona->apellido_mat.' '.$value->persona->nombres  }}</td>
 			@else

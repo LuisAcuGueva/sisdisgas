@@ -154,7 +154,7 @@ class MovalmacenController extends Controller
             //$movalmacen->persona_id =  $request->input('proveedor_id');
             //$movalmacen->concepto_id = 4;
             $movalmacen->num_compra = $request->input('serie') . '-' . $request->input('numerodocumento');
-            $movalmacen->fecha  = $request->input('fecha');
+            //$movalmacen->fecha  = $request->input('fecha');
             $movalmacen->estado = 1;
             $movalmacen->total = $total;
             //$movalmacen->igv = $igv;
@@ -166,8 +166,8 @@ class MovalmacenController extends Controller
             }else{
                 $movalmacen->concepto_id = 18;
             }
-
-            $movalmacen->comentario = $request->input('comentario');
+ 
+            $movalmacen->comentario = strtoupper ( $request->input('comentario') );
             
             $user = Auth::user();
             $movalmacen->usuario_id = $user->id;
@@ -289,10 +289,8 @@ class MovalmacenController extends Controller
 
             }
 
-            $dat[0]=array("respuesta"=>"OK","movalmacen_id"=>$movalmacen->id, "ind" => 0, "second_id" => 0);
-
         });
-        return is_null($error) ? json_encode($dat) : $error;
+        return is_null($error) ? "OK" : $error;
 
     }
 
@@ -330,6 +328,20 @@ class MovalmacenController extends Controller
             $movimiento->estado = 0;
             $movimiento->comentario_anulado  = strtoupper($request->input('motivo'));  
             $movimiento->save();
+
+            $kardexs = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                            ->where('detalle_mov_almacen.movimiento_id', $id)
+                            ->get();
+
+            foreach ($kardexs as $key => $value) {
+                $stock = Stock::where('producto_id', $value->producto_id )->where('sucursal_id', $movimiento->sucursal_id)->first();
+                if( $value->tipo == "I"){
+                    $stock->cantidad -= $value->cantidad;
+                }else{
+                    $stock->cantidad += $value->cantidad;
+                }
+                $stock->save();
+            }
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -398,23 +410,35 @@ class MovalmacenController extends Controller
             foreach ($productos as $key => $value){
                 /*$currentstock = Kardex::leftjoin('detallemovimiento', 'kardex.detallemovimiento_id', '=', 'detallemovimiento.id')->leftjoin('movimiento', 'detallemovimiento.movimiento_id', '=', 'movimiento.id')->where('producto_id', '=', $value->id)->where('movimiento.almacen_id', '=',1)->orderBy('kardex.id', 'DESC')->first();*/
                 $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                                        ->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
                                         ->where('detalle_mov_almacen.producto_id', '=', $value->id)
                                         ->where('kardex.sucursal_id', '=', $sucursal_id)
+                                        ->where('movimiento.estado', '=', 1)
                                         ->orderBy('kardex.id', 'DESC')
                                         ->first();
-                $stock = 0;
-                if ($currentstock != null) {
-                    $stock = $currentstock->stock_actual;
-                }
 
-                $data[$c] = array(
-                    'nombre' => $value->descripcion,
-                    'stock' => number_format($stock, 0, '.', ''),
-                    'stock_seguridad' => number_format($value->stock_seguridad, 0, '.', ''),
-                    'precio_venta' => number_format($value->precio_venta,2,'.',''),
-                    'precio_compra' => number_format($value->precio_compra,2,'.',''),
-                    'idproducto' => $value->id,
-                );
+                $stock = Stock::where('producto_id', $value->id )->where('sucursal_id', $sucursal_id)->first();
+
+                if( $stock == null){
+                    $data[$c] = array(
+                        'nombre' => $value->descripcion,
+                        'stock' => number_format(0, 0, '.', ''),
+                        'stock_seguridad' => number_format($value->stock_seguridad, 0, '.', ''),
+                        'precio_venta' => number_format($value->precio_venta,2,'.',''),
+                        'precio_compra' => number_format($value->precio_compra,2,'.',''),
+                        'idproducto' => $value->id,
+                    );
+                }else{
+                    $data[$c] = array(
+                        'nombre' => $value->descripcion,
+                        'stock' => number_format($stock->cantidad, 0, '.', ''),
+                        'stock_seguridad' => number_format($value->stock_seguridad, 0, '.', ''),
+                        'precio_venta' => number_format($value->precio_venta,2,'.',''),
+                        'precio_compra' => number_format($value->precio_compra,2,'.',''),
+                        'idproducto' => $value->id,
+                    );
+                }
+                                        
                 $c++;
             }            
         }else{
@@ -431,8 +455,10 @@ class MovalmacenController extends Controller
         $producto = Producto::find($request->input("idproducto"));
 
         $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                                ->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
                                 ->where('detalle_mov_almacen.producto_id', '=', $producto_id)
                                 ->where('kardex.sucursal_id', '=', $sucursal_id)
+                                ->where('movimiento.estado', '=', 1)
                                 ->orderBy('kardex.id', 'DESC')
                                 ->first();
 
@@ -483,5 +509,20 @@ class MovalmacenController extends Controller
                 </td>';
 
         return $cadena; 
+    }
+
+    public function generartipodocumento(Request $request){
+        $tipo = $request->input('tipo');
+        $tipos_doc = null;
+        if( $tipo == "I"){
+            $tipos_doc = Tipodocumento::where('tipomovimiento_id',3)->get();
+        }else{
+            $tipos_doc = Tipodocumento::where('tipomovimiento_id',2)->get();
+        }
+        $cboDocumento = array();
+        foreach ($tipos_doc as $key => $value) {
+            $cboDocumento = $cboDocumento + array( $value->id => $value->abreviatura . " - " .$value->descripcion);
+        }
+        return $tipos_doc;
     }
 }

@@ -38,7 +38,7 @@ $hoy = date("Y-m-d");
 			{!! Form::label('fecha', 'Fecha:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 			<div class="col-lg-8 col-md-8 col-sm-8">
 				<div class='input-group input-group-sm' id='divfecha'>
-					<input class="form-control input-sm" id="fecha" placeholder="Ingrese Fecha" name="fecha" type="date" value="{{ $hoy }}">
+					<input class="form-control input-sm" id="fecha" placeholder="Ingrese Fecha" name="fecha" type="date" value="{{ $hoy }}" readOnly="readOnly">
 				</div>
 			</div>
 		</div>
@@ -174,6 +174,7 @@ $(document).ready(function() {
 		$("#detallesCompra").html("");
 		$('#nombreproducto').focus();
 		calculatetotal();
+		generarTipodoc();
 	});
 	
 	$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_compra"]').keydown( function(e) {
@@ -330,7 +331,8 @@ function addpurchasecart(){
 			title: 'SELECCIONE UN PRODUCTO',
 			});
 	}else{
-
+		stock = parseInt( $('#stock').val() );
+		cantidad = parseInt( $('#cantidad').val() );
 		if( tipo == "E" ){
 			if(stock < cantidad){
 				swal({
@@ -541,89 +543,77 @@ function guardarCompra(entidad, idboton) {
 		$(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="ccruc"]').focus();
 		return false;
 	}else{
-		var total = $(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="total"]').val();
-		total = total.replace(',','');
-		var mensaje = '<h3 align = "center">Total = '+total+'</h3>';
-		/*if (typeof mensajepersonalizado != 'undefined' && mensajepersonalizado !== '') {
-			mensaje = mensajepersonalizado;
-		}*/
-		bootbox.confirm({
-			message : mensaje,
-			buttons: {
-				'cancel': {
-					label: 'Cancelar',
-					className: 'btn btn-default btn-sm'
-				},
-				'confirm':{
-					label: 'Aceptar',
-					className: 'btn btn-success btn-sm'
-				}
-			}, 
-			callback: function(result) {
-				if (result) {
-					var idformulario = IDFORMMANTENIMIENTO + entidad;
-					var data         = submitForm(idformulario);
-					var respuesta    = '';
-					var listar       = 'NO';
-					
-					var btn = $(idboton);
-					btn.button('loading');
-					data.done(function(msg) {
-						respuesta = msg;
-					}).fail(function(xhr, textStatus, errorThrown) {
-						respuesta = 'ERROR';
-					}).always(function() {
-						btn.button('reset');
-						if(respuesta === 'ERROR'){
-						}else{
-							var dat = JSON.parse(respuesta);
-				            if(dat[0]!==undefined){
-				                resp=dat[0].respuesta;    
-				            }else{
-				                resp='VALIDACION';
-				            }
-				            
-							if (resp === 'OK') {
-								cerrarModal();
-				                buscarCompaginado('', 'Accion realizada correctamente', entidad, 'OK');
-				                /*if(dat[0].pagohospital!="0"){
-				                    window.open('/juanpablo/ticket/pdfComprobante?ticket_id='+dat[0].ticket_id,'_blank')
-				                }else{
-				                    window.open('/juanpablo/ticket/pdfPrefactura?ticket_id='+dat[0].ticket_id,'_blank')
-				                }*/
-				                //alert('hola');
-				                /*if (dat[0].ind == 1) {
-				                	window.open('/juanpablo/venta/pdfComprobante?venta_id='+dat[0].venta_id,'_blank');
-				                	window.open('/juanpablo/venta/pdfComprobante?venta_id='+dat[0].second_id,'_blank');
-				                }else{
-				                	window.open('/juanpablo/venta/pdfComprobante?venta_id='+dat[0].venta_id,'_blank');
-				                }*/
-				                
-							} else if(resp === 'ERROR') {
-								//bootbox.alert(dat[0].msg);
-								swal({
-									title: dat[0].msg,
-									type: 'error',
-									});
-							} else {
-								mostrarErrores(respuesta, idformulario, entidad);
-							}
-						}
-					});
-				};
-			}            
-		}).find("div.modal-content").addClass("bootboxConfirmWidth");
-		setTimeout(function () {
-			if (contadorModal !== 0) {
-				$('.modal' + (contadorModal-1)).css('pointer-events','auto');
-				$('body').addClass('modal-open');
+
+		var sucursal = document.getElementById("sucursal");
+		var tipomov = $('#tipo').val();
+		var tipo = $('#tipodocumento_id').val();
+		var total = parseFloat($("#total").val());
+		var letra = "";
+		if(tipo == 4){
+			letra ="FC";
+		}else if(tipo == 5){
+			letra ="BC";
+		}
+
+		if( tipomov == 'I'){
+
+			var mensaje = "<div style='text-align: left; padding: 20px; font-size: 15;'><p><label>Sucursal:  </label>  "+ sucursal.options[sucursal.selectedIndex].text 
+					+"</p><p><label>Tipo de Movimiento: </label>  INGRESO"
+					+"</p><p><label>N° Documento: </label>  "+ letra + $('#serie').val() + "-"+ $('#numerodocumento').val() 
+					+ "</p><p><label>Total:  </label>  S/."+  total.toFixed(2) +"</p><div>" ;
+		}else{
+
+			var mensaje = "<div style='text-align: left; padding: 20px; font-size: 15;'><p><label>Sucursal:  </label>  "+ sucursal.options[sucursal.selectedIndex].text 
+					+"</p><p><label>Tipo de Movimiento: </label>  SALIDA" 
+					+"</p><p><label>N° Documento: </label>  "+ letra + $('#serie').val() + "-"+ $('#numerodocumento').val() 
+					+ "</p><p><label>Total:  </label>  S/."+  total.toFixed(2) +"</p><div>" ;
+
+		}
+
+		swal({
+			title: 'Confirmar Guardado',
+			html: mensaje,
+			type: 'question',
+			showCancelButton: true,
+			confirmButtonColor: '#54b359',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Guardar Compra'
+		}).then((result) => {
+			if (result.value) {
+				guardar("{{$entidad}}");
 			}
-		},2000);
+		});
 	}	
 }
 
 function is_numeric(value) {
 	return !isNaN(parseFloat(value)) && isFinite(value);
+}
+
+function generarTipodoc() {
+	var tipo = $("#tipo").val();
+	var tiposdoc = "";
+	$.ajax({
+		"method": "POST",
+		"url": "{{ url('/movalmacen/generartipodocumento') }}",
+		"data": {
+			"tipo" : tipo, 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		tiposdoc = info;
+	}).always(function(){
+
+		var select = "";
+
+		$.each(tiposdoc, function(i, item) {
+			select =  select + '<option value="' + item.id + '">'+ item.abreviatura + ' - ' + item.descripcion + '</option>';
+		});
+
+		$("#tipodocumento_id").html(select);
+
+	});
+	
 }
 
 </script>

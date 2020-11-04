@@ -76,6 +76,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('movalmacen/buscandoproducto','MovalmacenController@buscandoproducto')->name('movalmacen.buscandoproducto');
     Route::post('movalmacen/consultaproducto','MovalmacenController@consultaproducto')->name('movalmacen.consultaproducto');
     Route::post('movalmacen/agregarcarritocompra','MovalmacenController@agregarcarritocompra')->name('movalmacen.agregarcarritocompra');
+    Route::post('movalmacen/generartipodocumento','MovalmacenController@generartipodocumento')->name('movalmacen.generartipodocumento');
 
     Route::get('caja/pdfDetalleCierre', 'CajaController@pdfDetalleCierre')->name('caja.pdfDetalleCierre');
     Route::get('caja/clienteautocompletar/{searching}', 'CajaController@clienteautocompletar')->name('caja.clienteautocompletar');

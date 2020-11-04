@@ -19,8 +19,8 @@
 				{!! Form::text('serieventa', $compra->tipodocumento->abreviatura . $compra->num_compra , array('class' => 'form-control input-sm', 'id' => 'serieventa', 'data-inputmask' => "'mask': '9999-9999999'", 'readOnly')) !!}
 			</div>
 			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
-				{!! Form::label('fecha', 'Fecha:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-				{!! Form::text('fecha', date("d/m/Y",strtotime($compra->fecha )), array('class' => 'form-control input-sm', 'id' => 'fecha', 'readOnly')) !!}
+				{!! Form::label('fecha', 'Fecha y hora:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+				{!! Form::text('fecha', date("d/m/Y h:i:s a",strtotime($compra->fecha )), array('class' => 'form-control input-sm', 'id' => 'fecha', 'readOnly')) !!}
 			</div>
 			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 				{!! Form::label('proveedor', 'Proveedor:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
