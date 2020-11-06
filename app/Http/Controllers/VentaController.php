@@ -181,6 +181,7 @@ class VentaController extends Controller
             $user           = Auth::user();
             $movimiento->usuario_id           = $user->id;
             $movimiento->sucursal_id          = $request->input('sucursal_id');
+            $movimiento->comentario =  strtoupper ($request->input('comentario') );
             $movimiento->save();
 
             /*
@@ -243,7 +244,7 @@ class VentaController extends Controller
                     $movimientopago->usuario_id           = $user->id;
                     $movimientopago->sucursal_id          = $request->input('sucursal_id');
                     $movimientopago->venta_id             = $movimiento->id;
-                    $movimientopago->comentario             = "Pago de pedido a crédito: ". $movimiento->tipodocumento->abreviatura."-". $movimiento->num_venta;
+                    $movimientopago->comentario             = "PAGO DE PEDIDO A CRÉDITO: ". $movimiento->tipodocumento->abreviatura."-". $movimiento->num_venta;
                     $movimientopago->save();
 
                     $trabajador = $request->input('empleado_id');

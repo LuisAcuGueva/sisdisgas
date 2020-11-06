@@ -1,5 +1,6 @@
 <?php
 	Use App\Tipodocumento;
+	Use App\Tipomovimiento;
 ?>
 @if(count($lista) == 0)
 <h3 class="text-warning">No se encontraron resultados.</h3>
@@ -38,7 +39,11 @@
 					<td align="center">Egreso</td>
 				@endif
 			@endif
-
+			<?php
+			$tipomovimiento_id = $value->tipomovimiento_id;
+			$tipomovimiento = Tipomovimiento::find($tipomovimiento_id);
+			?>
+			<td align="center">{{ $tipomovimiento->descripcion }}</td>
 			<?php
 			$tipodocumento_id = $value->tipodocumento_id;
 			$tipodocumento = Tipodocumento::find($tipodocumento_id);

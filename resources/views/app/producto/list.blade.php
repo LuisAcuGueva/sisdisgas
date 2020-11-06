@@ -37,6 +37,12 @@
 			<td align="center">&#10004;</td>
 			@endif
 
+			@if($value->recargable == 0)
+			<td align="center">&#10008;</td>
+			@elseif($value->recargable == 1)
+			<td align="center">&#10004;</td>
+			@endif
+
 		</tr>
 		<?php
 		$contador = $contador + 1;

@@ -6,7 +6,7 @@
 		{!! Form::label('nombre', 'Nombre:') !!}<div class="" style="display: inline-block;color: red;">*</div>
 		</div>
 		<div class="col-lg-9 col-md-9 col-sm-9">
-			{!! Form::text('nombre', null, array('class' => 'form-control input-xs', 'id' => 'nombre', 'placeholder' => 'Ingrese nombre')) !!}
+			{!! Form::text('nombre', null, array('class' => 'form-control input-xs', 'id' => 'nombre', 'placeholder' => 'Ingrese nombre', 'style' => 'margin-top: 10px;')) !!}
 		</div>
 	</div>
 	<div class="form-group">
@@ -14,7 +14,7 @@
 		{!! Form::label('direccion', 'Direccion:') !!}<div class="" style="display: inline-block;color: red;">*</div>
 		</div>
 		<div class="col-lg-9 col-md-9 col-sm-9">
-			{!! Form::text('direccion', null, array('class' => 'form-control input-xs', 'id' => 'direccion', 'placeholder' => 'Ingrese direccion')) !!}
+			{!! Form::text('direccion', null, array('class' => 'form-control input-xs', 'id' => 'direccion', 'placeholder' => 'Ingrese direccion', 'style' => 'margin-top: 10px;')) !!}
 		</div>
 	</div>
 	<div class="form-group">
@@ -22,7 +22,23 @@
 		{!! Form::label('telefono', 'Telefono:') !!}<div class="" style="display: inline-block;color: red;">*</div>
 		</div>
 		<div class="col-lg-9 col-md-9 col-sm-9">
-			{!! Form::text('telefono', null, array('class' => 'form-control input-xs', 'id' => 'telefono', 'placeholder' => 'Ingrese telefono')) !!}
+			{!! Form::text('telefono', null, array('class' => 'form-control input-xs', 'id' => 'telefono', 'placeholder' => 'Ingrese telefono', 'style' => 'margin-top: 10px;')) !!}
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="control-label col-lg-5 col-md-5 col-sm-5" style ="padding-top: 15px">
+		{!! Form::label('cant_balon_normal', 'Cant. Bal. Normal:') !!}<div class="" style="display: inline-block;color: red;">*</div>
+		</div>
+		<div class="col-lg-7 col-md-7 col-sm-7">
+			{!! Form::text('cant_balon_normal', null, array('class' => 'form-control input-xs', 'id' => 'cant_balon_normal', 'placeholder' => 'Ingrese cant. bal. normal', 'style' => 'margin-top: 10px;')) !!}
+		</div>
+	</div>
+	<div class="form-group">
+	<div class="control-label col-lg-5 col-md-5 col-sm-5" style ="padding-top: 15px">
+		{!! Form::label('cant_balon_premium', 'Cant. Bal. Premium:') !!}<div class="" style="display: inline-block;color: red;">*</div>
+		</div>
+		<div class="col-lg-7 col-md-7 col-sm-7">
+			{!! Form::text('cant_balon_premium', null, array('class' => 'form-control input-xs', 'id' => 'cant_balon_premium', 'placeholder' => 'Ingrese cant. bal. premium', 'style' => 'margin-top: 10px;')) !!}
 		</div>
 	</div>
 	<div class="form-group">

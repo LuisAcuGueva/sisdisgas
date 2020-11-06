@@ -22,6 +22,8 @@
 			<td>{{ $value->nombre }}</td>
 			<td>{{ $value->direccion }}</td>
 			<td>{{ $value->telefono }}</td>
+			<td align="center">{{ $value->cant_balon_normal }}</td>
+			<td align="center">{{ $value->cant_balon_premium }}</td>
 		</tr>
 		<?php
 		$contador = $contador + 1;

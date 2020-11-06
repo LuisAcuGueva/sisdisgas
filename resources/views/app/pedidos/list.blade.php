@@ -39,6 +39,16 @@
 
 			<td> {{  $value->persona->direccion }} </td>
 
+			@if($value->estado == 1)
+				@if (!is_null($value->comentario))
+					<td> {{ $value->comentario }} </td>
+				@else
+					<td align="center"> - </td>
+				@endif
+			@elseif($value->estado == 0)
+				<td> {{ $value->comentario }} | Anulado por: {{ $value->comentario_anulado }} </td>
+			@endif
+
 			@if($value->vale_balon_subcafae == 1)
 				<td align="center"> SUBCAFAE </td>
 			@elseif($value->vale_balon_fise == 1)

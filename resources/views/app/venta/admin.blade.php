@@ -83,15 +83,10 @@ operaciones
 					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS ADICIONALES DEL PEDIDO</h4>
 				</div>
 
-				<div class="col-lg-4 col-md-4 col-sm-4 m-b-15 vales">
-					<div class="col-lg-12 col-md-12 col-sm-12 vales" style="margin-bottom: 15px;" disabled>
-						{!! Form::label('balon_nuevo', 'Balón nuevo:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
-						<input class="balon" name="balon_nuevo" type="checkbox" id="balon_nuevo">
-					</div>
-					<div class="col-lg-12 col-md-12 col-sm-12 vales">
-						{!! Form::label('balon_a_cuenta', 'Pedido a crédito:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
-						<input class="balon" name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
-						{!! Form::hidden('credito', 0 ,array('id'=>'credito')) !!}
+				<div class="col-lg-4 col-md-4 col-sm-4 m-b-15">
+					<div class="col-lg-12 col-md-12 col-sm-12" style="margin-bottom: 15px;">
+						{!! Form::label('balon_nuevo', 'Venta en sucursal:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+						<input name="venta_sucursal" type="checkbox" id="venta_sucursal">
 					</div>
 				</div>
 
@@ -142,7 +137,7 @@ operaciones
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 						{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-						{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'generarNumeroSerie(); permisoRegistrar(); actualizarPreciosVales(); generarEmpleados();generarProductos();')) !!}		
+						{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'generarNumeroSerie(); permisoRegistrar(); generarEmpleados();generarProductos();')) !!}		
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 						{!! Form::label('tipodocumento_id', 'Tipo de Documento:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
@@ -186,7 +181,7 @@ operaciones
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<div id="servicios_frecuentes" class="col-lg-12 col-md-12 col-sm-12" style="margin: 10px; border-style: groove; width: 100%; height: 180px; overflow-y: scroll;">
 							@foreach($productos  as $key => $value)
-								<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="{{ $value->id}}"  precio="{{ $value->precio_venta }}" descripcion="{{ $value->descripcion }}" editable="{{ $value->editable }}" stock="{{ $value->cantidad }}" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
+								<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="{{ $value->id}}"  precio="{{ $value->precio_venta }}" descripcion="{{ $value->descripcion }}" editable="{{ $value->editable }}" recargable="{{ $value->recargable }}" stock="{{ $value->cantidad }}" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
 									<label style="font-size: 9.5px; color: #2a3f54; padding-top: 13px;">{{ $value->descripcion}}</label>
 									<label style="font-size: 9.5px; color: #2a3f54;">STOCK: {{$value->cantidad}}</label>
 								</div>
@@ -198,7 +193,7 @@ operaciones
 						{!! Form::hidden('cant',null,array('id'=>'cant', 'value' => '0')) !!}
 						<h4 align="center" class="col-lg-12 col-md-12 col-sm-12 m-t-30" style="color: #2a3f54; font-weight: 600;">LISTA DE PRODUCTOS</h4>
 						<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="font-size: 90%; padding: 0px 0px !important;">
-							<thead id="cabecera"><tr><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Cant</th><th style="font-size: 13px !important;">Precio Unit</th><th style="font-size: 13px !important;">Precio Acum</th><th style="font-size: 13px !important;">Eliminar</th></tr></thead>
+							<thead id="cabecera"><tr><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Cant</th><th style="font-size: 13px !important;">Precio Unit. S/.</th><th style="font-size: 13px !important;">Envase nuevo</th><th style="font-size: 13px !important;">Precio Acum. S/.</th><th style="font-size: 13px !important;">Eliminar</th></tr></thead>
 							<tbody id="detalle"></tbody>
 						</table>
 					</div>
@@ -240,8 +235,17 @@ operaciones
 						{!! Form::label('vuelto', 'Vuelto:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
 						{!! Form::text('vuelto', '', array('class' => 'form-control input-lg', 'id' => 'vuelto', 'readOnly', 'style' => 'text-align: right; font-size: 30px; color: red;  margin-top: 25px;', 'placeholder' => '0.00')) !!}
 					</div>
-					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="text-align:right">
+					<div class="col-lg-8 col-md-8 col-sm-8 m-b-15 vales" style="margin-top: 15px;">
+						{!! Form::label('balon_a_cuenta', 'Pedido a crédito:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+						<input class="balon" name="balon_a_cuenta" type="checkbox" id="balon_a_cuenta">
+						{!! Form::hidden('credito', 0 ,array('id'=>'credito')) !!}
+					</div>
+					<div class="col-lg-4 col-md-4 col-sm-4 m-b-15" style="text-align:right">
 						{!! Form::button('<i class="glyphicon glyphicon-floppy-disk"></i> Guardar', array( 'class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md btnGuardar', 'id' => 'btnGuardar' , 'style' => 'margin-top: 23px;' )) !!}
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+						{!! Form::label('comentario', 'Comentario:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+						{!! Form::textarea('comentario', null, array('class' => 'form-control input-xs', 'rows' => '3','id' => 'comentario')) !!}
 					</div>
 				</div>
 
@@ -266,7 +270,6 @@ $(document).ready(function(){
 	$('#codigo_vale_fise').prop('disabled', true);
 	$('#monto_vale_fise').prop('disabled', true);
 
-	$('#balon_nuevo').prop('disabled', true);
 	//$('#balon_a_cuenta').prop('disabled', true);
 
 	$('[data-toggle="tooltip"]').tooltip({trigger: 'hover'}); 
@@ -536,11 +539,12 @@ $(document).ready(function(){
 	
 	});
 
+	//crédito
 	$('.vales .iCheck-helper').on('click', function(){
 		var divpadre = $(this).parent();
 		var input = divpadre.find('input');
 
-		if( input.attr('id') == 'balon_a_cuenta'){ //codigo_vale_subcafae
+		if( input.attr('id') == 'balon_a_cuenta'){ 
 			if( divpadre.hasClass('checked')) { 
 				console.log("credito");
 				$("#credito").val("1");
@@ -624,6 +628,7 @@ function agregarProducto(){
 		var precio = parseFloat($(this).attr('precio'));
 		var descripcion = $(this).attr('descripcion');
 		var editable = $(this).attr('editable');
+		var recargable = $(this).attr('recargable');
 		var stock = $(this).attr('stock');
 		var cant = $("#cant").val();
 
@@ -631,35 +636,12 @@ function agregarProducto(){
 		
 		var existe = false;
 
+		//checkbox
 		if(idservicio_frecuente == 4 || idservicio_frecuente == 5 ){
 			$('#activar_checkbox').val(1);
 			activar_checkbox = $('#activar_checkbox').val();
 			clickVales();
 
-			$("#detalle tr").each(function(){
-				var id = parseInt($(this).attr('id'));
-				var cantidad = $(this).attr('cantidad');
-				if( id == "5" ){
-					$(this).attr('precio', (37).toFixed(2));
-					var trprecio = $(this).find('.precioeditable');
-					$(trprecio).val((37).toFixed(2));
-					var trprecioacumulado = $(this).find('.precioacumulado');
-					$(trprecioacumulado).html((37*cantidad).toFixed(2));
-					var btneliminar = $(this).find('.btnEliminar');
-					$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
-					calcularTotal();
-				}else if( id == "4" ){
-					$(this).attr('precio', (36).toFixed(2));
-					var trprecio = $(this).find('.precioeditable');
-					$(trprecio).val((36).toFixed(2));
-					var trprecioacumulado = $(this).find('.precioacumulado');
-					$(trprecioacumulado).html((36*cantidad).toFixed(2));
-					var btneliminar = $(this).find('.btnEliminar');
-					$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
-					calcularTotal();
-				}
-			});
-			$('#balon_nuevo').prop('disabled', false);
 			//$('#balon_a_cuenta').prop('disabled', false);
 			$('#vale_balon_subcafae').prop('disabled', false);
 			$('#vale_balon_monto').prop('disabled', false);
@@ -677,13 +659,10 @@ function agregarProducto(){
 			$('#vale_balon_subcafae').parent().removeClass('checked');
 			$('#vale_balon_monto').parent().removeClass('checked');
 			$('#vale_balon_fise').parent().removeClass('checked');
-			$('#balon_nuevo').parent().removeClass('disabled');
 			//$('#balon_a_cuenta').parent().removeClass('disabled');
-			$('#balon_nuevo').parent().removeClass('checked');
 			
 			//$('#balon_a_cuenta').parent().removeClass('checked');
 			
-			$('#balon_nuevo').prop('checked', false);
 			//$('#balon_a_cuenta').prop('checked', false)
 			$('#codigo_vale_monto').prop('readOnly', true);
 			$('#codigo_vale_subcafae').prop('readOnly', true);
@@ -705,13 +684,48 @@ function agregarProducto(){
 						var cantidadfila = parseInt($(this).attr('cantidad'));
 						var stockfila = parseInt($(this).attr('stock'));
 						var precioactual = parseFloat($(this).attr('precio'));
+						var envases_nuevos = parseFloat($(this).attr('envases_nuevos'));
+						var precio_envase = parseFloat($(this).attr('precio_envase'));
+						if(precio_envase == 0 ){
+							precio_envase = "";
+						}
+						if(envases_nuevos == 0 ){
+							envases_nuevos = "";
+						}
 						if(stockfila > cantidadfila){
 							cantidadfila++;
 							$(this).attr('cantidad',cantidadfila);
-							if(editable == 0){
-								var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;">'+ (precio*cantidadfila).toFixed(2) +'</td><td class="precioacumulado" style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
-							}else if(editable == 1){
-								var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precioactual).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precioactual*cantidadfila).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precioactual*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+
+							var acumulado = parseFloat( ( (cantidadfila - envases_nuevos) * precioactual ) + ( envases_nuevos * precio_envase) );
+
+							if(recargable == 1){
+								if(editable == 0){
+									var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion 
+									+'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila 
+									+'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) 
+									+'</td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text" value="'+ envases_nuevos +'"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 60px;" type="text" value="'+ precio_envase +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ ((cantidadfila - envases_nuevos) * precioactual) + " + " + ( envases_nuevos * precio_envase) +  " = " +(acumulado).toFixed(2) 
+									+'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (acumulado).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+								}else if(editable == 1){
+									var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion 
+									+'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila 
+									+'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precioactual).toFixed(2) 
+									+'"></td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text" value="'+ envases_nuevos +'"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 60px;" type="text" value="'+ precio_envase +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ ((cantidadfila - envases_nuevos) * precioactual) + " + " + ( envases_nuevos * precio_envase) +  " = " +(acumulado).toFixed(2) 
+									+'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (acumulado).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+								}
+							}else if(recargable == 0){
+								if(editable == 0){
+									var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion 
+									+'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila 
+									+'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) 
+									+'</td><td style="vertical-align: middle;">-</td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio*cantidadfila).toFixed(2) 
+									+'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+								}else if(editable == 1){
+									var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion 
+									+'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila 
+									+'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precioactual).toFixed(2) 
+									+'"></td><td style="vertical-align: middle;">-</td><td class="precioacumulado" style="vertical-align: middle;">'+ (precioactual*cantidadfila).toFixed(2) 
+									+'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precioactual*cantidadfila).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
+								}
 							}
 							$(this).html(nuevafila);
 							calcularTotal();
@@ -727,10 +741,30 @@ function agregarProducto(){
 		}
 
 		if(!existe){
-			if(editable == 0){
-				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +' stock='+ stock +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
-			}else if(editable == 1){
-				var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +' stock='+ stock +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precio).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+			if(recargable == 1){
+				if(editable == 0){
+					var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" envases_nuevos="'+ 0 +'" precio_envase="'+ 0  +'" precio='+ (precio).toFixed(2) +' stock='+ stock 
+					+'><td style="vertical-align: middle; text-align: left;">'+ descripcion 
+					+'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 
+					+'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) 
+					+'</td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 60px;" type="text" value="'
+					+'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ precio + " + 0 = " +  (precio).toFixed(2)
+					+'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+				}else if(editable == 1){
+					var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" envases_nuevos="'+ 0 +'" precio_envase="'+ 0 +'" precio='+ (precio).toFixed(2) +' stock='+ stock 
+					+'><td style="vertical-align: middle; text-align: left;">'+ descripcion 
+					+'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 
+					+'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precio).toFixed(2) 
+					+'"></td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 60px;" type="text" value="'
+					+'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ precio + " + 0 = " +  (precio).toFixed(2)
+					+'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+				}
+			}else if(recargable == 0){
+				if(editable == 0){
+					var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +' stock='+ stock +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;">-</td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+				}else if(editable == 1){
+					var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" precio='+ (precio).toFixed(2) +' stock='+ stock +'><td style="vertical-align: middle; text-align: left;">'+ descripcion +'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 +'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precio).toFixed(2) +'"></td><td style="vertical-align: middle;">-</td><td class="precioacumulado" style="vertical-align: middle;">'+ (precio).toFixed(2) +'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
+				}
 			}
 			$("#detalle").append(fila);
 			cant++;
@@ -743,21 +777,79 @@ function agregarProducto(){
 			var precionuevo = parseFloat($(this).val());
 			if( is_numeric(precionuevo) ){
 				if(precionuevo > 0){
+
 					var tr = $(this).parent().parent();
-					var precioactual = $(tr).attr('precio');
-					var cantidad = $(tr).attr('cantidad');
-					$(tr).attr('precio',(precionuevo).toFixed(2));
-					var trprecioacumulado = $(tr).find('.precioacumulado');
-					$(trprecioacumulado).html((precionuevo*cantidad).toFixed(2));
-					var btneliminar = $(tr).find('.btnEliminar');
-					$(btneliminar).attr('precio',(precionuevo*cantidad).toFixed(2));
-					calcularTotal();
-					$("#montoefectivo").val("");
-					$("#montovisa").val("");
-					$("#montomaster").val("");
-					$("#vuelto").val((0).toFixed(2));
-					$('#divMensajeErrorVenta').html("");
-					//$('#btnGuardar').prop('disabled', false);
+
+					var cantidadactual = parseInt($(tr).attr('cantidad'));
+
+					if( $(tr).attr('envases_nuevos') != undefined ){
+						var envases_nuevos = parseInt($(tr).attr('envases_nuevos'));
+						var precio_envase = parseFloat($(tr).attr('precio_envase'));
+					}else{
+						var envases_nuevos = 0;
+						var precio_envase = 0;
+					}
+
+					console.log( "precio envase = " +precio_envase)
+
+					if( precio_envase != 0 ){
+						if( precionuevo < precio_envase ){
+
+							$(tr).attr('precio',(precionuevo).toFixed(2));
+
+							var trprecioacumulado = $(tr).find('.precioacumulado');
+
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * precionuevo ) + ( envases_nuevos * precio_envase) );
+							
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * precionuevo ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							var btneliminar = $(tr).find('.btnEliminar');
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
+
+							calcularTotal();
+							$("#montoefectivo").val("");
+							$("#montovisa").val("");
+							$("#montomaster").val("");
+							$("#vuelto").val((0).toFixed(2));
+							$('#divMensajeErrorVenta').html("");
+
+						}else{
+							swal({
+								title: 'EL PRECIO DEL PRODUCTO NO PUEDE SER MAYOR AL PRECIO DE ENVASE NUEVO',
+								type: 'error',
+							});
+							var tr = $(this).parent().parent();
+							var precioactual = $(tr).attr('precio');
+							$(this).val(precioactual);
+
+						}
+					}else{
+						$(tr).attr('precio',(precionuevo).toFixed(2));
+
+						var trprecioacumulado = $(tr).find('.precioacumulado');
+
+						var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * precionuevo ) + ( envases_nuevos * precio_envase) );
+						
+						if( $(tr).attr('envases_nuevos') != undefined ){
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * precionuevo ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+
+						}else{
+							$(trprecioacumulado).html( (acumulado).toFixed(2));
+						}
+
+
+
+						var btneliminar = $(tr).find('.btnEliminar');
+						$(btneliminar).attr('precio',(acumulado).toFixed(2));
+
+						calcularTotal();
+						$("#montoefectivo").val("");
+						$("#montovisa").val("");
+						$("#montomaster").val("");
+						$("#vuelto").val((0).toFixed(2));
+						$('#divMensajeErrorVenta').html("");
+					}
+
 				}else{
 					var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
 					cadenaError += '<li>Los campos de precios editables deben ser montos positivos.</li></ul></div>';
@@ -784,24 +876,63 @@ function agregarProducto(){
 			if( is_numeric(cantidadnueva) ){
 				if(cantidadnueva > 0){
 					var tr = $(this).parent().parent();
+
 					var precioactual = parseFloat($(tr).attr('precio'));
-					var stockactual = $(tr).attr('stock');
+					var stockactual = parseInt($(tr).attr('stock'));
+
+					if( $(tr).attr('envases_nuevos') != undefined ){
+						var envases_nuevos = parseInt($(tr).attr('envases_nuevos'));
+						var precio_envase = parseFloat($(tr).attr('precio_envase'));
+
+					}else{
+						var envases_nuevos = 0;
+						var precio_envase = 0;
+					}
+
 					console.log( stockactual + ' < ' + cantidadnueva);
 					if(stockactual >= cantidadnueva ){
 						//var cantidad = $(tr).attr('cantidad');
-						$(tr).attr('precio',precioactual);
-						$(tr).attr('cantidad',cantidadnueva);
-						var trprecioacumulado = $(tr).find('.precioacumulado');
-						$(trprecioacumulado).html((precioactual*cantidadnueva).toFixed(2));
-						var btneliminar = $(tr).find('.btnEliminar');
-						$(btneliminar).attr('precio',(precioactual*cantidadnueva).toFixed(2));
-						calcularTotal();
-						$("#montoefectivo").val("");
-						$("#montovisa").val("");
-						$("#montomaster").val("");
-						$("#vuelto").val((0).toFixed(2));
-						$('#divMensajeErrorVenta').html("");
-						//$('#btnGuardar').prop('disabled', false);
+						//$(tr).attr('precio',precioactual);
+
+						if(cantidadnueva >= envases_nuevos ){
+							$(tr).attr('cantidad',cantidadnueva);
+
+							var trprecioacumulado = $(tr).find('.precioacumulado');
+
+							console.log("cantidad nueva = " + cantidadnueva);
+
+							var acumulado = parseFloat( ( (cantidadnueva - envases_nuevos) * precioactual ) + ( envases_nuevos * precio_envase) );
+
+							console.log("acumulado = " + acumulado);
+
+							if( $(tr).attr('envases_nuevos') != undefined ){
+
+								$(trprecioacumulado).html( ( (cantidadnueva - envases_nuevos) * precioactual ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+
+							}else{
+								$(trprecioacumulado).html( (acumulado).toFixed(2));
+							}
+
+							var btneliminar = $(tr).find('.btnEliminar');
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
+								
+							calcularTotal();
+							$("#montoefectivo").val("");
+							$("#montovisa").val("");
+							$("#montomaster").val("");
+							$("#vuelto").val((0).toFixed(2));
+							$('#divMensajeErrorVenta').html("");
+						}else{
+							swal({
+								title: 'LA CANTIDAD DEL PRODUCTO NO PUEDE SER MENOR AL NÚMERO DE ENVASES NUEVOS',
+								type: 'error',
+							});
+							var tr = $(this).parent().parent();
+							var cantidadactual = $(tr).attr('cantidad');
+							$(this).val(cantidadactual);
+						}
+
+
 					}else{
 						swal({
 							title: 'NO HAY STOCK SUFICIENTE',
@@ -829,6 +960,140 @@ function agregarProducto(){
 				var cantidadactual = $(tr).attr('cantidad');
 				$(this).val(cantidadactual);
 			}
+		});
+
+		$(".cant_nuevo").blur(function() {
+			var elemento = this;
+			var cant_nuevo = parseInt($(this).val());
+
+			if( is_numeric(cant_nuevo) ){
+				if(cant_nuevo >= 0){
+
+					$('#divMensajeErrorVenta').html("");
+					var tr = $(this).parent().parent();
+
+					var precioactual = parseFloat($(tr).attr('precio'));
+					var cantidadactual = parseInt($(tr).attr('cantidad'));
+					var precio_envase = parseFloat($(tr).attr('precio_envase'));
+					//console.log( stockactual + ' < ' + cantidadnueva);
+
+					
+					if(cantidadactual >= cant_nuevo ){
+						//var cantidad = $(tr).attr('cantidad');
+						//$(tr).attr('precio',precioactual);
+						$(tr).attr('envases_nuevos',cant_nuevo);
+
+						var trprecioacumulado = $(tr).find('.precioacumulado');
+
+						var acumulado = parseFloat( ( (cantidadactual - cant_nuevo) * precioactual ) + ( cant_nuevo * precio_envase) );
+
+						$(trprecioacumulado).html( ( (cantidadactual - cant_nuevo) * precioactual ) + " + " + ( cant_nuevo * precio_envase) + " = " + (acumulado).toFixed(2));
+						var btneliminar = $(tr).find('.btnEliminar');
+						$(btneliminar).attr('precio',(acumulado).toFixed(2));
+
+
+						calcularTotal();
+						$("#montoefectivo").val("");
+						$("#montovisa").val("");
+						$("#montomaster").val("");
+						$("#vuelto").val((0).toFixed(2));
+						//$('#btnGuardar').prop('disabled', false);
+					}else{
+						swal({
+							title: 'LA CANTIDAD DE ENVASES NUEVOS DEBE SER MENOR A LA CANTIDAD DEL PRODUCTO',
+							type: 'error',
+						});
+						var tr = $(this).parent().parent();
+						var envases_nuevos = $(tr).attr('envases_nuevos');
+						$(this).val(envases_nuevos);
+					}
+
+				}else{
+					var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+					cadenaError += '<li>Los campos de cantidad deben ser números positivos.</li></ul></div>';
+					$('#divMensajeErrorVenta').html(cadenaError);
+					//$('#btnGuardar').prop('disabled', true);
+					var tr = $(this).parent().parent();
+					var envases_nuevos = $(tr).attr('envases_nuevos');
+					$(this).val(envases_nuevos);
+				}
+			}else{
+				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+				cadenaError += '<li>Los campos de cantidad deben ser númericos.</li></ul></div>';
+				$('#divMensajeErrorVenta').html(cadenaError);
+				//$('#btnGuardar').prop('disabled', true);
+				var tr = $(this).parent().parent();
+				var envases_nuevos = $(tr).attr('envases_nuevos');
+				$(this).val(envases_nuevos);
+			}
+		
+		});
+
+		$(".precio_nuevo").blur(function() {
+			var elemento = this;
+			var precio_nuevo = parseFloat($(this).val());
+	
+			if( is_numeric(precio_nuevo) ){
+				if(precio_nuevo >= 0){
+
+					$('#divMensajeErrorVenta').html("");
+					var tr = $(this).parent().parent();
+
+					var precioactual = parseFloat($(tr).attr('precio'));
+					var cantidadactual = parseInt($(tr).attr('cantidad'));
+					var envases_nuevos = parseInt($(tr).attr('envases_nuevos'));
+					//console.log( stockactual + ' < ' + cantidadnueva);
+
+					
+					if(precio_nuevo >= precioactual ){
+						//var cantidad = $(tr).attr('cantidad');
+						//$(tr).attr('precio',precioactual);
+						$(tr).attr('precio_envase',precio_nuevo);
+
+						var trprecioacumulado = $(tr).find('.precioacumulado');
+
+						var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * precioactual ) + ( envases_nuevos * precio_nuevo) );
+
+						$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * precioactual ) + " + " + ( envases_nuevos * precio_nuevo) + " = " + (acumulado).toFixed(2));
+						var btneliminar = $(tr).find('.btnEliminar');
+						$(btneliminar).attr('precio',(acumulado).toFixed(2));
+
+
+						calcularTotal();
+						$("#montoefectivo").val("");
+						$("#montovisa").val("");
+						$("#montomaster").val("");
+						$("#vuelto").val((0).toFixed(2));
+						//$('#btnGuardar').prop('disabled', false);
+					}else{
+						swal({
+							title: 'EL PRECIO DEL PRODUCTO CON ENVASE DEBE SER MAYOR AL PRECIO NORMAL',
+							type: 'error',
+						});
+						var tr = $(this).parent().parent();
+						var precio_envase = $(tr).attr('precio_envase');
+						$(this).val(precio_envase);
+					}
+
+				}else{
+					var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+					cadenaError += '<li>Los campos de cantidad deben ser números positivos.</li></ul></div>';
+					$('#divMensajeErrorVenta').html(cadenaError);
+					//$('#btnGuardar').prop('disabled', true);
+					var tr = $(this).parent().parent();
+					var precio_envase = $(tr).attr('precio_envase');
+					$(this).val(precio_envase);
+				}
+			}else{
+				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+				cadenaError += '<li>Los campos de cantidad deben ser númericos.</li></ul></div>';
+				$('#divMensajeErrorVenta').html(cadenaError);
+				//$('#btnGuardar').prop('disabled', true);
+				var tr = $(this).parent().parent();
+				var precio_envase = $(tr).attr('precio_envase');
+				$(this).val(precio_envase);
+			}
+			
 		});
 		
 		$("#montoefectivo").val("");
@@ -890,28 +1155,38 @@ function clickVales(){
 				if( divpadre.hasClass('checked')) { 
 					//console.log('seleccionar balon monto');
 					$("#detalle tr").each(function(){
+						$(this).css( 'background-color', '');
 						var id = parseInt($(this).attr('id'));
-						var cantidad = $(this).attr('cantidad');
+						var cantidadactual = parseInt($(this).attr('cantidad'));
+						var precio_envase = parseFloat($(this).attr('precio_envase'));
+						var envases_nuevos = parseInt($(this).attr('envases_nuevos'));
 						if( id == "5" ){
 							$(this).attr('precio', (37).toFixed(2));
 							var trprecio = $(this).find('.precioeditable');
 							$(trprecio).val((37).toFixed(2));
+
 							var trprecioacumulado = $(this).find('.precioacumulado');
-							$(trprecioacumulado).html((37*cantidad).toFixed(2));
+
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 37 ) + ( envases_nuevos * precio_envase) );
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
-							$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
-							calcularTotal();
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}else if( id == "4" ){
 							$(this).attr('precio', (36).toFixed(2));
 							var trprecio = $(this).find('.precioeditable');
 							$(trprecio).val((36).toFixed(2));
+
 							var trprecioacumulado = $(this).find('.precioacumulado');
-							$(trprecioacumulado).html((36*cantidad).toFixed(2));
+							
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
-							$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
-							calcularTotal();
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}
 					});
+					calcularTotal();
 					//activar vale monto
 					$('#vale_balon_monto').prop('checked',true);
 					$('#monto_vale_balon').prop('readOnly',false);
@@ -929,28 +1204,38 @@ function clickVales(){
 					$('#vale_balon_subcafae').prop('checked',false);
 				}else {
 					$("#detalle tr").each(function(){
+						$(this).css( 'background-color', '');
 						var id = parseInt($(this).attr('id'));
-						var cantidad = $(this).attr('cantidad');
+						var cantidadactual = parseInt($(this).attr('cantidad'));
+						var precio_envase = parseFloat($(this).attr('precio_envase'));
+						var envases_nuevos = parseInt($(this).attr('envases_nuevos'));
 						if( id == "5" ){
 							$(this).attr('precio', (37).toFixed(2));
 							var trprecio = $(this).find('.precioeditable');
 							$(trprecio).val((37).toFixed(2));
+
 							var trprecioacumulado = $(this).find('.precioacumulado');
-							$(trprecioacumulado).html((37*cantidad).toFixed(2));
+
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 37 ) + ( envases_nuevos * precio_envase) );
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
-							$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
-							calcularTotal();
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}else if( id == "4" ){
 							$(this).attr('precio', (36).toFixed(2));
 							var trprecio = $(this).find('.precioeditable');
 							$(trprecio).val((36).toFixed(2));
+
 							var trprecioacumulado = $(this).find('.precioacumulado');
-							$(trprecioacumulado).html((36*cantidad).toFixed(2));
+							
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
-							$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
-							calcularTotal();
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}
 					});
+					calcularTotal();
 					$('#monto_vale_balon').prop('readOnly',true);
 					$('#codigo_vale_monto').prop('readOnly',true);
 					$('#monto_vale_balon').val('');
@@ -967,35 +1252,50 @@ function clickVales(){
 					var primero = true;
 					$("#detalle tr").each(function(){
 						var id = parseInt($(this).attr('id'));
-						var cantidad = $(this).attr('cantidad');
+						var cantidadactual = parseInt($(this).attr('cantidad'));
+						var precio_envase = parseFloat($(this).attr('precio_envase'));
+						var envases_nuevos = parseInt($(this).attr('envases_nuevos'));
 						if( id == "4" || id == "5"){
 							if( sucursal_id == 1 && primero == true){
+
+								$(this).css( 'background-color', '#97ff9a9e');
+
 								$(this).attr('precio', (36).toFixed(2));
 								var trprecio = $(this).find('.precioeditable');
 								$(trprecio).val((36).toFixed(2));
+
 								var trprecioacumulado = $(this).find('.precioacumulado');
-								$(trprecioacumulado).html((36*cantidad).toFixed(2));
+
+								var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+
+								$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 								var btneliminar = $(this).find('.btnEliminar');
-								$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+								$(btneliminar).attr('precio',(acumulado).toFixed(2));
+
 								primero = false;
-								calcularTotal();
-								var total = $("#total").val();
-								$("#total").val( (total - 16).toFixed(2) );
+
 							}else if( sucursal_id == 2 && primero == true){
+
+								$(this).css( 'background-color', '#97ff9a9e');
+
 								$(this).attr('precio', (35).toFixed(2));
 								var trprecio = $(this).find('.precioeditable');
 								$(trprecio).val((35).toFixed(2));
+								
 								var trprecioacumulado = $(this).find('.precioacumulado');
-								$(trprecioacumulado).html((35*cantidad).toFixed(2));
+
+								var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 35 ) + ( envases_nuevos * precio_envase) );
+								
+								$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 35 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 								var btneliminar = $(this).find('.btnEliminar');
-								$(btneliminar).attr('precio',(35*cantidad).toFixed(2));
+								$(btneliminar).attr('precio',(acumulado).toFixed(2));
 								primero = false;
-								calcularTotal();
-								var total = $("#total").val();
-								$("#total").val( (total - 16).toFixed(2) );
+
 							}
 						}
 					});
+					calcularTotal();
+
 					//activar vale sisfoh
 					$('#vale_balon_fise').prop('checked',true);
 					$('#monto_vale_fise').prop('readOnly',false);
@@ -1015,28 +1315,38 @@ function clickVales(){
 					$('#vale_balon_subcafae').prop('checked',false);
 				}else {
 					$("#detalle tr").each(function(){
+						$(this).css( 'background-color', '');
 						var id = parseInt($(this).attr('id'));
-						var cantidad = $(this).attr('cantidad');
+						var cantidadactual = parseInt($(this).attr('cantidad'));
+						var precio_envase = parseFloat($(this).attr('precio_envase'));
+						var envases_nuevos = parseInt($(this).attr('envases_nuevos'));
 						if( id == "5" ){
 							$(this).attr('precio', (37).toFixed(2));
 							var trprecio = $(this).find('.precioeditable');
 							$(trprecio).val((37).toFixed(2));
+
 							var trprecioacumulado = $(this).find('.precioacumulado');
-							$(trprecioacumulado).html((37*cantidad).toFixed(2));
+
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 37 ) + ( envases_nuevos * precio_envase) );
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
-							$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
-							calcularTotal();
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}else if( id == "4" ){
 							$(this).attr('precio', (36).toFixed(2));
 							var trprecio = $(this).find('.precioeditable');
 							$(trprecio).val((36).toFixed(2));
+
 							var trprecioacumulado = $(this).find('.precioacumulado');
-							$(trprecioacumulado).html((36*cantidad).toFixed(2));
+							
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
-							$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
-							calcularTotal();
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}
 					});
+					calcularTotal();
 					$('#monto_vale_fise').prop('readOnly',true);
 					$('#codigo_vale_fise').prop('readOnly',true);
 					$('#monto_vale_fise').val('');
@@ -1053,33 +1363,47 @@ function clickVales(){
 					var primero = true;
 					$("#detalle tr").each(function(){
 						var id = parseInt($(this).attr('id'));
-						var cantidad = $(this).attr('cantidad');
+						var cantidadactual = parseInt($(this).attr('cantidad'));
+						var precio_envase = parseFloat($(this).attr('precio_envase'));
+						var envases_nuevos = parseInt($(this).attr('envases_nuevos'));
 						if( id == "5"  && primero == true){
+
+							$(this).css( 'background-color', '#97ff9a9e');
+
 							$(this).attr('precio', (36).toFixed(2));
 							var trprecio = $(this).find('.precioeditable');
 							$(trprecio).val((36).toFixed(2));
+
 							var trprecioacumulado = $(this).find('.precioacumulado');
-							$(trprecioacumulado).html((36*cantidad).toFixed(2));
+							
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
-							$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
+
 							primero = false;
-							calcularTotal();
-							var total = $("#total").val();
-							$("#total").val( (total - 36).toFixed(2) );
+
 						}else if( id == "4"  && primero == true ){
+
+							$(this).css( 'background-color', '#97ff9a9e');
+
 							$(this).attr('precio', (37).toFixed(2));
 							var trprecio = $(this).find('.precioeditable');
 							$(trprecio).val((37).toFixed(2));
+							
 							var trprecioacumulado = $(this).find('.precioacumulado');
-							$(trprecioacumulado).html((37*cantidad).toFixed(2));
+
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 37 ) + ( envases_nuevos * precio_envase) );
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
-							$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 							primero = false;
-							calcularTotal();
-							var total = $("#total").val();
-							$("#total").val( (total - 37).toFixed(2) );
+
 						}
 					});
+					calcularTotal();
 					$('#codigo_vale_subcafae').prop('readOnly',false);
 					$('#codigo_vale_subcafae').prop('disabled',false);
 					$('#codigo_vale_fise').prop('readOnly',true);
@@ -1099,28 +1423,39 @@ function clickVales(){
 					//$('#btnGuardar').prop('disabled', false);
 				}else {
 					$("#detalle tr").each(function(){
+						$(this).css( 'background-color', '');
 						var id = parseInt($(this).attr('id'));
-						var cantidad = $(this).attr('cantidad');
+						var cantidadactual = parseInt($(this).attr('cantidad'));
+						var precio_envase = parseFloat($(this).attr('precio_envase'));
+						var envases_nuevos = parseInt($(this).attr('envases_nuevos'));
 						if( id == "5" ){
 							$(this).attr('precio', (37).toFixed(2));
 							var trprecio = $(this).find('.precioeditable');
 							$(trprecio).val((37).toFixed(2));
+
 							var trprecioacumulado = $(this).find('.precioacumulado');
-							$(trprecioacumulado).html((37*cantidad).toFixed(2));
+
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 37 ) + ( envases_nuevos * precio_envase) );
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
-							$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
-							calcularTotal();
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}else if( id == "4" ){
 							$(this).attr('precio', (36).toFixed(2));
 							var trprecio = $(this).find('.precioeditable');
 							$(trprecio).val((36).toFixed(2));
+
 							var trprecioacumulado = $(this).find('.precioacumulado');
-							$(trprecioacumulado).html((36*cantidad).toFixed(2));
+							
+							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+
+							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
-							$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
-							calcularTotal();
+							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}
 					});
+					calcularTotal();
+
 					$('#monto_vale_fise').prop('readOnly',true);
 					$('#codigo_vale_fise').prop('readOnly',true);
 					$('#codigo_vale_monto').prop('readOnly',true);
@@ -1132,29 +1467,7 @@ function clickVales(){
 					$('#vale_balon_monto').prop('checked',false);
 					$('#vale_balon_subcafae').parent().removeClass('checked');
 				}
-			}/*else if( input.attr('id') == 'balon_a_cuenta'){ //codigo_vale_subcafae
-				if( divpadre.hasClass('checked')) { 
-					console.log("credito");
-					$("#credito").val("1");
-
-					$("#montoefectivo").val("");
-					$("#vuelto").val((0).toFixed(2));
-
-					$("#btnGuardar").prop('disabled',false);
-					$('#balon_a_cuenta').prop('checked',true);
-					$('#divMensajeErrorVenta').html("");
-
-				}else{
-
-					console.log("sin credito");
-
-					$("#montoefectivo").val("");
-					$("#credito").val("0");
-
-					$("#btnGuardar").prop('disabled',true);
-					$('#balon_a_cuenta').prop('checked',false);
-				}
-			}*/
+			}
 			calcularTotal();
 		}
 	});
@@ -1180,7 +1493,7 @@ function generarProductos(){
 	}).always(function(){
 
 		$.each(productos, function(i, item) {
-			tabla =  tabla +'<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="' + item.id  + '"  precio="' + item.precio_venta + '" descripcion="' + item.descripcion + '" editable="' + item.editable + '" stock="' + item.cantidad + '" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" ><label style="font-size: 9.5px; color: #2a3f54; padding-top: 13px;">' + item.descripcion + '</label><label style="font-size: 9.5px; color: #2a3f54;">STOCK: ' + item.cantidad + '</label></div>';
+			tabla =  tabla +'<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="' + item.id  + '"  precio="' + item.precio_venta + '" descripcion="' + item.descripcion + '" editable="' + item.editable + '" recargable="' + item.recargable + '" stock="' + item.cantidad + '" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" ><label style="font-size: 9.5px; color: #2a3f54; padding-top: 13px;">' + item.descripcion + '</label><label style="font-size: 9.5px; color: #2a3f54;">STOCK: ' + item.cantidad + '</label></div>';
 		});
 
 		$('#servicios_frecuentes').html(tabla);
@@ -1350,14 +1663,10 @@ function desactivarVales(){
 	$('#vale_balon_monto').parent().addClass('disabled');
 	$('#vale_balon_fise').parent().addClass('disabled');
 
-	$('#balon_nuevo').prop('disabled', true);
 	//$('#balon_a_cuenta').prop('disabled', true);
 
-	$('#balon_nuevo').parent().removeClass('checked');
 	//$('#balon_a_cuenta').parent().removeClass('checked');
-	$('#balon_nuevo').parent().addClass('disabled');
 
-	$('#balon_nuevo').prop('checked', false);
 	$('#balon_a_cuenta').prop('checked', false);
 
 }
@@ -1393,77 +1702,50 @@ $('#cliente').typeahead(null,{
 }); 
 
 function eliminarDetalle(comp){
-	$("#detalle tr").each(function(){
-		var id = parseInt($(this).attr('id'));
-		var cantidad = $(this).attr('cantidad');
-		if( id == "5" ){
-			$(this).attr('precio', (37).toFixed(2));
-			var trprecio = $(this).find('.precioeditable');
-			$(trprecio).val((37).toFixed(2));
-			var trprecioacumulado = $(this).find('.precioacumulado');
-			$(trprecioacumulado).html((37*cantidad).toFixed(2));
-			var btneliminar = $(this).find('.btnEliminar');
-			$(btneliminar).attr('precio',(37*cantidad).toFixed(2));
-			calcularTotal();
-		}else if( id == "4" ){
-			$(this).attr('precio', (36).toFixed(2));
-			var trprecio = $(this).find('.precioeditable');
-			$(trprecio).val((36).toFixed(2));
-			var trprecioacumulado = $(this).find('.precioacumulado');
-			$(trprecioacumulado).html((36*cantidad).toFixed(2));
-			var btneliminar = $(this).find('.btnEliminar');
-			$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
-			calcularTotal();
-		}
-	});
 	var precioeliminar = parseFloat($(comp).attr('precio'));
 	var idproducto = $(comp).attr('idproducto');
 	if(idproducto == 4 || idproducto == 5 ){
-			//$('#activar_checkbox').val(0);
-			$('#activar_checkbox').val(0);
-			activar_checkbox = $('#activar_checkbox').val();
-			clickVales();
-			//desactibar checkbox
-			$('#vale_balon_subcafae').prop('disabled', true);
-			$('#vale_balon_monto').prop('disabled', true);
-			$('#vale_balon_fise').prop('disabled', true);
+		//$('#activar_checkbox').val(0);
+		$('#activar_checkbox').val(0);
+		activar_checkbox = $('#activar_checkbox').val();
+		clickVales();
+		//desactibar checkbox
+		$('#vale_balon_subcafae').prop('disabled', true);
+		$('#vale_balon_monto').prop('disabled', true);
+		$('#vale_balon_fise').prop('disabled', true);
 
-			$('#vale_balon_subcafae').prop('checked', false);
-			$('#vale_balon_monto').prop('checked', false);
-			$('#vale_balon_fise').prop('checked', false);
+		$('#vale_balon_subcafae').prop('checked', false);
+		$('#vale_balon_monto').prop('checked', false);
+		$('#vale_balon_fise').prop('checked', false);
 
-			//desactivar inputs
-			$('#codigo_vale_subcafae').prop('disabled', true);
-			$('#codigo_vale_monto').prop('disabled', true);
-			$('#monto_vale_balon').prop('disabled', true);
-			$('#codigo_vale_fise').prop('disabled', true);
-			$('#monto_vale_fise').prop('disabled', true);
+		//desactivar inputs
+		$('#codigo_vale_subcafae').prop('disabled', true);
+		$('#codigo_vale_monto').prop('disabled', true);
+		$('#monto_vale_balon').prop('disabled', true);
+		$('#codigo_vale_fise').prop('disabled', true);
+		$('#monto_vale_fise').prop('disabled', true);
 
-			$('#vale_balon_subcafae').parent().addClass('disabled');
-			$('#vale_balon_monto').parent().addClass('disabled');
-			$('#vale_balon_fise').parent().addClass('disabled');
+		$('#vale_balon_subcafae').parent().addClass('disabled');
+		$('#vale_balon_monto').parent().addClass('disabled');
+		$('#vale_balon_fise').parent().addClass('disabled');
 
-			$('#vale_balon_subcafae').parent().removeClass('checked');
-			$('#vale_balon_monto').parent().removeClass('checked');
-			$('#vale_balon_fise').parent().removeClass('checked');
+		$('#vale_balon_subcafae').parent().removeClass('checked');
+		$('#vale_balon_monto').parent().removeClass('checked');
+		$('#vale_balon_fise').parent().removeClass('checked');
 
-			$('#balon_nuevo').prop('disabled', true);
-			//$('#balon_a_cuenta').prop('disabled', true);
+		//$('#balon_a_cuenta').prop('disabled', true);
 
-			$('#balon_nuevo').parent().removeClass('checked');
-			//$('#balon_a_cuenta').parent().removeClass('checked'); // aqui
+		//$('#balon_a_cuenta').parent().removeClass('checked'); // aqui
 
-			$('#balon_nuevo').parent().addClass('disabled');
 
-			$('#balon_nuevo').prop('checked', false);
-			$('#balon_a_cuenta').prop('checked', false);
+		$('#balon_a_cuenta').prop('checked', false);
 
-			$('#monto_vale_balon').val('');
-			$('#monto_vale_fise').val('');
-			$('#codigo_vale_monto').val('');
-			$('#codigo_vale_fise').val('');
-			$('#codigo_vale_subcafae').val('');
-		}
+		$('#monto_vale_balon').val('');
+		$('#monto_vale_fise').val('');
+		$('#codigo_vale_monto').val('');
+		$('#codigo_vale_fise').val('');
+		$('#codigo_vale_subcafae').val('');
+	}
 	var cant = $("#cant"). val();
 	cant--;
 	$("#cant").val(cant);
@@ -1477,7 +1759,6 @@ function eliminarDetalle(comp){
 	$("#vuelto").val((0).toFixed(2));
 
 	(($(comp).parent()).parent()).remove();
-
 	
 	$('#monto_vale_balon').val('');
 	$('#monto_vale_fise').val('');
@@ -1485,7 +1766,6 @@ function eliminarDetalle(comp){
 	$('#codigo_vale_fise').val('');
 	$('#codigo_vale_subcafae').val('');
 			
-
 	calcularTotal();
 	
 	$("#detalle tr").each(function(){
@@ -1497,7 +1777,6 @@ function eliminarDetalle(comp){
 			activar_checkbox = $('#activar_checkbox').val();
 			clickVales();
 			//console.log(activar_checkbox);
-			$('#balon_nuevo').prop('disabled', false);
 			//$('#balon_a_cuenta').prop('disabled', false);
 			$('#vale_balon_subcafae').prop('disabled', false);
 			$('#vale_balon_monto').prop('disabled', false);
@@ -1514,7 +1793,6 @@ function eliminarDetalle(comp){
 			$('#monto_vale_balon').prop('readOnly', true);
 			$('#monto_vale_fise').prop('readOnly', true);
 			
-			$('#balon_nuevo').parent().removeClass('checked');
 			//$('#balon_a_cuenta').parent().removeClass('checked');
 			$('#vale_balon_subcafae').parent().removeClass('checked');
 			$('#vale_balon_monto').parent().removeClass('checked');
@@ -1523,7 +1801,6 @@ function eliminarDetalle(comp){
 			$('#vale_balon_subcafae').parent().removeClass('disabled');
 			$('#vale_balon_monto').parent().removeClass('disabled');
 			$('#vale_balon_fise').parent().removeClass('disabled');
-			$('#balon_nuevo').parent().removeClass('disabled');
 
 		}
 
@@ -1636,44 +1913,6 @@ function detalleventa(){
 	});
 }
 
-function actualizarPreciosVales(){
-	var sucursal_id = $("#sucursal_id").val();
-	if( $("#vale_balon_fise").prop("checked") ){
-		var primero = true;
-		$("#detalle tr").each(function(){
-			var id = parseInt($(this).attr('id'));
-			var cantidad = $(this).attr('cantidad');
-			if( id == "4" || id == "5"){
-				if( sucursal_id == 1 && primero == true){
-					$(this).attr('precio', (36).toFixed(2));
-					var trprecio = $(this).find('.precioeditable');
-					$(trprecio).val((36).toFixed(2));
-					var trprecioacumulado = $(this).find('.precioacumulado');
-					$(trprecioacumulado).html((36*cantidad).toFixed(2));
-					var btneliminar = $(this).find('.btnEliminar');
-					$(btneliminar).attr('precio',(36*cantidad).toFixed(2));
-					primero = false;
-					calcularTotal();
-					var total = $("#total").val();
-					$("#total").val( (total - 16).toFixed(2) );
-				}else if( sucursal_id == 2 && primero == true){
-					$(this).attr('precio', (35).toFixed(2));
-					var trprecio = $(this).find('.precioeditable');
-					$(trprecio).val((35).toFixed(2));
-					var trprecioacumulado = $(this).find('.precioacumulado');
-					$(trprecioacumulado).html((35*cantidad).toFixed(2));
-					var btneliminar = $(this).find('.btnEliminar');
-					$(btneliminar).attr('precio',(35*cantidad).toFixed(2));
-					primero = false;
-					calcularTotal();
-					var total = $("#total").val();
-					$("#total").val( (total - 16).toFixed(2) );
-				}
-			}
-		});
-	}
-}
-
 function is_numeric(value) {
 	return !isNaN(parseFloat(value)) && isFinite(value);
 }
@@ -1683,7 +1922,14 @@ function calcularTotal(){
 	$("#detalle tr").each(function(){
 		var cantidad = parseInt($(this).attr('cantidad'));
 		var precio = parseFloat($(this).attr('precio'));
-		total += precio*cantidad;
+		if( $(this).attr('envases_nuevos') != null || $(this).attr('envases_nuevos') == ""){
+			var envases_nuevos = parseInt($(this).attr('envases_nuevos'));
+			var precio_envase = parseFloat($(this).attr('precio_envase'));
+			total += (cantidad - envases_nuevos) * precio + (envases_nuevos * precio_envase);
+
+		}else{
+			total += precio * cantidad;
+		}
 	});
 	var fise = parseFloat($('#monto_vale_fise').val());
 	var monto = parseFloat($('#monto_vale_balon').val());

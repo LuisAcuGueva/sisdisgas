@@ -47,6 +47,7 @@ class ProductoController extends Controller
         $cabecera[]       = array('valor' => 'PRECIO VENTA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ACTIVO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRECIO EDITABLE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'RECARGABLE', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -120,6 +121,7 @@ class ProductoController extends Controller
             $producto->precio_compra = $request->input('precio_compra');
             $producto->frecuente = $request->input('frecuente');
             $producto->editable = $request->input('editable');
+            $producto->recargable = $request->input('recargable');
             $producto->save();
         });
         return is_null($error) ? "OK" : $error;
@@ -186,6 +188,7 @@ class ProductoController extends Controller
             $producto->precio_compra = $request->input('precio_compra');
             $producto->frecuente = $request->input('frecuente');
             $producto->editable = $request->input('editable');
+            $producto->recargable = $request->input('recargable');
             $producto->save();
         });
         return is_null($error) ? "OK" : $error;

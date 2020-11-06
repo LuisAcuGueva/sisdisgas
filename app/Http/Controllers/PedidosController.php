@@ -103,6 +103,7 @@ class PedidosController extends Controller
         $cabecera[]       = array('valor' => 'NRO DOC', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'VALE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CRÉDITO', 'numero' => '1');
         //$cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');

@@ -44,6 +44,7 @@ class KardexController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TIPO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'TIPO MOVIMIENTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NRO DOCUMENTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRODUCTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CANTIDAD', 'numero' => '1');

@@ -100,6 +100,43 @@
 	</div>
 
 	<div class="form-group">
+		{!! Form::label('recargable', 'Recargable:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
+		<div class="col-sm-8 col-xs-12">
+		
+		@if($producto == null)
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="radio" name="recargable" id="recargablesi" value="1">
+				<label class="form-check-label" for="recargablesi">SI</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<input checked class="form-check-input" type="radio" name="recargable" id="recargableno" value="0">
+				<label class="form-check-label" for="recargableno">NO</label>
+			</div>
+		@else
+			@if($producto->recargable == 1)
+				<div class="form-check form-check-inline">
+					<input checked class="form-check-input" type="radio" name="recargable" id="recargablesi" value="1">
+					<label class="form-check-label" for="recargablesi">SI</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="recargable" id="recargableno" value="0">
+					<label class="form-check-label" for="recargableno">NO</label>
+				</div>
+			@elseif($producto->recargable == 0)
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="recargable" id="recargablesi" value="1">
+					<label class="form-check-label" for="recargablesi">SI</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input checked class="form-check-input" type="radio" name="recargable" id="recargableno" value="0">
+					<label class="form-check-label" for="recargableno">NO</label>
+				</div>
+			@endif
+		@endif
+		</div>
+	</div>
+
+	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
 			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
