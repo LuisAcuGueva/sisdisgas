@@ -9,22 +9,58 @@
 			{!! Form::text('descripcion', null, array('class' => 'form-control input-xs', 'id' => 'name', 'placeholder' => 'Ingrese descripción')) !!}
 		</div>
 	</div>
-	<div class="form-group">
-		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
-			{!! Form::label('precio_venta', 'Precio de venta:') !!}<div class="" style="display: inline-block;color: red;">*</div>
-		</div>
-		<div class="col-lg-6 col-md-6 col-sm-6">
-			{!! Form::text('precio_venta', null, array('class' => 'form-control input-xs', 'id' => 'precio_venta', 'placeholder' => 'Ingrese precio de venta')) !!}
-		</div>
-	</div>
+	
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('precio_compra', 'Precio de compra:') !!}<div class="" style="display: inline-block;color: red;">*</div>
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-6">
-			{!! Form::text('precio_compra', null, array('class' => 'form-control input-xs', 'id' => 'precio_compra', 'placeholder' => 'Ingrese precio de compra')) !!}
+			{!! Form::text('precio_compra', null, array('class' => 'form-control input-xs', 'id' => 'precio_compra', 'placeholder' => 'Precio de compra')) !!}
 		</div>
 	</div>
+	<div class="form-group">
+		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
+			{!! Form::label('precio_venta', 'Precio de venta:') !!}<div class="" style="display: inline-block;color: red;">*</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6">
+			{!! Form::text('precio_venta', null, array('class' => 'form-control input-xs', 'id' => 'precio_venta', 'placeholder' => 'Precio de venta')) !!}
+		</div>
+	</div>
+	
+	@if($producto == null)
+		<div class="form-group recarga" style="display:none;">
+	@else
+		@if($producto->recargable == 1)
+			<div class="form-group recarga">
+		@elseif($producto->recargable == 0)
+			<div class="form-group recarga" style="display:none;">
+		@endif
+	@endif
+		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
+			{!! Form::label('precio_compra_envase', 'Precio de compra + envase:') !!}
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6">
+			{!! Form::text('precio_compra_envase', null, array('class' => 'form-control input-xs', 'id' => 'precio_compra_envase', 'placeholder' => 'Precio de compra + envase', 'style' => 'margin-top: 18px;')) !!}
+		</div>
+	</div>
+
+	@if($producto == null)
+		<div class="form-group recarga" style="display:none;">
+	@else
+		@if($producto->recargable == 1)
+			<div class="form-group recarga">
+		@elseif($producto->recargable == 0)
+			<div class="form-group recarga" style="display:none;">
+		@endif
+	@endif
+		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
+			{!! Form::label('precio_venta_envase', 'Precio de venta + envase:') !!}
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6">
+			{!! Form::text('precio_venta_envase', null, array('class' => 'form-control input-xs', 'id' => 'precio_venta_envase', 'placeholder' => 'Precio de venta + envase', 'style' => 'margin-top: 18px;')) !!}
+		</div>
+	</div>
+
 	<div class="form-group">
 		{!! Form::label('frecuente', 'Activo:', array('class' => 'col-sm-4 col-xs-12 control-label')) !!}
 		<div class="col-sm-8 col-xs-12">
@@ -151,5 +187,23 @@ $(document).ready(function() {
 		checkboxClass: 'icheckbox_flat-green',
 		radioClass: 'iradio_flat-green'
 	});
+
+	$('.iCheck-helper').on('click', function(){
+
+		var divpadre = $(this).parent();
+		var input = divpadre.find('input');
+
+		if( input.attr('id') == 'recargablesi' ){
+
+			$(".recarga").css('display','');
+
+		}else{
+
+			$(".recarga").css('display','none');
+
+		}
+
+	});
+
 }); 
 </script>

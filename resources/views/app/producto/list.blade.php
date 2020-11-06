@@ -25,6 +25,14 @@
 			<td align="center">{{ $value->precio_compra }}</td>
 			<td align="center">{{ $value->precio_venta }}</td>
 
+			@if($value->recargable == 0)
+				<td align="center">-</td>
+				<td align="center">-</td>
+			@elseif($value->recargable == 1)
+				<td align="center">{{ $value->precio_compra_envase }}</td>
+				<td align="center">{{ $value->precio_venta_envase }}</td>
+			@endif
+
 			@if($value->frecuente == 0)
 			<td align="center">&#10008;</td>
 			@elseif($value->frecuente == 1)

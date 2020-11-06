@@ -45,6 +45,8 @@ class ProductoController extends Controller
         $cabecera[]       = array('valor' => 'DESCRIPCIÓN', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRECIO COMPRA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRECIO VENTA', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'PRECIO COMPRA + ENVASE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'PRECIO VENTA + ENVASE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ACTIVO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRECIO EDITABLE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'RECARGABLE', 'numero' => '1');
@@ -105,10 +107,19 @@ class ProductoController extends Controller
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
-        $reglas     = array('descripcion' => 'required|max:100',
+        if($request->input('recargable') ==  0){
+            $reglas     = array('descripcion' => 'required|max:100',
                             'precio_venta' => 'required|numeric',
                             'precio_compra' => 'required|numeric',
                             );
+        }else if($request->input('recargable') ==  1){
+            $reglas     = array('descripcion' => 'required|max:100',
+                            'precio_venta' => 'required|numeric',
+                            'precio_compra' => 'required|numeric',
+                            'precio_venta_envase' => 'required|numeric',
+                            'precio_compra_envase' => 'required|numeric',
+                            );
+        }
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
         if ($validacion->fails()) {
@@ -119,6 +130,8 @@ class ProductoController extends Controller
             $producto->descripcion = strtoupper($request->input('descripcion'));
             $producto->precio_venta = $request->input('precio_venta');
             $producto->precio_compra = $request->input('precio_compra');
+            $producto->precio_venta_envase = $request->input('precio_venta_envase');
+            $producto->precio_compra_envase = $request->input('precio_compra_envase');
             $producto->frecuente = $request->input('frecuente');
             $producto->editable = $request->input('editable');
             $producto->recargable = $request->input('recargable');
@@ -172,10 +185,19 @@ class ProductoController extends Controller
         if ($existe !== true) {
             return $existe;
         }
-        $reglas     = array('descripcion' => 'required|max:100',
+        if($request->input('recargable') ==  0){
+            $reglas     = array('descripcion' => 'required|max:100',
                             'precio_venta' => 'required|numeric',
                             'precio_compra' => 'required|numeric',
                             );
+        }else if($request->input('recargable') ==  1){
+            $reglas     = array('descripcion' => 'required|max:100',
+                            'precio_venta' => 'required|numeric',
+                            'precio_compra' => 'required|numeric',
+                            'precio_venta_envase' => 'required|numeric',
+                            'precio_compra_envase' => 'required|numeric',
+                            );
+        }
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
         if ($validacion->fails()) {
@@ -186,6 +208,8 @@ class ProductoController extends Controller
             $producto->descripcion = strtoupper($request->input('descripcion'));
             $producto->precio_venta = $request->input('precio_venta');
             $producto->precio_compra = $request->input('precio_compra');
+            $producto->precio_venta_envase = $request->input('precio_venta_envase');
+            $producto->precio_compra_envase = $request->input('precio_compra_envase');
             $producto->frecuente = $request->input('frecuente');
             $producto->editable = $request->input('editable');
             $producto->recargable = $request->input('recargable');
