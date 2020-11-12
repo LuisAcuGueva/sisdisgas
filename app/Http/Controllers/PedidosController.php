@@ -11,7 +11,7 @@ use App\Person;
 use App\Sucursal;
 use App\Movimiento;
 use App\Detalleturnopedido;
-use App\Detalleventa;
+use App\Detallemovalmacen;
 use App\Detallepagos;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -167,9 +167,9 @@ class PedidosController extends Controller
         $pedido = Movimiento::find($id);
         if($pedido->tipomovimiento_id == 5){
             $pedido = Movimiento::find($pedido->venta_id);
-            $detalles = Detalleventa::where('venta_id',$pedido->id)->get();
+            $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
         }else{
-            $detalles = Detalleventa::where('venta_id',$pedido->id)->get();
+            $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
         }
         $entidad  = 'Pedidos';
         $formData = array('turno.store', $id);

@@ -6,7 +6,6 @@ use Validator;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Movimiento;
-use App\Detalleventa;
 use App\Detallepagos;
 use App\Detalleturnopedido;
 use App\Detallemovalmacen;
@@ -107,7 +106,11 @@ class CompraspagarController extends Controller
         $formData = array('compraspagar.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        return view($this->folderview.'.detalle')->with(compact('compra', 'detalles','formData', 'entidad', 'boton', 'listar'));
+        $detallespago = Detallepagos::where('pedido_id', '=', $id)
+                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                    ->where('estado',1)
+                    ->get();  
+        return view($this->folderview.'.detalle')->with(compact('compra', 'detallespago','detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function pagos(Request $request, $id)
@@ -137,7 +140,7 @@ class CompraspagarController extends Controller
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $pedido = Movimiento::find($id);
-        $detalles = Detalleventa::where('venta_id',$pedido->id)->get();
+        $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
         $total_pagos = Detallepagos::where('pedido_id', '=', $id)
                                     ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
                                     ->where('estado',1)

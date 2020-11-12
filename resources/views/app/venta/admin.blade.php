@@ -85,7 +85,7 @@ operaciones
 
 				<div class="col-lg-4 col-md-4 col-sm-4 m-b-15">
 					<div class="col-lg-12 col-md-12 col-sm-12" style="margin-bottom: 15px;">
-						{!! Form::label('balon_nuevo', 'Venta en sucursal:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
+						{!! Form::label('venta_sucursal', 'Venta en sucursal:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
 						<input name="venta_sucursal" type="checkbox" id="venta_sucursal">
 					</div>
 				</div>
@@ -181,7 +181,7 @@ operaciones
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<div id="servicios_frecuentes" class="col-lg-12 col-md-12 col-sm-12" style="margin: 10px; border-style: groove; width: 100%; height: 180px; overflow-y: scroll;">
 							@foreach($productos  as $key => $value)
-								<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="{{ $value->id}}"  precio="{{ $value->precio_venta }}" descripcion="{{ $value->descripcion }}" editable="{{ $value->editable }}" recargable="{{ $value->recargable }}" stock="{{ $value->cantidad }}" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
+								<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="{{ $value->id}}"  precio="{{ $value->precio_venta }}" precio_envase="{{ $value->precio_venta_envase }}" descripcion="{{ $value->descripcion }}" editable="{{ $value->editable }}" recargable="{{ $value->recargable }}" stock="{{ $value->cantidad }}" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
 									<label style="font-size: 9.5px; color: #2a3f54; padding-top: 13px;">{{ $value->descripcion}}</label>
 									<label style="font-size: 9.5px; color: #2a3f54;">STOCK: {{$value->cantidad}}</label>
 								</div>
@@ -626,6 +626,7 @@ function agregarProducto(){
 		var elemento = this;
 		var idservicio_frecuente = $(this).attr('id');
 		var precio = parseFloat($(this).attr('precio'));
+		var precio_envase = parseFloat($(this).attr('precio_envase'));
 		var descripcion = $(this).attr('descripcion');
 		var editable = $(this).attr('editable');
 		var recargable = $(this).attr('recargable');
@@ -696,20 +697,20 @@ function agregarProducto(){
 							cantidadfila++;
 							$(this).attr('cantidad',cantidadfila);
 
-							var acumulado = parseFloat( ( (cantidadfila - envases_nuevos) * precioactual ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadfila * precioactual ) + ( envases_nuevos * precio_envase) );
 
 							if(recargable == 1){
 								if(editable == 0){
 									var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion 
 									+'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila 
 									+'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) 
-									+'</td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text" value="'+ envases_nuevos +'"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 60px;" type="text" value="'+ precio_envase +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ ((cantidadfila - envases_nuevos) * precioactual) + " + " + ( envases_nuevos * precio_envase) +  " = " +(acumulado).toFixed(2) 
+									+'</td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text" value="'+ envases_nuevos +'"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 70px;" type="text" value="'+ (precio_envase).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ ((cantidadfila - envases_nuevos) * precioactual) + " + " + ( envases_nuevos * precio_envase) +  " = " +(acumulado).toFixed(2) 
 									+'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (acumulado).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
 								}else if(editable == 1){
 									var nuevafila = '<td style="vertical-align: middle; text-align: left;">'+ descripcion 
 									+'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ cantidadfila 
 									+'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precioactual).toFixed(2) 
-									+'"></td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text" value="'+ envases_nuevos +'"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 60px;" type="text" value="'+ precio_envase +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ ((cantidadfila - envases_nuevos) * precioactual) + " + " + ( envases_nuevos * precio_envase) +  " = " +(acumulado).toFixed(2) 
+									+'"></td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text" value="'+ envases_nuevos +'"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 70px;" type="text" value="'+ (precio_envase).toFixed(2) +'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ ((cantidadfila - envases_nuevos) * precioactual) + " + " + ( envases_nuevos * precio_envase) +  " = " +(acumulado).toFixed(2) 
 									+'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (acumulado).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
 								}
 							}else if(recargable == 0){
@@ -743,19 +744,19 @@ function agregarProducto(){
 		if(!existe){
 			if(recargable == 1){
 				if(editable == 0){
-					var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" envases_nuevos="'+ 0 +'" precio_envase="'+ 0  +'" precio='+ (precio).toFixed(2) +' stock='+ stock 
+					var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" envases_nuevos="'+ 0 +'" precio_envase="'+ (precio_envase).toFixed(2)  +'" precio='+ (precio).toFixed(2) +' stock='+ stock 
 					+'><td style="vertical-align: middle; text-align: left;">'+ descripcion 
 					+'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 
 					+'"></td><td style="vertical-align: middle;">'+ (precio).toFixed(2) 
-					+'</td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 60px;" type="text" value="'
+					+'</td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 70px;" type="text" value="' + (precio_envase).toFixed(2)
 					+'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ precio + " + 0 = " +  (precio).toFixed(2)
 					+'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
 				}else if(editable == 1){
-					var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" envases_nuevos="'+ 0 +'" precio_envase="'+ 0 +'" precio='+ (precio).toFixed(2) +' stock='+ stock 
+					var fila =  '<tr align="center" class="DetalleServicio" id="'+ idservicio_frecuente +'" cantidad="'+ 1 +'" envases_nuevos="'+ 0 +'" precio_envase="'+ (precio_envase).toFixed(2) +'" precio='+ (precio).toFixed(2) +' stock='+ stock 
 					+'><td style="vertical-align: middle; text-align: left;">'+ descripcion 
 					+'</td><td style="vertical-align: middle;"><input class="form-control input-xs cantidadeditable" style="text-align: right; width: 70px;" type="text" value="'+ 1 
 					+'"></td><td style="vertical-align: middle;"><input class="form-control input-xs precioeditable" style="text-align: right; width: 70px;" type="text" value="'+ (precio).toFixed(2) 
-					+'"></td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 60px;" type="text" value="'
+					+'"></td><td style="vertical-align: middle;">Cant: <input class="form-control input-xs cant_nuevo" style="text-align: right; width: 60px;" type="text"> Precio S/. <input class="form-control input-xs precio_nuevo" style="text-align: right; width: 70px;" type="text" value="' + (precio_envase).toFixed(2)
 					+'"></td><td class="precioacumulado" style="vertical-align: middle;">'+ precio + " + 0 = " +  (precio).toFixed(2)
 					+'</td><td style="vertical-align: middle;"><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto='+ idservicio_frecuente +' precio='+ (precio).toFixed(2) +' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
 				}
@@ -790,8 +791,6 @@ function agregarProducto(){
 						var precio_envase = 0;
 					}
 
-					console.log( "precio envase = " +precio_envase)
-
 					if( precio_envase != 0 ){
 						if( precionuevo < precio_envase ){
 
@@ -799,9 +798,9 @@ function agregarProducto(){
 
 							var trprecioacumulado = $(tr).find('.precioacumulado');
 
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * precionuevo ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * precionuevo ) + ( envases_nuevos * precio_envase) );
 							
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * precionuevo ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * precionuevo ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(tr).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 
@@ -827,11 +826,11 @@ function agregarProducto(){
 
 						var trprecioacumulado = $(tr).find('.precioacumulado');
 
-						var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * precionuevo ) + ( envases_nuevos * precio_envase) );
+						var acumulado = parseFloat( ( cantidadactual * precionuevo ) + ( envases_nuevos * precio_envase) );
 						
 						if( $(tr).attr('envases_nuevos') != undefined ){
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * precionuevo ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual* precionuevo ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 
 						}else{
 							$(trprecioacumulado).html( (acumulado).toFixed(2));
@@ -874,7 +873,7 @@ function agregarProducto(){
 			var elemento = this;
 			var cantidadnueva = parseInt($(this).val());
 			if( is_numeric(cantidadnueva) ){
-				if(cantidadnueva > 0){
+				if(cantidadnueva >= 0){
 					var tr = $(this).parent().parent();
 
 					var precioactual = parseFloat($(tr).attr('precio'));
@@ -889,49 +888,33 @@ function agregarProducto(){
 						var precio_envase = 0;
 					}
 
-					console.log( stockactual + ' < ' + cantidadnueva);
 					if(stockactual >= cantidadnueva ){
 						//var cantidad = $(tr).attr('cantidad');
 						//$(tr).attr('precio',precioactual);
 
-						if(cantidadnueva >= envases_nuevos ){
-							$(tr).attr('cantidad',cantidadnueva);
+						$(tr).attr('cantidad',cantidadnueva);
 
-							var trprecioacumulado = $(tr).find('.precioacumulado');
+						var trprecioacumulado = $(tr).find('.precioacumulado');
 
-							console.log("cantidad nueva = " + cantidadnueva);
+						var acumulado = parseFloat( ( cantidadnueva * precioactual ) + ( envases_nuevos * precio_envase) );
 
-							var acumulado = parseFloat( ( (cantidadnueva - envases_nuevos) * precioactual ) + ( envases_nuevos * precio_envase) );
+						if( $(tr).attr('envases_nuevos') != undefined ){
 
-							console.log("acumulado = " + acumulado);
+							$(trprecioacumulado).html( ( cantidadnueva * precioactual ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 
-							if( $(tr).attr('envases_nuevos') != undefined ){
-
-								$(trprecioacumulado).html( ( (cantidadnueva - envases_nuevos) * precioactual ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
-
-							}else{
-								$(trprecioacumulado).html( (acumulado).toFixed(2));
-							}
-
-							var btneliminar = $(tr).find('.btnEliminar');
-							$(btneliminar).attr('precio',(acumulado).toFixed(2));
-								
-							calcularTotal();
-							$("#montoefectivo").val("");
-							$("#montovisa").val("");
-							$("#montomaster").val("");
-							$("#vuelto").val((0).toFixed(2));
-							$('#divMensajeErrorVenta').html("");
 						}else{
-							swal({
-								title: 'LA CANTIDAD DEL PRODUCTO NO PUEDE SER MENOR AL NÚMERO DE ENVASES NUEVOS',
-								type: 'error',
-							});
-							var tr = $(this).parent().parent();
-							var cantidadactual = $(tr).attr('cantidad');
-							$(this).val(cantidadactual);
+							$(trprecioacumulado).html( (acumulado).toFixed(2));
 						}
 
+						var btneliminar = $(tr).find('.btnEliminar');
+						$(btneliminar).attr('precio',(acumulado).toFixed(2));
+							
+						calcularTotal();
+						$("#montoefectivo").val("");
+						$("#montovisa").val("");
+						$("#montomaster").val("");
+						$("#vuelto").val((0).toFixed(2));
+						$('#divMensajeErrorVenta').html("");
 
 					}else{
 						swal({
@@ -975,38 +958,27 @@ function agregarProducto(){
 					var precioactual = parseFloat($(tr).attr('precio'));
 					var cantidadactual = parseInt($(tr).attr('cantidad'));
 					var precio_envase = parseFloat($(tr).attr('precio_envase'));
-					//console.log( stockactual + ' < ' + cantidadnueva);
 
-					
-					if(cantidadactual >= cant_nuevo ){
-						//var cantidad = $(tr).attr('cantidad');
-						//$(tr).attr('precio',precioactual);
-						$(tr).attr('envases_nuevos',cant_nuevo);
+					//var cantidad = $(tr).attr('cantidad');
+					//$(tr).attr('precio',precioactual);
+					$(tr).attr('envases_nuevos',cant_nuevo);
 
-						var trprecioacumulado = $(tr).find('.precioacumulado');
+					var trprecioacumulado = $(tr).find('.precioacumulado');
 
-						var acumulado = parseFloat( ( (cantidadactual - cant_nuevo) * precioactual ) + ( cant_nuevo * precio_envase) );
+					var acumulado = parseFloat( ( cantidadactual * precioactual ) + ( cant_nuevo * precio_envase) );
 
-						$(trprecioacumulado).html( ( (cantidadactual - cant_nuevo) * precioactual ) + " + " + ( cant_nuevo * precio_envase) + " = " + (acumulado).toFixed(2));
-						var btneliminar = $(tr).find('.btnEliminar');
-						$(btneliminar).attr('precio',(acumulado).toFixed(2));
+					$(trprecioacumulado).html( ( cantidadactual * precioactual ) + " + " + ( cant_nuevo * precio_envase) + " = " + (acumulado).toFixed(2));
+					var btneliminar = $(tr).find('.btnEliminar');
+					$(btneliminar).attr('precio',(acumulado).toFixed(2));
 
 
-						calcularTotal();
-						$("#montoefectivo").val("");
-						$("#montovisa").val("");
-						$("#montomaster").val("");
-						$("#vuelto").val((0).toFixed(2));
-						//$('#btnGuardar').prop('disabled', false);
-					}else{
-						swal({
-							title: 'LA CANTIDAD DE ENVASES NUEVOS DEBE SER MENOR A LA CANTIDAD DEL PRODUCTO',
-							type: 'error',
-						});
-						var tr = $(this).parent().parent();
-						var envases_nuevos = $(tr).attr('envases_nuevos');
-						$(this).val(envases_nuevos);
-					}
+					calcularTotal();
+					$("#montoefectivo").val("");
+					$("#montovisa").val("");
+					$("#montomaster").val("");
+					$("#vuelto").val((0).toFixed(2));
+					//$('#btnGuardar').prop('disabled', false);
+		
 
 				}else{
 					var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
@@ -1042,7 +1014,6 @@ function agregarProducto(){
 					var precioactual = parseFloat($(tr).attr('precio'));
 					var cantidadactual = parseInt($(tr).attr('cantidad'));
 					var envases_nuevos = parseInt($(tr).attr('envases_nuevos'));
-					//console.log( stockactual + ' < ' + cantidadnueva);
 
 					
 					if(precio_nuevo >= precioactual ){
@@ -1052,9 +1023,9 @@ function agregarProducto(){
 
 						var trprecioacumulado = $(tr).find('.precioacumulado');
 
-						var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * precioactual ) + ( envases_nuevos * precio_nuevo) );
+						var acumulado = parseFloat( ( cantidadactual * precioactual ) + ( envases_nuevos * precio_nuevo) );
 
-						$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * precioactual ) + " + " + ( envases_nuevos * precio_nuevo) + " = " + (acumulado).toFixed(2));
+						$(trprecioacumulado).html( ( cantidadactual * precioactual ) + " + " + ( envases_nuevos * precio_nuevo) + " = " + (acumulado).toFixed(2));
 						var btneliminar = $(tr).find('.btnEliminar');
 						$(btneliminar).attr('precio',(acumulado).toFixed(2));
 
@@ -1167,9 +1138,9 @@ function clickVales(){
 
 							var trprecioacumulado = $(this).find('.precioacumulado');
 
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 37 ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * 37 ) + ( envases_nuevos * precio_envase) );
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}else if( id == "4" ){
@@ -1179,9 +1150,9 @@ function clickVales(){
 
 							var trprecioacumulado = $(this).find('.precioacumulado');
 							
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * 36 ) + ( envases_nuevos * precio_envase) );
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}
@@ -1216,9 +1187,9 @@ function clickVales(){
 
 							var trprecioacumulado = $(this).find('.precioacumulado');
 
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 37 ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * 37 ) + ( envases_nuevos * precio_envase) );
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}else if( id == "4" ){
@@ -1228,9 +1199,9 @@ function clickVales(){
 
 							var trprecioacumulado = $(this).find('.precioacumulado');
 							
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * 36 ) + ( envases_nuevos * precio_envase) );
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}
@@ -1266,9 +1237,9 @@ function clickVales(){
 
 								var trprecioacumulado = $(this).find('.precioacumulado');
 
-								var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+								var acumulado = parseFloat( ( cantidadactual * 36 ) + ( envases_nuevos * precio_envase) );
 
-								$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+								$(trprecioacumulado).html( ( cantidadactual * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 								var btneliminar = $(this).find('.btnEliminar');
 								$(btneliminar).attr('precio',(acumulado).toFixed(2));
 
@@ -1284,9 +1255,9 @@ function clickVales(){
 								
 								var trprecioacumulado = $(this).find('.precioacumulado');
 
-								var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 35 ) + ( envases_nuevos * precio_envase) );
+								var acumulado = parseFloat( ( cantidadactual * 35 ) + ( envases_nuevos * precio_envase) );
 								
-								$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 35 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+								$(trprecioacumulado).html( ( cantidadactual * 35 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 								var btneliminar = $(this).find('.btnEliminar');
 								$(btneliminar).attr('precio',(acumulado).toFixed(2));
 								primero = false;
@@ -1327,9 +1298,9 @@ function clickVales(){
 
 							var trprecioacumulado = $(this).find('.precioacumulado');
 
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 37 ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * 37 ) + ( envases_nuevos * precio_envase) );
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}else if( id == "4" ){
@@ -1339,9 +1310,9 @@ function clickVales(){
 
 							var trprecioacumulado = $(this).find('.precioacumulado');
 							
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * 36 ) + ( envases_nuevos * precio_envase) );
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}
@@ -1376,9 +1347,9 @@ function clickVales(){
 
 							var trprecioacumulado = $(this).find('.precioacumulado');
 							
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * 36 ) + ( envases_nuevos * precio_envase) );
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 
@@ -1394,9 +1365,9 @@ function clickVales(){
 							
 							var trprecioacumulado = $(this).find('.precioacumulado');
 
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 37 ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * 37 ) + ( envases_nuevos * precio_envase) );
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 							primero = false;
@@ -1435,9 +1406,9 @@ function clickVales(){
 
 							var trprecioacumulado = $(this).find('.precioacumulado');
 
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 37 ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * 37 ) + ( envases_nuevos * precio_envase) );
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * 37 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}else if( id == "4" ){
@@ -1447,9 +1418,9 @@ function clickVales(){
 
 							var trprecioacumulado = $(this).find('.precioacumulado');
 							
-							var acumulado = parseFloat( ( (cantidadactual - envases_nuevos) * 36 ) + ( envases_nuevos * precio_envase) );
+							var acumulado = parseFloat( ( cantidadactual * 36 ) + ( envases_nuevos * precio_envase) );
 
-							$(trprecioacumulado).html( ( (cantidadactual - envases_nuevos) * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
+							$(trprecioacumulado).html( ( cantidadactual * 36 ) + " + " + ( envases_nuevos * precio_envase) + " = " + (acumulado).toFixed(2));
 							var btneliminar = $(this).find('.btnEliminar');
 							$(btneliminar).attr('precio',(acumulado).toFixed(2));
 						}
@@ -1848,15 +1819,25 @@ function detalleventa(){
 	$("#detalle tr").each(function(){
 		var element = $(this); // <-- en la variable element tienes tu elemento
 		
-		var id = element.attr('id');
-		var cantidad = element.attr('cantidad');
-		var precio = element.attr('precio');
+		var id = parseInt(element.attr('id'));
+		var cantidad = parseInt(element.attr('cantidad'));
+		var precio = parseFloat(element.attr('precio'));
+
+		if( $(element).attr('envases_nuevos') != undefined ){
+			var envases_nuevos = parseInt(element.attr('envases_nuevos'));
+			var precio_envase = parseFloat(element.attr('precio_envase'));
+
+		}else{
+			var envases_nuevos = "";
+			var precio_envase = "";
+		}
 	
 		data.push(
-			{"id": id , "cantidad": cantidad, "precio": precio }
+			{"id": id , "cantidad": cantidad, "precio": precio , "cantidad_envase": envases_nuevos, "precio_envase": precio_envase }
 		);
 
 	});
+
 	var detalle = {"data": data};
 	var json = JSON.stringify(detalle);
 	var respuesta = "";
@@ -1911,6 +1892,7 @@ function detalleventa(){
 			$(".empleado").css('background', 'rgb(255,255,255)');
 		}
 	});
+
 }
 
 function is_numeric(value) {
@@ -1925,7 +1907,7 @@ function calcularTotal(){
 		if( $(this).attr('envases_nuevos') != null || $(this).attr('envases_nuevos') == ""){
 			var envases_nuevos = parseInt($(this).attr('envases_nuevos'));
 			var precio_envase = parseFloat($(this).attr('precio_envase'));
-			total += (cantidad - envases_nuevos) * precio + (envases_nuevos * precio_envase);
+			total += (cantidad * precio ) + (envases_nuevos * precio_envase);
 
 		}else{
 			total += precio * cantidad;

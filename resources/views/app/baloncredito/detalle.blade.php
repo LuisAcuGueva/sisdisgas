@@ -41,28 +41,23 @@
 			</div>
 		</div>
 
-		<div class="col-lg-6 col-md-6 col-sm-6">
-			<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
-				<h4 clas="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS ADICIONALES DEL PEDIDO</h4>
-			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12">
-				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="margin-bottom: 15px;">
-					<div class="col-lg-3 col-md-3 col-sm-3" style="margin-top: 4px;">
-						{!! Form::label('trabajador', 'Repartidor:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-					</div>
-					<div class="col-lg-8 col-md-8 col-sm-8">
-						@if(!is_null($pedido->trabajador->dni))
-						{!! Form::text('trabajador', $pedido->trabajador->apellido_pat.' '.$pedido->trabajador->apellido_mat.' '.$pedido->trabajador->nombres, array('class' => 'form-control input-sm', 'id' => 'trabajador', 'readOnly')) !!}
-						@else
-						{!! Form::text('trabajador', $pedido->trabajador->razon_social , array('class' => 'form-control input-sm', 'id' => 'trabajador', 'readOnly')) !!}
-						@endif
-						{!! Form::hidden('trabajador_id',null,array('id'=>'trabajador_id')) !!}
-					</div>
+		<div class="col-lg-9 col-md-9 col-sm-9">
+			<div class="col-lg-8 col-md-8 col-sm-8">
+				<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
+					<h4 clas="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS ADICIONALES DEL PEDIDO</h4>
 				</div>
 				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 					<div class="col-lg-6 col-md-6 col-sm-6" style="margin-bottom: 15px;">
-						{!! Form::label('balon_nuevo', 'Balón nuevo:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
-						@if($pedido->balon_nuevo == 1)
+					{!! Form::label('venta_sucursal', 'Venta en sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
+						@if($pedido->venta_sucursal == 1)
+							SI
+						@else
+							NO
+						@endif
+					</div>
+					<div class="col-lg-6 col-md-6 col-sm-6">
+						{!! Form::label('balon_a_cuenta', 'Pedido a crédito:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
+						@if($pedido->balon_a_cuenta == 1)
 							SI
 						@else
 							NO
@@ -103,62 +98,120 @@
 						</div>
 					@endif
 				</div>
+				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+					{!! Form::label('comentario', 'Comentario:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+					{!! Form::textarea('comentario', $pedido->comentario, array('class' => 'form-control input-xs', 'rows' => '2','id' => 'comentario', 'readOnly')) !!}
+				</div>
 			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
-				<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">LISTA DE PRODUCTOS</h4>
-				<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
-					<thead id="cabecera"><tr><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Cant</th><th style="font-size: 13px !important;">Precio Unit</th><th style="font-size: 13px !important;">Precio Acum</th></tr></thead>
-					<tbody id="detalle">
-						@foreach($detalles  as $key => $value)
+			<div class="col-lg-4 col-md-4 col-sm-4">
+				<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
+					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">PAGO</h4>
+				</div>
+				@if($pedido->balon_a_cuenta != 1)
+				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
+					<div  class="col-lg-4 col-md-4 col-sm-4">
+						<img src="assets/images/efectivo.png" style="width: 60px; height: 60px">
+					</div>
+					<div  class="col-lg-8 col-md-8 col-sm-8">
+						{!! Form::text('montoefectivo', number_format($pedido->total + $pedido->vuelto,2) , array('class' => 'form-control input-lg montos', 'id' => 'montoefectivo', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00' , 'readOnly')) !!}
+					</div>
+				</div>
+				@endif
+				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="display: none;">
+					<div  class="col-lg-4 col-md-4 col-sm-4">
+						<img src="assets/images/visa.png" style="width: 60px; height: 60px">
+					</div>
+					<div  class="col-lg-8 col-md-8 col-sm-8">
+						{!! Form::text('montovisa', '', array('class' => 'form-control input-lg montos', 'id' => 'montovisa', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
+					</div>
+				</div>
+				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="display: none;">
+					<div  class="col-lg-4 col-md-4 col-sm-4">
+						<img src="assets/images/master.png" style="width: 60px; height: 40px">
+					</div>
+					<div  class="col-lg-8 col-md-8 col-sm-8">
+						{!! Form::text('montomaster', '', array('class' => 'form-control input-lg montos', 'id' => 'montomaster', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
+					</div>
+				</div>
+				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="margin-top: 10px;">
+					{!! Form::label('total', 'Total:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
+					{!! Form::text('total', $pedido->total, array('class' => 'form-control input-lg', 'id' => 'total', 'readOnly', 'style' => 'text-align: right; font-size: 30px; margin-top: 25px;')) !!}
+				</div>
+				@if($pedido->balon_a_cuenta != 1)
+				<div class="col-lg-12 col-md-12 col-sm-12" style="margin-top: 10px;">
+					{!! Form::label('vuelto', 'Vuelto:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
+					{!! Form::text('vuelto', $pedido->vuelto , array('class' => 'form-control input-lg', 'id' => 'vuelto', 'readOnly', 'style' => 'text-align: right; font-size: 30px; margin-top: 25px;', 'placeholder' => '0.00')) !!}
+				</div>
+				@endif
+			</div>
+			<?php
+			$cont = 1;
+			?>
+			@if($pedido->balon_a_cuenta == 1)
+			<div class="col-lg-12 col-md-12 col-sm-12">
+				<div style=" border: solid 1px; border-radius: 5px; height: 40px; margin-top: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
+					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">LISTA DE PAGOS</h4>
+					<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
+						<thead id="cabecera"><tr><th style="font-size: 13px !important;">#</th><th style="font-size: 13px !important;">Fecha</th><th style="font-size: 13px !important;">Tipo de pago</th><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Monto</th></tr></thead>
+						<tbody id="detalle">
+						@foreach($detallespago  as $key => $value)
 							<tr>
-							<td>{{ $value->producto->descripcion }} </td>
-							<td>{{ $value->cantidad }} </td>
-							<td>{{ $value->precio }} </td>
-							<td>{{ number_format($value->cantidad * $value->precio, 2)}} </td>
+							<td>{{ $cont }} </td>
+							<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->pago->fecha )) }}</td>
+							@if($value->tipo == "R")
+							<td>PAGO CON REPARTIDOR</td>
+							<td>Repartidor: {{  $value->pago->trabajador->apellido_pat.' '.$value->pago->trabajador->apellido_mat.' '.$value->pago->trabajador->nombres  }}</td>
+							@elseif($value->tipo == "S")
+							<td>PAGO EN SUCURSAL</td>
+							<td>Sucursal: {{ $value->pago->sucursal->nombre }} </td>
+							@endif
+							<td>{{ $value->monto }} </td>
 							</tr>
+							<?php
+							$cont++;
+							?>
 						@endforeach
-					</tbody>
-				</table>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			@endif
+
+			<div class="col-lg-12 col-md-12 col-sm-12">
+				<div style=" border: solid 1px; border-radius: 5px; height: 40px; margin-top: 10px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
+					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">LISTA DE PRODUCTOS</h4>
+					<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
+						<thead id="cabecera"><tr><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Cant</th><th style="font-size: 13px !important;">Precio Unit</th><th style="font-size: 13px !important;">Cant. Envases</th><th style="font-size: 13px !important;">Precio Envase</th><th style="font-size: 13px !important;">Precio Acum</th></tr></thead>
+						<tbody id="detalle">
+							@foreach($detalles  as $key => $value)
+								<tr>
+								<td>{{ $value->producto->descripcion }} </td>
+								<td align="center">{{ $value->cantidad }} </td>
+								<td align="center">{{ $value->precio }} </td>
+								@if( $value->cantidad_envase == null )
+									<td align="center"> - </td>
+								@else
+									<td align="center">{{ $value->cantidad_envase }} </td>
+								@endif
+								@if( $value->cantidad_envase == null )
+									<td align="center"> - </td>
+								@else
+									<td align="center">{{ $value->precio_envase }} </td>
+								@endif
+
+								@if( $value->cantidad_envase == null )
+									<td align="center">{{ number_format($value->cantidad * $value->precio, 2)}} </td>
+								@else
+									<td align="center">{{ number_format($value->cantidad * $value->precio, 2)}} + {{ number_format($value->cantidad_envase * $value->precio_envase, 2)}} = {{  number_format(($value->cantidad * $value->precio) + ($value->cantidad_envase * $value->precio_envase) ,2) }} </td>
+								@endif
+
+								</tr>
+							@endforeach
+						</tbody>
+					</table>
+				</div>
 			</div>
 			
-		</div>
-
-		<div class="col-lg-3 col-md-3 col-sm-3">
-			<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
-				<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">MONTO DEL PEDIDO</h4>
-			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="display:none;">
-				<div  class="col-lg-4 col-md-4 col-sm-4">
-					<img src="assets/images/efectivo.png" style="width: 60px; height: 60px">
-				</div>
-				<div  class="col-lg-8 col-md-8 col-sm-8">
-					{!! Form::text('montoefectivo', number_format($pedido->total + $pedido->vuelto,2) , array('class' => 'form-control input-lg montos', 'id' => 'montoefectivo', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00' , 'readOnly')) !!}
-				</div>
-			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="display: none;">
-				<div  class="col-lg-4 col-md-4 col-sm-4">
-					<img src="assets/images/visa.png" style="width: 60px; height: 60px">
-				</div>
-				<div  class="col-lg-8 col-md-8 col-sm-8">
-					{!! Form::text('montovisa', '', array('class' => 'form-control input-lg montos', 'id' => 'montovisa', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
-				</div>
-			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="display: none;">
-				<div  class="col-lg-4 col-md-4 col-sm-4">
-					<img src="assets/images/master.png" style="width: 60px; height: 40px">
-				</div>
-				<div  class="col-lg-8 col-md-8 col-sm-8">
-					{!! Form::text('montomaster', '', array('class' => 'form-control input-lg montos', 'id' => 'montomaster', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
-				</div>
-			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15" style="margin-top: 10px;">
-				{!! Form::label('total', 'Total:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
-				{!! Form::text('total', $pedido->total, array('class' => 'form-control input-lg', 'id' => 'total', 'readOnly', 'style' => 'text-align: right; font-size: 30px; margin-top: 25px;')) !!}
-			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12" style="margin-top: 10px; display:none;">
-				{!! Form::label('vuelto', 'Vuelto:' ,array('class' => 'input-md', 'style' => 'margin-bottom: -30px;'))!!}
-				{!! Form::text('vuelto', $pedido->vuelto , array('class' => 'form-control input-lg', 'id' => 'vuelto', 'readOnly', 'style' => 'text-align: right; font-size: 30px; margin-top: 25px;', 'placeholder' => '0.00')) !!}
-			</div>
 		</div>
 	</div>
 	<div class="form-group">

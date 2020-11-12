@@ -64,8 +64,17 @@
 			@else
 				<td align="center">{{ $value->precio_venta }}</td>
 			@endif
-			<td align="center">{{ $value->stock_anterior }}</td>
-			<td align="center">{{ $value->stock_actual }}</td>
+			@if($value->cantidad_envase != 0)
+				<td align="center">{{ $value->cantidad_envase }}</td>
+				@if( $value->tipo == "I")
+					<td align="center">{{ $value->precio_compra_envase }}</td>
+				@else
+					<td align="center">{{ $value->precio_venta_envase }}</td>
+				@endif
+			@else
+				<td align="center"> - </td>
+				<td align="center"> - </td>
+			@endif
 
 		</tr>
 		@endforeach

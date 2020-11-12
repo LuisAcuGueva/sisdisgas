@@ -4,8 +4,14 @@
 	{!! Form::hidden('pedido_id',$pedido->id,array('id'=>'pedido_id')) !!}
 	<div class="col-lg-12 col-md-12 col-sm-12 tipopago">
 		<div class="col-lg-6 col-md-6 col-sm-6 sucursal">
-			{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'permisoRegistrar();')) !!}		
+			{!! Form::label('sucursal', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+			{!! Form::select('sucursal', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal' , 'onchange' => 'permisoRegistrar();generarSaldoCaja();')) !!}	
+			<div class="form-group" style="height: 12px; margin: 25px 0px;">
+				{!! Form::label('saldo_caja', 'Saldo en caja:', array('class' => 'col-lg-5 col-md-5 col-sm-5 control-label')) !!}
+				<div class="col-lg-5 col-md-5 col-sm-5">
+					{!! Form::text('saldo_caja', number_format(0, 2, '.', ''), array('style' => 'background-color: #c3ffd6 ;', 'readOnly' ,'class' => 'form-control input-sm', 'id' => 'saldo_caja' )) !!}
+				</div>
+			</div>
 		</div>
 		<div class="col-lg-3 col-md-3 col-sm-3"></div>
 		<div class="col-lg-6 col-md-6 col-sm-6" style="margin-bottom: 30px;">
@@ -34,6 +40,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	permisoRegistrar();
+	generarSaldoCaja();
 	configurarAnchoModal('700');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
@@ -99,43 +106,84 @@ function is_numeric(value) {
 
 function permisoRegistrar(){
 
-var aperturaycierre = null;
+	var aperturaycierre = null;
 
-var sucursal_id = $('#sucursal_id').val();
+	var sucursal_id = $('#sucursal').val();
 
-var ajax = $.ajax({
-	"method": "POST",
-	"url": "{{ url('/venta/permisoRegistrar') }}",
-	"data": {
-		"sucursal_id" : sucursal_id, 
-		"_token": "{{ csrf_token() }}",
+	var ajax = $.ajax({
+		"method": "POST",
+		"url": "{{ url('/venta/permisoRegistrar') }}",
+		"data": {
+			"sucursal_id" : sucursal_id, 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		aperturaycierre = info;
+	}).always(function(){
+		if(aperturaycierre == 0){
+			$("#btnGuardar").prop('disabled',true);
+			$("#monto").prop('disabled',true);
+
+			$('#divMensajeErrorMovimiento').html("");
+
+			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
+
+			var surcursal_id = $('#sucursal_id').val();
+
+			if(sucursal_id != null){
+				$('#divMensajeErrorMovimiento').html(cadenaError);
+			}
+
+		}else if(aperturaycierre == 1){
+			$("#btnGuardar").prop('disabled',false);
+			$("#monto").prop('disabled',false);
+
+			$('#divMensajeErrorMovimiento').html("");
+
 		}
-}).done(function(info){
-	aperturaycierre = info;
-}).always(function(){
-	if(aperturaycierre == 0){
-		$("#btnGuardar").prop('disabled',true);
-		$("#monto").prop('disabled',true);
+	});
 
-		$('#divMensajeErrorMovimiento').html("");
+	return aperturaycierre;
+}
 
-		var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
+function generarSaldoCaja(){
+	var saldocaja = null;
 
-		var surcursal_id = $('#sucursal_id').val();
+	var saldo = {{ $saldo }} ;
 
-		if(sucursal_id != null){
-			$('#divMensajeErrorMovimiento').html(cadenaError);
+	var sucursal_id = $('#sucursal').val();
+
+	var serieajax = $.ajax({
+		"method": "POST",
+		"url": "{{ url('/caja/saldoCaja') }}",
+		"data": {
+			"sucursal_id" : sucursal_id, 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		saldocaja = info;
+	}).always(function(){
+		$('#saldo_caja').val(saldocaja);
+		var total = $('#total').val();
+		if(saldocaja < total){
+			$("#monto").keyup(function(){
+				if( $("#monto").val() == ""){
+					$('#total').val(saldo.toFixed(2));
+				}else{ 
+					if( is_numeric( $("#monto").val())){
+						var monto = parseFloat($("#monto").val());
+						var saldo_caja = parseFloat($("#saldo_caja").val());
+						if(monto > saldo_caja){
+							$("#monto").val("");
+							$('#total').val(saldo.toFixed(2));
+						}
+					}else{
+						$("#monto").val("");
+						$('#total').val(saldo.toFixed(2));
+					}
+				}
+			}); 
 		}
-
-	}else if(aperturaycierre == 1){
-		$("#btnGuardar").prop('disabled',false);
-		$("#monto").prop('disabled',false);
-
-		$('#divMensajeErrorMovimiento').html("");
-
-	}
-});
-
-return aperturaycierre;
+	});
 }
 </script>

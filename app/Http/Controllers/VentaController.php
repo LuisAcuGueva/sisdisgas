@@ -6,11 +6,7 @@ use Validator;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Person;
-use App\Personamaestro;
 use App\Movimiento;
-use App\Detalleventa;
-use App\Detallecomision;
-use App\Serieventa;
 use App\Producto;
 use App\Tipodocumento;
 use App\Turnorepartidor;
@@ -314,40 +310,29 @@ class VentaController extends Controller
             $error = DB::transaction(function() use($request, $venta_id, $detalle,$cantidad_servicios ){
                 $cantidad           = $detalle->{"cantidad"};
                 $precio             = $detalle->{"precio"};
-                $subtotal           = round(($cantidad*$precio), 2);
+                if( $detalle->{"cantidad_envase"} != ""){
+                    $cantidad_envase    = $detalle->{"cantidad_envase"};
+                }else{
+                    $cantidad_envase = null;
+                }
+                if( $detalle->{"precio_envase"} != ""){
+                    $precio_envase    = $detalle->{"precio_envase"};
+                }else{
+                    $precio_envase = null;
+                }
+                $subtotal           = round( ( ( ($cantidad - $cantidad_envase) * $precio ) + ( $cantidad_envase * $precio_envase) ) , 2);
                 $producto_id        = $detalle->{"id"} ;
 
-                $detalleventa       = new Detalleventa();
-                $detalleventa->cantidad  = $cantidad;
-                $detalleventa->producto_id  = $producto_id;
-                $detalleventa->venta_id  = $venta_id;
-                $detalleventa->precio  = $precio;
-                $detalleventa->save();
 
                 $detalleMovAlmacen = new Detallemovalmacen();
                 $detalleMovAlmacen->cantidad = $cantidad;
                 $detalleMovAlmacen->precio = $precio;
+                $detalleMovAlmacen->cantidad_envase = $cantidad_envase;
+                $detalleMovAlmacen->precio_envase = $precio_envase;
                 $detalleMovAlmacen->subtotal = $subtotal;
                 $detalleMovAlmacen->movimiento_id = $venta_id;
                 $detalleMovAlmacen->producto_id = $producto_id;
                 $detalleMovAlmacen->save();
-
-                $lote = null;
-              
-                /*if( $request->input('lote'.$i) != ""){
-                    // Creamos el lote para el producto
-                    $lote = new Lote();
-                    $lote->nombre  = $request->input('lote'.$i);
-                    $lote->fecha  = $request->input('fecha');
-                    $lote->cantidad = $cantidad;
-                    $lote->stock_restante = $cantidad;
-                    $lote->producto_id = $request->input('producto_id'.$i);
-                    $lote->almacen_id = $almacen_id;
-                    $lote->save();
-
-                    $detalleCompra->lote_id = $lote->id ;
-                    $detalleCompra->save();
-                }*/
 
                 $stockanterior = 0;
                 $stockactual = 0;
@@ -369,12 +354,11 @@ class VentaController extends Controller
                     $kardex->stock_anterior = $stockanterior;
                     $kardex->stock_actual = $stockactual;
                     $kardex->cantidad = $cantidad;
+                    $kardex->cantidad_envase = $cantidad_envase;
                     $kardex->precio_venta = $precio;
+                    $kardex->precio_venta_envase = $precio_envase;
                     $kardex->sucursal_id = $venta->sucursal_id;
                     $kardex->detalle_mov_almacen_id = $detalleMovAlmacen->id;
-                    if( $lote != null){
-                        $kardex->lote_id = $lote->id;
-                    }
                     $kardex->save();
                     
                 }else{
@@ -386,12 +370,11 @@ class VentaController extends Controller
                     $kardex->stock_anterior = $stockanterior;
                     $kardex->stock_actual = $stockactual;
                     $kardex->cantidad = $cantidad;
-                    $kardex->precio_compra = $precio;
+                    $kardex->cantidad_envase = $cantidad_envase;
+                    $kardex->precio_venta = $precio;
+                    $kardex->precio_venta_envase = $precio_envase;
                     $kardex->sucursal_id = $venta->sucursal_id;
                     $kardex->detalle_mov_almacen_id = $detalleMovAlmacen->id;
-                    if( $lote != null){
-                        $kardex->lote_id = $lote->id;
-                    }
                     $kardex->save();    
 
                 }

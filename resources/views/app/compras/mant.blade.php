@@ -91,8 +91,8 @@ $hoy = date("Y-m-d");
                 {!! Form::button('<i class="glyphicon glyphicon-plus"></i>', array('class' => 'btn btn-primary btn-sm', 'style' => 'height: 30px;', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'NUEVO PRODUCTO' , 'onclick' => 'modalCaja (\''.URL::route('producto.create', array('listar'=>'SI','modo'=>'popup')).'\', \'Nuevo Producto\', this);', 'title' => 'Nuevo Producto')) !!}
     		</div>
 			{!! Form::hidden('producto_id', null, array( 'id' => 'producto_id')) !!}
-			{!! Form::hidden('precioventa', null, array('id' => 'precioventa')) !!}
 			{!! Form::hidden('stock', null, array('id' => 'stock')) !!}
+			{!! Form::hidden('recargable', null, array('id' => 'recargable')) !!}
 		</div>
 
 		<div class="form-group col-lg-12 col-md-12 col-sm-12" id="divProductos" style="margin-top: 20px; overflow:auto; height:180px; padding-right:10px; border:1px outset">
@@ -103,7 +103,7 @@ $hoy = date("Y-m-d");
 						<th class='text-center' style='width:110px;'><span style='display: block;'>Precio Compra</span></th>
 						<th class='text-center' style='width:110px;'><span style='display: block;'>Precio Venta</span></th>
 						<th class='text-center' style='width:110px;'><span style='display: block;'>Stock</span></th>
-						<th class='text-center' style='width:110px;'><span style='display: block;'>Stock Seguridad</span></th>
+						<th class='text-center' style='width:110px;'><span style='display: block;'>Recargable</span></th>
 					</tr>
 				</thead>
 				<tbody id='tablaProducto'>
@@ -112,27 +112,52 @@ $hoy = date("Y-m-d");
 			</table>
 		</div>
 
-		<div class="form-group">
-			<table>
-			<tr>
-				<td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td>
-				<td><b>Precio Compra</b></td>
-				<td>&nbsp</td>
-				<td>{!! Form::text('precio_compra', null, array('class' => 'form-control input-sm', 'id' => 'precio_compra','size' => '6')) !!}</td>
-				<td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td>
-				<td><b>Precio Venta</b></td>
-				<td>&nbsp</td>
-				<td>{!! Form::text('precio_venta', null, array('class' => 'form-control input-sm', 'id' => 'precio_venta', 'size' => '6')) !!}</td>
-				<td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td>
-				<td><b>Cantidad</b></td>
-				<td>&nbsp</td>
-				<td>{!! Form::text('cantidad', null, array('class' => 'form-control input-sm', 'id' => 'cantidad', 'size' => '6', 'onkeyup' => "javascript:this.value=this.value.toUpperCase();")) !!}</td>
-				<td>{!! Form::button('<i class="glyphicon glyphicon-plus"></i>', array('class' => 'btn btn-success btn-sm', 'style' => 'height: 30px; margin-left: 10px; margin-bottom: 1px;', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'AGREGAR PRODUCTO', 'id' => 'agregarProducto')) !!}</td>
-			</tr>
-			</table>
+		<div class="form-group col-lg-12 col-md-12 col-sm-12">
+
+			<div class="form-group col-lg-4 col-md-4 col-sm-4">
+				{!! Form::label('precio_compra', 'Precio Compra:', array('class' => 'col-lg-6 col-md-6 col-sm-6 control-label')) !!}
+				<div class="col-lg-6 col-md-6 col-sm-6">
+					{!! Form::text('precio_compra', null, array('class' => 'form-control input-sm', 'id' => 'precio_compra' )) !!}
+				</div>
+			</div>
+			<div class="form-group col-lg-4 col-md-4 col-sm-4">
+				{!! Form::label('precio_venta', 'Precio Venta:', array('class' => 'col-lg-6 col-md-6 col-sm-6 control-label')) !!}
+				<div class="col-lg-6 col-md-6 col-sm-6">
+					{!! Form::text('precio_venta', null, array('class' => 'form-control input-sm', 'id' => 'precio_venta' )) !!}
+				</div>
+			</div>
+			<div class="form-group col-lg-4 col-md-4 col-sm-4">
+				{!! Form::label('cantidad', 'Cantidad:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
+				<div class="col-lg-6 col-md-6 col-sm-6">
+					{!! Form::text('cantidad', null, array('class' => 'form-control input-sm', 'id' => 'cantidad' )) !!}
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-2">
+					{!! Form::button('<i class="glyphicon glyphicon-plus"></i>', array('class' => 'btn btn-success btn-sm', 'style' => 'height: 30px; margin-left: 10px; margin-bottom: 1px;', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'AGREGAR PRODUCTO', 'id' => 'agregarProducto')) !!}
+				</div>
+			</div>
 		</div>
 
-		<hr style="height: 1px; border: 0; color: #666; background-color: #a4a4a4;">
+		<div class="form-group col-lg-12 col-md-12 col-sm-12 divEnvase" style="margin-top: -20px; display: none;">
+
+			<div class="form-group col-lg-4 col-md-4 col-sm-4">
+				{!! Form::label('precio_compra_envase', 'Precio Compra Envase:', array('class' => 'col-lg-6 col-md-6 col-sm-6 control-label')) !!}
+				<div class="col-lg-6 col-md-6 col-sm-6">
+					{!! Form::text('precio_compra_envase', null, array('class' => 'form-control input-sm', 'id' => 'precio_compra_envase', 'style' => 'margin-top: 13;' )) !!}
+				</div>
+			</div>
+			<div class="form-group col-lg-4 col-md-4 col-sm-4">
+				{!! Form::label('precio_venta_envase', 'Precio Venta Envase:', array('class' => 'col-lg-6 col-md-6 col-sm-6 control-label')) !!}
+				<div class="col-lg-6 col-md-6 col-sm-6">
+					{!! Form::text('precio_venta_envase', null, array('class' => 'form-control input-sm', 'id' => 'precio_venta_envase', 'style' => 'margin-top: 13px;' )) !!}
+				</div>
+			</div>
+			<div class="form-group col-lg-4 col-md-4 col-sm-4">
+				{!! Form::label('cantidad_envase', 'Cantidad Envases:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
+				<div class="col-lg-6 col-md-6 col-sm-6">
+					{!! Form::text('cantidad_envase', null, array('class' => 'form-control input-sm', 'id' => 'cantidad_envase', 'style' => 'margin-top: 13px;' )) !!}
+				</div>
+			</div>
+		</div>
 
 		<div class="form-group">
 			{!! Form::label('comentario', 'Comentario:', array('class' => 'col-lg-2 col-md-2 col-sm-2')) !!}
@@ -171,8 +196,10 @@ $hoy = date("Y-m-d");
 		                <tr>
 		                    <th bgcolor="#E0ECF8" class='text-center' style="width:50px;">N°</th>
 		                    <th bgcolor="#E0ECF8" class='text-center' style="width:350px;">Producto</th>
-		                    <th bgcolor="#E0ECF8" class='text-center' style="width:250px;">Cantidad</th>
+		                    <th bgcolor="#E0ECF8" class='text-center' style="width:120px;">Cantidad</th>
 		                    <th bgcolor="#E0ECF8" class="text-center" style="width:120px;">Precio Unit</th>
+							<th bgcolor="#E0ECF8" class='text-center' style="width:120px;">Cantidad Envases</th>
+							<th bgcolor="#E0ECF8" class='text-center' style="width:120px;">Precio Envase</th>
 		                    <th bgcolor="#E0ECF8" class="text-center" style="width:120px;">Subtotal</th>
 		                    <th bgcolor="#E0ECF8" class='text-center' style="width:100px;">Eliminar</th>
 		                </tr>
@@ -181,7 +208,7 @@ $hoy = date("Y-m-d");
 		            </tbody>
 		            <tbody border="1">
 		            	<tr>
-		            		<th colspan="5" style="text-align: right;">TOTAL</th>
+		            		<th colspan="7" style="text-align: right;">TOTAL</th>
 		            		<td class="text-center">
 		            			<center id="totalcompra2">0.00</center><input type="hidden" id="totalcompra" readonly="" name="totalcompra" value="0.00">
 		            		</td>
@@ -387,7 +414,7 @@ function buscarProducto(valor){
                 var a = '';
                 if(datos.length > 0) {
 	                for(c=0; c < datos.length; c++){
-	                    a +="<tr style='cursor:pointer' class='escogerFila' id='"+datos[c].idproducto+"' onclick=\"seleccionarProducto('"+datos[c].idproducto+"')\"><td><span style='display: block; font-size:.9em'>"+datos[c].nombre+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_compra+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_venta+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].stock+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].stock_seguridad+"</span></td></tr>";
+	                    a +="<tr style='cursor:pointer' class='escogerFila' id='"+datos[c].idproducto+"' onclick=\"seleccionarProducto('"+datos[c].idproducto+"')\"><td><span style='display: block; font-size:.9em'>"+datos[c].nombre+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_compra+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_venta+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].stock+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].recargable+"</span></td></tr>";
 	                }	                
 	            } else {
 	            	a +="<tr><td align='center' colspan='8'>Productos no encontrados.</td></tr>";
@@ -429,7 +456,7 @@ function generarSaldoCaja(){
 function seleccionarProducto(idproducto){
 	//alert(idproducto);
 	var _token =$('input[name=_token]').val();
-	$.post('{{ URL::route("compras.consultaproducto")}}', {idproducto: idproducto,_token: _token} , function(data){
+	$.post('{{ URL::route("compras.consultaproducto")}}', {idproducto: idproducto, sucursal_id: $('#sucursal').val() ,_token: _token} , function(data){
 		//$('#divDetail').html(data);
 		//calculatetotal();
 		var datos = data.split('@');
@@ -437,21 +464,31 @@ function seleccionarProducto(idproducto){
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="precio_compra"]').val(datos[1]);
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="precio_venta"]').val(datos[2]);
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="stock"]').val(datos[3]);
-		//$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="preciocompra"]').val(datos[4]);
+		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="recargable"]').val(datos[4]);
+		if(datos[4] == 1){
+			$(".divEnvase").css('display','');
+			$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="precio_compra_envase"]').val(datos[5]);
+			$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="precio_venta_envase"]').val(datos[6]);
+		}else{
+			$(".divEnvase").css('display','none');
+		}
 	});
 	$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="cantidad"]').focus();
 }
 
 function addpurchasecart(elemento){
 	var cantidad = $('#cantidad').val();
-	var precio = $('#precio_compra').val();
-	var precioventa = $('#precio_venta').val();
+	var cantidad_envase = $('#cantidad_envase').val();
+	var precio_compra = $('#precio_compra').val();
+	var precio_compra_envase = $('#precio_compra_envase').val();
+	var precio_venta = $('#precio_venta').val();
+	var precio_venta_envase = $('#precio_venta_envase').val();
 	var product_id = $('#producto_id').val();
 	var stock = $('#stock').val();
 
 	var _token =$('input[name=_token]').val();
 
-	if(parseFloat(precioventa) < parseFloat(precio)){
+	if(parseFloat(precio_venta) < parseFloat(precio_compra)){
 		swal({
 			type: 'error',
 			title: 'INGRESE UN PRECIO DE VENTA MAYOR AL DE COMPRA',
@@ -471,32 +508,32 @@ function addpurchasecart(elemento){
 			type: 'error',
 			title: 'CANTIDAD DEBE SER UN VALOR NÚMERICO',
 			});
-	}else if(precio.trim() == '' ){
+	}else if(precio_compra.trim() == '' ){
 		swal({
 			title: 'INGRESE PRECIO DE COMPRA',
 			type: 'error',
 			});
-	}else if(precio.trim() == 0){
+	}else if(precio_compra.trim() == 0){
 		swal({
 			type: 'error',
 			title: 'EL PRECIO DE COMPRA DEBE SER MAYOR A 0',
 			});
-	}else if( is_numeric(precio) != true){
+	}else if( is_numeric(precio_compra) != true){
 		swal({
 			type: 'error',
 			title: 'EL PRECIO DE COMPRA DEBE SER UN VALOR NÚMERICO',
 			});
-	}else if(precioventa.trim() == 0){
+	}else if(precio_venta.trim() == 0){
 		swal({
 			type: 'error',
 			title: 'EL PRECIO DE VENTA DEBE SER MAYOR A 0',
 			});
-	}else if(precioventa.trim() == '' ){
+	}else if(precio_venta.trim() == '' ){
 		swal({
 			title: 'INGRESE PRECIO DE VENTA',
 			type: 'error',
 			});
-	}else if( is_numeric(precioventa) != true){
+	}else if( is_numeric(precio_venta) != true){
 		swal({
 			type: 'error',
 			title: 'EL PRECIO DE VENTA DEBE SER UN VALOR NÚMERICO',
@@ -507,7 +544,7 @@ function addpurchasecart(elemento){
 			title: 'SELECCIONE UN PRODUCTO',
 			});
 	}else{
-		$.post('{{ URL::route("compras.agregarcarritocompra")}}', {cantidad: cantidad, precio: precio, producto_id: product_id, precioventa: precioventa, detalle: $('#detalle').val(),_token: _token} , function(data){
+		$.post('{{ URL::route("compras.agregarcarritocompra")}}', {cantidad: cantidad, cantidad_envase: cantidad_envase, precio_compra: precio_compra, precio_compra_envase: precio_compra_envase, producto_id: product_id, precio_venta: precio_venta, precio_venta_envase: precio_venta_envase, detalle: $('#detalle').val(),_token: _token} , function(data){
 			$('#detalle').val(true);
 			if(data === '0-0') {
 				swal({
@@ -535,8 +572,12 @@ function addpurchasecart(elemento){
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="cantidad"]').val('');
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_compra"]').val('');
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_venta"]').val('');
+				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_compra_envase"]').val('');
+				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_venta_envase"]').val('');
+				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="cantidad_envase"]').val('');
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="nombreproducto"]').focus();
 				$('.escogerFila').css('background-color', 'white');
+				$(".divEnvase").css('display','none');
 				$("#tablaProducto").html("<tr><td align='center' colspan='8'>Digite más de 3 caracteres.</td></tr>");
 			}
 		});
@@ -566,8 +607,11 @@ function calculatetotal () {
 		$(this).find('.producto_id').attr('name', '').attr('name', 'producto_id' + i);
 		$(this).find('.productonombre').attr('name', '').attr('name', 'productonombre' + i);
 		$(this).find('.cantidad').attr('name', '').attr('name', 'cantidad' + i);
+		$(this).find('.cantidadenvase').attr('name', '').attr('name', 'cantidadenvase' + i);
 		$(this).find('.preciocompra').attr('name', '').attr('name', 'preciocompra' + i);
+		$(this).find('.preciocompraenvase').attr('name', '').attr('name', 'preciocompraenvase' + i);
 		$(this).find('.precioventa').attr('name', '').attr('name', 'precioventa' + i);
+		$(this).find('.precioventaenvase').attr('name', '').attr('name', 'precioventaenvase' + i);
 		$(this).find('.subtotal').attr('name', '').attr('name', 'subtotal' + i);
 		total += parseFloat($(this).find('.subtotal').val());
 		i++;

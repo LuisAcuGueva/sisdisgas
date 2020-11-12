@@ -216,12 +216,21 @@ class ComprasController extends Controller
 
             for ($i=1; $i <= $lista; $i++) {
                 $cantidad  = $request->input('cantidad'.$i);
+                $cantidadenvase  = $request->input('cantidadenvase'.$i);
+                $precioenvase    = $request->input('preciocompraenvase'.$i);
                 $precio    = $request->input('preciocompra'.$i);
-                $subtotal  = round(($cantidad*$precio), 2);
+                if( $cantidadenvase == ""){
+                    $cantidadenvase = 0;
+                    $precioenvase = 0;
+                }
+
+                $subtotal  = round(( ($cantidad * $precio) + ( $cantidadenvase * $precioenvase )), 2);
 
                 $detalleCompra = new Detallemovalmacen();
                 $detalleCompra->cantidad = $cantidad;
+                $detalleCompra->cantidad_envase = $cantidadenvase;
                 $detalleCompra->precio = $precio;
+                $detalleCompra->precio_envase = $precioenvase;
                 $detalleCompra->subtotal = $subtotal;
                 $detalleCompra->movimiento_id = $compra_id;
                 $detalleCompra->producto_id = $request->input('producto_id'.$i);
@@ -230,8 +239,10 @@ class ComprasController extends Controller
                 $producto = Producto::find($request->input('producto_id'.$i));
                 $producto->precio_compra = $request->input('preciocompra'.$i);
                 $producto->precio_venta = $request->input('precioventa'.$i);
+                $producto->precio_compra_envase = $request->input('preciocompraenvase'.$i);
+                $producto->precio_venta_envase = $request->input('precioventaenvase'.$i);
                 $producto->save();
-
+                
                 $stockanterior = 0;
                 $stockactual = 0;
 
@@ -253,7 +264,9 @@ class ComprasController extends Controller
                     $kardex->stock_anterior = $stockanterior;
                     $kardex->stock_actual = $stockactual;
                     $kardex->cantidad = $cantidad;
+                    $kardex->cantidad_envase = $cantidadenvase;
                     $kardex->precio_compra = $precio;
+                    $kardex->precio_compra_envase = $precioenvase;
                     $kardex->sucursal_id = $sucursal_id;
                     $kardex->detalle_mov_almacen_id = $detalleCompra->id;
                     $kardex->save();
@@ -267,7 +280,9 @@ class ComprasController extends Controller
                     $kardex->stock_anterior = $stockanterior;
                     $kardex->stock_actual = $stockactual;
                     $kardex->cantidad = $cantidad;
+                    $kardex->cantidad_envase = $cantidadenvase;
                     $kardex->precio_compra = $precio;
+                    $kardex->precio_compra_envase = $precioenvase;
                     $kardex->sucursal_id = $sucursal_id;
                     $kardex->detalle_mov_almacen_id = $detalleCompra->id;
                     $kardex->save();    
@@ -283,6 +298,8 @@ class ComprasController extends Controller
                     $stock->sucursal_id = $sucursal_id;
                 }
                 $stock->cantidad += $cantidad;
+                $stock->envases_total += $cantidadenvase;
+                $stock->envases_llenos += $cantidadenvase;
                 $stock->save();
 
             }
@@ -429,11 +446,19 @@ class ComprasController extends Controller
 
                 $stock = Stock::where('producto_id', $value->id )->where('sucursal_id', $sucursal_id)->first();
 
+                $recargable = "";
+
+                if( $value->recargable == 1){
+                    $recargable = "SI";
+                }else{
+                    $recargable = "NO";
+                }
+
                 if( $stock == null){
                     $data[$c] = array(
                         'nombre' => $value->descripcion,
                         'stock' => number_format(0, 0, '.', ''),
-                        'stock_seguridad' => number_format($value->stock_seguridad, 0, '.', ''),
+                        'recargable' => $recargable,
                         'precio_venta' => number_format($value->precio_venta,2,'.',''),
                         'precio_compra' => number_format($value->precio_compra,2,'.',''),
                         'idproducto' => $value->id,
@@ -442,7 +467,7 @@ class ComprasController extends Controller
                     $data[$c] = array(
                         'nombre' => $value->descripcion,
                         'stock' => number_format($stock->cantidad, 0, '.', ''),
-                        'stock_seguridad' => number_format($value->stock_seguridad, 0, '.', ''),
+                        'recargable' => $recargable,
                         'precio_venta' => number_format($value->precio_venta,2,'.',''),
                         'precio_compra' => number_format($value->precio_compra,2,'.',''),
                         'idproducto' => $value->id,
@@ -475,22 +500,28 @@ class ComprasController extends Controller
             $stock=$currentstock->stock_actual;
         }
 
-        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->stock_seguridad;
+        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->recargable.'@'.$producto->precio_compra_envase.'@'.$producto->precio_venta_envase;
     }
 
     public function agregarcarritocompra(Request $request)
     {
         $cadena = '';
         $cantidad         = Libreria::getParam(str_replace(",", "", $request->input('cantidad'))); 
+        $cantidad_envase        = Libreria::getParam(str_replace(",", "", $request->input('cantidad_envase'))); 
         //$cantidades2      = explode("F", $cantidades1);
         $producto_id      = Libreria::getParam($request->input('producto_id'));
-        $precio           = Libreria::getParam(str_replace(",", "", $request->input('precio')));
-        $precioventa           = Libreria::getParam(str_replace(",", "", $request->input('precioventa')));
-        $lote             = Libreria::getParam($request->input('lote'));
+        $precio_compra           = Libreria::getParam(str_replace(",", "", $request->input('precio_compra')));
+        $precio_compra_envase           = Libreria::getParam(str_replace(",", "", $request->input('precio_compra_envase')));
+        $precio_venta           = Libreria::getParam(str_replace(",", "", $request->input('precio_venta')));
+        $precio_venta_envase           = Libreria::getParam(str_replace(",", "", $request->input('precio_venta_envase')));
         //$distribuidora_id = Libreria::getParam($request->input('person_id'));
         $producto         = Producto::find($producto_id);
-        
-        $subtotal = round($cantidad*$precio, 2);
+
+        if( $producto->recargable == 1){
+            $subtotal = round( ($cantidad * $precio_compra) + ( $cantidad_envase * $precio_compra_envase) , 2);
+        }else{
+            $subtotal = round($cantidad*$precio_compra, 2);
+        }
 
         $cadena .= '<td class="text-center numeration"></td>
                     <td class="infoProducto">
@@ -498,16 +529,41 @@ class ComprasController extends Controller
                         <input type ="hidden" class="producto_id"  value="'.$producto_id.'">
                         <input type ="hidden" class="productonombre"  value="'.$producto->nombre.'">
                         <input type ="hidden" class="cantidad" value="'.$cantidad.'">
-                        <input type ="hidden" class="precioventa" value="'.$precioventa.'">
-                        <input type ="hidden" class="preciocompra" value="'.$precio.'">
+                        <input type ="hidden" class="cantidadenvase" value="'.$cantidad_envase.'">
+                        <input type ="hidden" class="preciocompraenvase" value="'.$precio_compra_envase.'">
+                        <input type ="hidden" class="preciocompra" value="'.$precio_compra.'">
+                        <input type ="hidden" class="precioventaenvase" value="'.$precio_venta_envase.'">
+                        <input type ="hidden" class="precioventa" value="'.$precio_venta.'">
                         <input type ="hidden" class="subtotal" value="'.$subtotal.'">
                     </td>';
         $cadena .= '<td class="text-center">
                     <span style="display: block; font-size:.9em">'.$cantidad.' UNIDADES</span>                    
                 </td>';
         $cadena .= '<td class="text-center">
-                    <span style="display: block; font-size:.9em">'.number_format($precio, 2, '.','').'</span>                    
+                    <span style="display: block; font-size:.9em">'.number_format($precio_compra, 2, '.','').'</span>                    
                 </td>';
+        if( $producto->recargable == 1){
+
+            if( $cantidad_envase == ""){
+                $cadena .= '<td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+                </td><td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+            </td>';
+            }else{
+                $cadena .= '<td class="text-center">
+                <span style="display: block; font-size:.9em">'.$cantidad_envase.' UNIDADES</span>                    
+            </td><td class="text-center">
+                <span style="display: block; font-size:.9em">'.number_format($producto->precio_compra_envase, 2, '.','').'</span>                    
+            </td>';
+            }
+        }else{
+            $cadena .= '<td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+                </td><td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+            </td>';
+        }
         $cadena .= '<td class="text-center">
                     <span style="display: block; font-size:.9em">'.number_format($subtotal, 2, '.','').'</span>                    
                 </td>';
@@ -570,3 +626,4 @@ class ComprasController extends Controller
         return is_null($error) ? "OK" : $error;
     }
 }
+

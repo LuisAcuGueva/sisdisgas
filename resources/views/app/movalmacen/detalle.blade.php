@@ -34,14 +34,29 @@
 				<div style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
 					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DETALLE DE MOV ALMACÉN</h4>
 					<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
-						<thead id="cabecera"><tr><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Cantidad</th><th style="font-size: 13px !important;">Precio Compra</th><th style="font-size: 13px !important;">Subtotal</th></tr></thead>
+					<thead id="cabecera"><tr><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Cant</th><th style="font-size: 13px !important;">Precio Unit</th><th style="font-size: 13px !important;">Cant. Envases</th><th style="font-size: 13px !important;">Precio Envase</th><th style="font-size: 13px !important;">Precio Acum</th></tr></thead>
 						<tbody id="detalle">
 							@foreach($detalles  as $key => $value)
 								<tr>
-								<td>{{ $value->producto->descripcion }} </td>
-								<td align="center">{{ $value->cantidad }} </td>
-								<td align="center">{{ $value->precio }} </td>
-								<td align="center">{{ number_format($value->cantidad * $value->precio, 2)}} </td>
+									<td>{{ $value->producto->descripcion }} </td>
+									<td align="center">{{ $value->cantidad }} </td>
+									<td align="center">{{ $value->precio }} </td>
+									@if( $value->cantidad_envase == null )
+										<td align="center"> - </td>
+									@else
+										<td align="center">{{ $value->cantidad_envase }} </td>
+									@endif
+									@if( $value->cantidad_envase == null )
+										<td align="center"> - </td>
+									@else
+										<td align="center">{{ $value->precio_envase }} </td>
+									@endif
+
+									@if( $value->cantidad_envase == null )
+										<td align="center">{{ number_format($value->cantidad * $value->precio, 2)}} </td>
+									@else
+										<td align="center">{{ number_format($value->cantidad * $value->precio, 2)}} + {{ number_format($value->cantidad_envase * $value->precio_envase, 2)}} = {{  number_format(($value->cantidad * $value->precio) + ($value->cantidad_envase * $value->precio_envase) ,2) }} </td>
+									@endif
 								</tr>
 							@endforeach
 						</tbody>
@@ -59,7 +74,7 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	configurarAnchoModal('1200');
+	configurarAnchoModal('1300');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
 	$('input').iCheck({

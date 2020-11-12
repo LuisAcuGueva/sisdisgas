@@ -180,12 +180,33 @@ class MovalmacenController extends Controller
 
             for ($i=1; $i <= $lista; $i++) {
                 $cantidad  = $request->input('cantidad'.$i);
-                $precio    = $request->input('preciocompra'.$i);
-                $subtotal  = round(($cantidad*$precio), 2);
+                $cantidadenvase  = $request->input('cantidadenvase'.$i);
+                $preciocompra    = $request->input('preciocompra'.$i);
+                $preciocompraenvase    = $request->input('preciocompraenvase'.$i);
+                $precioventa    = $request->input('precioventa'.$i);
+                $precioventaenvase    = $request->input('precioventaenvase'.$i);
+                if( $cantidadenvase == ""){
+                    $cantidadenvase = 0;
+                    $preciocompraenvase = 0;
+                    $precioventaenvase = 0;
+                }
+
+                if($tipo == "I"){
+                    $subtotal  = round(( ($cantidad * $preciocompra) + ( $cantidadenvase * $preciocompraenvase )), 2);
+                }else{
+                    $subtotal  = round(( ($cantidad * $precioventa) + ( $cantidadenvase * $precioventaenvase )), 2);
+                }
 
                 $detalleMovalmacen = new Detallemovalmacen();
                 $detalleMovalmacen->cantidad = $cantidad;
-                $detalleMovalmacen->precio = $precio;
+                $detalleMovalmacen->cantidad_envase = $cantidadenvase;
+                if($tipo == "I"){
+                    $detalleMovalmacen->precio = $preciocompra;
+                    $detalleMovalmacen->precio_envase = $preciocompraenvase;
+                }else{
+                    $detalleMovalmacen->precio = $precioventa;
+                    $detalleMovalmacen->precio_envase = $precioventaenvase;
+                }
                 $detalleMovalmacen->subtotal = $subtotal;
                 $detalleMovalmacen->movimiento_id = $movalmacen_id;
                 $detalleMovalmacen->producto_id = $request->input('producto_id'.$i);
@@ -194,6 +215,8 @@ class MovalmacenController extends Controller
                 $producto = Producto::find($request->input('producto_id'.$i));
                 $producto->precio_compra = $request->input('preciocompra'.$i);
                 $producto->precio_venta = $request->input('precioventa'.$i);
+                $producto->precio_compra_envase = $request->input('preciocompraenvase'.$i);
+                $producto->precio_venta_envase = $request->input('precioventaenvase'.$i);
                 $producto->save();
 
                 $stockanterior = 0;
@@ -219,7 +242,9 @@ class MovalmacenController extends Controller
                         $kardex->stock_anterior = $stockanterior;
                         $kardex->stock_actual = $stockactual;
                         $kardex->cantidad = $cantidad;
-                        $kardex->precio_compra = $precio;
+                        $kardex->cantidad_envase = $cantidadenvase;
+                        $kardex->precio_compra = $preciocompra;
+                        $kardex->precio_compra_envase = $preciocompraenvase;
                         $kardex->sucursal_id = $sucursal_id;
                         $kardex->detalle_mov_almacen_id = $detalleMovalmacen->id;
                         $kardex->save();
@@ -233,7 +258,9 @@ class MovalmacenController extends Controller
                         $kardex->stock_anterior = $stockanterior;
                         $kardex->stock_actual = $stockactual;
                         $kardex->cantidad = $cantidad;
-                        $kardex->precio_compra = $precio;
+                        $kardex->cantidad_envase = $cantidadenvase;
+                        $kardex->precio_compra = $preciocompra;
+                        $kardex->precio_compra_envase = $preciocompraenvase;
                         $kardex->sucursal_id = $sucursal_id;
                         $kardex->detalle_mov_almacen_id = $detalleMovalmacen->id;
                         $kardex->save();    
@@ -249,6 +276,9 @@ class MovalmacenController extends Controller
                         $stock->sucursal_id = $sucursal_id;
                     }
                     $stock->cantidad += $cantidad;
+                    $stock->cantidad += $cantidadenvase;
+                    $stock->envases_total += $cantidadenvase;
+                    $stock->envases_llenos += $cantidadenvase;
                     $stock->save();
 
                 }else{
@@ -267,7 +297,9 @@ class MovalmacenController extends Controller
                         $kardex->stock_anterior = $stockanterior;
                         $kardex->stock_actual = $stockactual;
                         $kardex->cantidad = $cantidad;
-                        $kardex->precio_compra = $precio;
+                        $kardex->cantidad_envase = $cantidadenvase;
+                        $kardex->precio_venta = $precioventa;
+                        $kardex->precio_venta_envase = $precioventaenvase;
                         $kardex->sucursal_id = $sucursal_id;
                         $kardex->detalle_mov_almacen_id = $detalleMovalmacen->id;
                         $kardex->save();    
@@ -283,6 +315,8 @@ class MovalmacenController extends Controller
                         $stock->sucursal_id = $sucursal_id;
                     }
                     $stock->cantidad -= $cantidad;
+                    $stock->envases_total -= $cantidadenvase;
+                    $stock->envases_llenos -= $cantidadenvase;
                     $stock->save();
 
                 }
@@ -418,21 +452,37 @@ class MovalmacenController extends Controller
                                         ->first();
 
                 $stock = Stock::where('producto_id', $value->id )->where('sucursal_id', $sucursal_id)->first();
+                
+                $recargable = "";
+                $envases_vacios = 0;
+
+                if( $value->recargable == 1){
+                    $recargable = "SI";
+                }else{
+                    $recargable = "NO";
+                }
 
                 if( $stock == null){
                     $data[$c] = array(
                         'nombre' => $value->descripcion,
                         'stock' => number_format(0, 0, '.', ''),
-                        'stock_seguridad' => number_format($value->stock_seguridad, 0, '.', ''),
+                        'envases_vacios' => $envases_vacios,
+                        'recargable' => $recargable,
                         'precio_venta' => number_format($value->precio_venta,2,'.',''),
                         'precio_compra' => number_format($value->precio_compra,2,'.',''),
                         'idproducto' => $value->id,
                     );
                 }else{
+                    if( $stock->envases_vacios == null){
+                        $envases_vacios = number_format(0, 0, '.', '');
+                    }else{
+                        $envases_vacios = number_format($stock->envases_vacios, 0, '.', '');
+                    }
                     $data[$c] = array(
                         'nombre' => $value->descripcion,
                         'stock' => number_format($stock->cantidad, 0, '.', ''),
-                        'stock_seguridad' => number_format($value->stock_seguridad, 0, '.', ''),
+                        'envases_vacios' => $envases_vacios,
+                        'recargable' => $recargable,
                         'precio_venta' => number_format($value->precio_venta,2,'.',''),
                         'precio_compra' => number_format($value->precio_compra,2,'.',''),
                         'idproducto' => $value->id,
@@ -462,27 +512,49 @@ class MovalmacenController extends Controller
                                 ->orderBy('kardex.id', 'DESC')
                                 ->first();
 
-        $stock = 0;
-        if ($currentstock != null) {
-            $stock = $currentstock->stock_actual;
+        $stock = Stock::where('producto_id', $producto_id )->where('sucursal_id', $sucursal_id)->first();
+
+        if ($stock == null) {
+            $stock = 0;
+            $envases_vacios = 0;
+        }else{
+            if( $stock->envases_vacios == null){
+                $envases_vacios = 0;
+            }else{
+                $envases_vacios = $stock->envases_vacios;
+            }
+            $stock = $stock->cantidad;
         }
 
-        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->stock_seguridad;
+        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->recargable.'@'.$producto->precio_compra_envase.'@'.$producto->precio_venta_envase.'@'.$envases_vacios;
     }
 
     public function agregarcarritocompra(Request $request)
     {
         $cadena = '';
         $cantidad         = Libreria::getParam(str_replace(",", "", $request->input('cantidad'))); 
+        $cantidad_envase        = Libreria::getParam(str_replace(",", "", $request->input('cantidad_envase'))); 
         //$cantidades2      = explode("F", $cantidades1);
         $producto_id      = Libreria::getParam($request->input('producto_id'));
-        $precio           = Libreria::getParam(str_replace(",", "", $request->input('precio')));
-        $precioventa           = Libreria::getParam(str_replace(",", "", $request->input('precioventa')));
-        $lote             = Libreria::getParam($request->input('lote'));
+        $precio_compra           = Libreria::getParam(str_replace(",", "", $request->input('precio_compra')));
+        $precio_compra_envase           = Libreria::getParam(str_replace(",", "", $request->input('precio_compra_envase')));
+        $precio_venta           = Libreria::getParam(str_replace(",", "", $request->input('precio_venta')));
+        $precio_venta_envase           = Libreria::getParam(str_replace(",", "", $request->input('precio_venta_envase')));
         //$distribuidora_id = Libreria::getParam($request->input('person_id'));
         $producto         = Producto::find($producto_id);
-        
-        $subtotal = round($cantidad*$precio, 2);
+
+        if( $producto->recargable == 1){
+            $subtotal = round( ($cantidad * $precio_compra) + ( $cantidad_envase * $precio_compra_envase) , 2);
+        }else{
+            $subtotal = round($cantidad*$precio_compra, 2);
+        }
+
+        if(  $request->input('cantidad') == 0){
+            $cantidad = 0;
+        }
+        if(  $request->input('cantidad_envase') == 0){
+            $cantidad_envase = 0;
+        }
 
         $cadena .= '<td class="text-center numeration"></td>
                     <td class="infoProducto">
@@ -490,16 +562,52 @@ class MovalmacenController extends Controller
                         <input type ="hidden" class="producto_id"  value="'.$producto_id.'">
                         <input type ="hidden" class="productonombre"  value="'.$producto->nombre.'">
                         <input type ="hidden" class="cantidad" value="'.$cantidad.'">
-                        <input type ="hidden" class="precioventa" value="'.$precioventa.'">
-                        <input type ="hidden" class="preciocompra" value="'.$precio.'">
+                        <input type ="hidden" class="cantidadenvase" value="'.$cantidad_envase.'">
+                        <input type ="hidden" class="preciocompraenvase" value="'.$precio_compra_envase.'">
+                        <input type ="hidden" class="preciocompra" value="'.$precio_compra.'">
+                        <input type ="hidden" class="precioventaenvase" value="'.$precio_venta_envase.'">
+                        <input type ="hidden" class="precioventa" value="'.$precio_venta.'">
                         <input type ="hidden" class="subtotal" value="'.$subtotal.'">
                     </td>';
+
+        if($cantidad != 0){
         $cadena .= '<td class="text-center">
                     <span style="display: block; font-size:.9em">'.$cantidad.' UNIDADES</span>                    
                 </td>';
         $cadena .= '<td class="text-center">
-                    <span style="display: block; font-size:.9em">'.number_format($precio, 2, '.','').'</span>                    
+                    <span style="display: block; font-size:.9em">'.number_format($precio_compra, 2, '.','').'</span>                    
                 </td>';
+        }else{
+            $cadena .= '<td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+                </td><td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+            </td>';
+        }
+
+        if( $producto->recargable == 1){
+
+            if( $cantidad_envase == ""){
+                $cadena .= '<td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+                </td><td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+            </td>';
+            }else{
+                $cadena .= '<td class="text-center">
+                <span style="display: block; font-size:.9em">'.$cantidad_envase.' UNIDADES</span>                    
+            </td><td class="text-center">
+                <span style="display: block; font-size:.9em">'.number_format($producto->precio_compra_envase, 2, '.','').'</span>                    
+            </td>';
+            }
+        }else{
+            $cadena .= '<td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+                </td><td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+            </td>';
+        }
+
         $cadena .= '<td class="text-center">
                     <span style="display: block; font-size:.9em">'.number_format($subtotal, 2, '.','').'</span>                    
                 </td>';
