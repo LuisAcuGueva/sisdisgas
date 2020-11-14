@@ -51,8 +51,8 @@ class KardexController extends Controller
         $cabecera[]       = array('valor' => 'PRECIO UNIT', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CANT ENVASES', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRECIO ENVASE', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'STOCK', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'STOCK ENVASE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'STOCK ANTERIOR', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'STOCK ACTUAL', 'numero' => '1');
         
         $ruta             = $this->rutas;
         if (count($lista) > 0) {

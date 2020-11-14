@@ -84,11 +84,16 @@ $(document).ready(function() {
 			if( is_numeric( $("#monto").val())){
 				var monto = parseFloat($("#monto").val());
 				var total = parseFloat($("#total").val());
+				var saldo_caja = parseFloat($("#saldo_caja").val());
 				if(monto < 0 ||  monto > saldo){
 					$("#monto").val("");
 					$('#total').val(saldo.toFixed(2));
 				}else{
 					$("#total").val((saldo - monto).toFixed(2));
+				}
+				if(monto > saldo_caja){
+					$("#monto").val("");
+					$('#total').val(saldo.toFixed(2));
 				}
 			}else{
 				$("#monto").val("");
@@ -96,6 +101,27 @@ $(document).ready(function() {
 			}
 		}
 	}); 
+
+	/*var total = $('#total').val();
+	if(saldocaja < total){
+		$("#monto").keyup(function(){
+			if( $("#monto").val() == ""){
+				$('#total').val(saldo.toFixed(2));
+			}else{ 
+				if( is_numeric( $("#monto").val())){
+					var monto = parseFloat($("#monto").val());
+					var saldo_caja = parseFloat($("#saldo_caja").val());
+					if(monto > saldo_caja){
+						$("#monto").val("");
+						$('#total').val(saldo.toFixed(2));
+					}
+				}else{
+					$("#monto").val("");
+					$('#total').val(saldo.toFixed(2));
+				}
+			}
+		}); 
+	}*/
 
 }); 
 
@@ -128,7 +154,7 @@ function permisoRegistrar(){
 
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
 
-			var surcursal_id = $('#sucursal_id').val();
+			var surcursal_id = $('#sucursal').val();
 
 			if(sucursal_id != null){
 				$('#divMensajeErrorMovimiento').html(cadenaError);
@@ -164,7 +190,7 @@ function generarSaldoCaja(){
 		saldocaja = info;
 	}).always(function(){
 		$('#saldo_caja').val(saldocaja);
-		var total = $('#total').val();
+		/*var total = $('#total').val();
 		if(saldocaja < total){
 			$("#monto").keyup(function(){
 				if( $("#monto").val() == ""){
@@ -183,7 +209,7 @@ function generarSaldoCaja(){
 					}
 				}
 			}); 
-		}
+		}*/
 	});
 }
 </script>

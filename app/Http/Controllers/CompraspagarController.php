@@ -173,7 +173,7 @@ class CompraspagarController extends Controller
         $compra = Movimiento::find($request->input('pedido_id'));
         $error = DB::transaction(function() use($request, $compra){
 
-            $sucursal_id = $request->input('sucursal_id');
+            $sucursal_id = $request->input('sucursal');
 
             $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
 

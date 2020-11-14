@@ -12,8 +12,8 @@
 			{!! Form::label('', 'Pago con repartidor' ,array('class' => 'input-lg', 'style' => 'margin-top: 5px;'))!!}
 		</div>
 		<div class="col-lg-6 col-md-6 col-sm-6 sucursal">
-			{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'permisoRegistrar();')) !!}		
+			{!! Form::label('sucursal', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+			{!! Form::select('sucursal', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal' , 'onchange' => 'permisoRegistrar();')) !!}		
 		</div>
 		<div class="col-lg-12 col-md-12 col-sm-12 repartidor" style="display:none;">
 			@if(!empty($turnos_iniciados))
@@ -129,7 +129,7 @@ function permisoRegistrar(){
 
 var aperturaycierre = null;
 
-var sucursal_id = $('#sucursal_id').val();
+var sucursal_id = $('#sucursal').val();
 
 var ajax = $.ajax({
 	"method": "POST",
@@ -149,7 +149,7 @@ var ajax = $.ajax({
 
 		var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
 
-		var surcursal_id = $('#sucursal_id').val();
+		var surcursal_id = $('#sucursal').val();
 
 		if(sucursal_id != null){
 			$('#divMensajeErrorMovimiento').html(cadenaError);
