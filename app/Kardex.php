@@ -35,7 +35,7 @@ class Kardex extends Model
 		            	}
                     })
                     ->where('movimiento.estado',1)
-        			->orderBy('kardex.fecha', 'DESC')->orderBy('kardex.id', 'DESC');;
+        			->orderBy('movimiento.fecha', 'DESC');//->orderBy('kardex.id', 'DESC');
     }
 
     public function detallemovimiento()

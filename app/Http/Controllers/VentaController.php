@@ -387,8 +387,21 @@ class VentaController extends Controller
                     $stock->producto_id = $producto_id;
                     $stock->sucursal_id = $venta->sucursal_id;
                 }
-                $stock->cantidad -= $cantidad;
-                $stock->save();
+
+                $producto = Producto::find( $producto_id );
+
+                if($producto->recargable == 1){
+                    $stock->cantidad -= $cantidad;
+                    $stock->cantidad -= $cantidad_envase;
+                    $stock->envases_total -= $cantidad_envase;
+                    $stock->envases_llenos -= $cantidad;
+                    $stock->envases_llenos -= $cantidad_envase;
+                    $stock->envases_vacios += $cantidad;
+                    $stock->save();
+                }else{
+                    $stock->cantidad -= $cantidad;
+                    $stock->save();
+                }
 
             });
         }

@@ -58,12 +58,19 @@
 				@endif
 			@endif
 			<td>{{ $value->descripcion }}</td>
-			<td align="center">{{ $value->cantidad }}</td>
-			@if( $value->tipo == "I")
-				<td align="center">{{ $value->precio_compra }}</td>
+
+			@if($value->cantidad != 0)
+				<td align="center">{{ $value->cantidad }}</td>
+				@if( $value->tipo == "I")
+					<td align="center">{{ $value->precio_compra }}</td>
+				@else
+					<td align="center">{{ $value->precio_venta }}</td>
+				@endif
 			@else
-				<td align="center">{{ $value->precio_venta }}</td>
+				<td align="center"> - </td>
+				<td align="center"> - </td>
 			@endif
+
 			@if($value->cantidad_envase != 0)
 				<td align="center">{{ $value->cantidad_envase }}</td>
 				@if( $value->tipo == "I")

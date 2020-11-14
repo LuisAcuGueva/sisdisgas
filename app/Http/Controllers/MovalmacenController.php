@@ -275,11 +275,21 @@ class MovalmacenController extends Controller
                         $stock->producto_id = $request->input('producto_id'.$i);
                         $stock->sucursal_id = $sucursal_id;
                     }
-                    $stock->cantidad += $cantidad;
-                    $stock->cantidad += $cantidadenvase;
-                    $stock->envases_total += $cantidadenvase;
-                    $stock->envases_llenos += $cantidadenvase;
-                    $stock->save();
+
+                    $producto = Producto::find( $request->input('producto_id'.$i) );
+
+                    if($producto->recargable == 1){
+                        $stock->cantidad += $cantidad;
+                        $stock->cantidad += $cantidadenvase;
+                        $stock->envases_total += $cantidadenvase;
+                        $stock->envases_llenos += $cantidad;
+                        $stock->envases_llenos += $cantidadenvase;
+                        $stock->envases_vacios -= $cantidad;
+                        $stock->save();
+                    }else{
+                        $stock->cantidad += $cantidad;
+                        $stock->save();
+                    }
 
                 }else{
 
@@ -314,10 +324,21 @@ class MovalmacenController extends Controller
                         $stock->producto_id = $request->input('producto_id'.$i);
                         $stock->sucursal_id = $sucursal_id;
                     }
-                    $stock->cantidad -= $cantidad;
-                    $stock->envases_total -= $cantidadenvase;
-                    $stock->envases_llenos -= $cantidadenvase;
-                    $stock->save();
+
+                    $producto = Producto::find( $request->input('producto_id'.$i) );
+
+                    if($producto->recargable == 1){
+                        $stock->cantidad -= $cantidad;
+                        $stock->cantidad -= $cantidadenvase;
+                        $stock->envases_total -= $cantidadenvase;
+                        $stock->envases_llenos -= $cantidad;
+                        $stock->envases_llenos -= $cantidadenvase;
+                        $stock->envases_vacios += $cantidad;
+                        $stock->save();
+                    }else{
+                        $stock->cantidad -= $cantidad;
+                        $stock->save();
+                    }
 
                 }
 
@@ -513,20 +534,34 @@ class MovalmacenController extends Controller
                                 ->first();
 
         $stock = Stock::where('producto_id', $producto_id )->where('sucursal_id', $sucursal_id)->first();
+        $sucursal = Sucursal::find($sucursal_id);
+
+        
+        $envases_sucursal = "";
+        $total_envases = "";
+        if( $producto->recargable != 1){
+            $envases_vacios = 0;
+        }else{
+            if( $producto_id == 4){
+                $envases_sucursal = $sucursal->cant_balon_premium;
+                $total_envases = $stock->envases_total;
+            }else if( $producto_id == 5){ //normal
+                $envases_sucursal = $sucursal->cant_balon_normal;
+                $total_envases = $stock->envases_total;
+            }
+            $total_envases = $stock->envases_total;
+            $envases_vacios = $stock->envases_vacios;
+        }
 
         if ($stock == null) {
             $stock = 0;
             $envases_vacios = 0;
         }else{
-            if( $stock->envases_vacios == null){
-                $envases_vacios = 0;
-            }else{
-                $envases_vacios = $stock->envases_vacios;
-            }
+           
             $stock = $stock->cantidad;
         }
 
-        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->recargable.'@'.$producto->precio_compra_envase.'@'.$producto->precio_venta_envase.'@'.$envases_vacios;
+        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->recargable.'@'.$producto->precio_compra_envase.'@'.$producto->precio_venta_envase.'@'.$envases_vacios.'@'.$envases_sucursal.'@'.$total_envases;
     }
 
     public function agregarcarritocompra(Request $request)
@@ -597,7 +632,7 @@ class MovalmacenController extends Controller
                 $cadena .= '<td class="text-center">
                 <span style="display: block; font-size:.9em">'.$cantidad_envase.' UNIDADES</span>                    
             </td><td class="text-center">
-                <span style="display: block; font-size:.9em">'.number_format($producto->precio_compra_envase, 2, '.','').'</span>                    
+                <span style="display: block; font-size:.9em">'.number_format($precio_compra_envase, 2, '.','').'</span>                    
             </td>';
             }
         }else{

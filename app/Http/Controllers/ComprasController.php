@@ -297,10 +297,21 @@ class ComprasController extends Controller
                     $stock->producto_id = $request->input('producto_id'.$i);
                     $stock->sucursal_id = $sucursal_id;
                 }
-                $stock->cantidad += $cantidad;
-                $stock->envases_total += $cantidadenvase;
-                $stock->envases_llenos += $cantidadenvase;
-                $stock->save();
+
+                $producto = Producto::find( $request->input('producto_id'.$i) );
+
+                if($producto->recargable == 1){
+                    $stock->cantidad += $cantidad;
+                    $stock->cantidad += $cantidadenvase;
+                    $stock->envases_total += $cantidadenvase;
+                    $stock->envases_llenos += $cantidad;
+                    $stock->envases_llenos += $cantidadenvase;
+                    $stock->envases_vacios -= $cantidad;
+                    $stock->save();
+                }else{
+                    $stock->cantidad += $cantidad;
+                    $stock->save();
+                }
 
             }
         });
@@ -447,6 +458,7 @@ class ComprasController extends Controller
                 $stock = Stock::where('producto_id', $value->id )->where('sucursal_id', $sucursal_id)->first();
 
                 $recargable = "";
+                $envases_vacios = 0;
 
                 if( $value->recargable == 1){
                     $recargable = "SI";
@@ -458,15 +470,22 @@ class ComprasController extends Controller
                     $data[$c] = array(
                         'nombre' => $value->descripcion,
                         'stock' => number_format(0, 0, '.', ''),
+                        'envases_vacios' => $envases_vacios,
                         'recargable' => $recargable,
                         'precio_venta' => number_format($value->precio_venta,2,'.',''),
                         'precio_compra' => number_format($value->precio_compra,2,'.',''),
                         'idproducto' => $value->id,
                     );
                 }else{
+                    if( $stock->envases_vacios == null){
+                        $envases_vacios = number_format(0, 0, '.', '');
+                    }else{
+                        $envases_vacios = number_format($stock->envases_vacios, 0, '.', '');
+                    }
                     $data[$c] = array(
                         'nombre' => $value->descripcion,
                         'stock' => number_format($stock->cantidad, 0, '.', ''),
+                        'envases_vacios' => $envases_vacios,
                         'recargable' => $recargable,
                         'precio_venta' => number_format($value->precio_venta,2,'.',''),
                         'precio_compra' => number_format($value->precio_compra,2,'.',''),
@@ -485,6 +504,7 @@ class ComprasController extends Controller
     public function consultaproducto(Request $request)
     {
         $sucursal_id = $request->input('sucursal_id');
+        $producto_id = $request->input('idproducto');
 
         $producto = Producto::find($request->input("idproducto"));
         
@@ -495,12 +515,35 @@ class ComprasController extends Controller
                                 ->where('movimiento.estado', '=', 1)
                                 ->orderBy('kardex.id', 'DESC')->first();
         
-        $stock = 0;
-        if ($currentstock !== null) {
-            $stock=$currentstock->stock_actual;
+        $stock = Stock::where('producto_id', $producto_id )->where('sucursal_id', $sucursal_id)->first();
+        $sucursal = Sucursal::find($sucursal_id);
+
+        
+        $envases_sucursal = "";
+        $total_envases = "";
+        if( $producto->recargable != 1){
+            $envases_vacios = 0;
+        }else{
+            if( $producto_id == 4){
+                $envases_sucursal = $sucursal->cant_balon_premium;
+                $total_envases = $stock->envases_total;
+            }else if( $producto_id == 5){ //normal
+                $envases_sucursal = $sucursal->cant_balon_normal;
+                $total_envases = $stock->envases_total;
+            }
+            $total_envases = $stock->envases_total;
+            $envases_vacios = $stock->envases_vacios;
         }
 
-        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->recargable.'@'.$producto->precio_compra_envase.'@'.$producto->precio_venta_envase;
+        if ($stock == null) {
+            $stock = 0;
+            $envases_vacios = 0;
+        }else{
+            
+            $stock = $stock->cantidad;
+        }
+
+        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->recargable.'@'.$producto->precio_compra_envase.'@'.$producto->precio_venta_envase.'@'.$envases_vacios.'@'.$envases_sucursal.'@'.$total_envases;
     }
 
     public function agregarcarritocompra(Request $request)
@@ -523,6 +566,13 @@ class ComprasController extends Controller
             $subtotal = round($cantidad*$precio_compra, 2);
         }
 
+        if(  $request->input('cantidad') == 0){
+            $cantidad = 0;
+        }
+        if(  $request->input('cantidad_envase') == 0){
+            $cantidad_envase = 0;
+        }
+
         $cadena .= '<td class="text-center numeration"></td>
                     <td class="infoProducto">
                         <span style="display: block; font-size:.9em">'.$producto->descripcion.'</span>
@@ -536,12 +586,22 @@ class ComprasController extends Controller
                         <input type ="hidden" class="precioventa" value="'.$precio_venta.'">
                         <input type ="hidden" class="subtotal" value="'.$subtotal.'">
                     </td>';
+
+        if($cantidad != 0){
         $cadena .= '<td class="text-center">
                     <span style="display: block; font-size:.9em">'.$cantidad.' UNIDADES</span>                    
                 </td>';
         $cadena .= '<td class="text-center">
                     <span style="display: block; font-size:.9em">'.number_format($precio_compra, 2, '.','').'</span>                    
                 </td>';
+        }else{
+            $cadena .= '<td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+                </td><td class="text-center">
+                <span style="display: block; font-size:.9em"> - </span>                    
+            </td>';
+        }
+
         if( $producto->recargable == 1){
 
             if( $cantidad_envase == ""){
@@ -554,7 +614,7 @@ class ComprasController extends Controller
                 $cadena .= '<td class="text-center">
                 <span style="display: block; font-size:.9em">'.$cantidad_envase.' UNIDADES</span>                    
             </td><td class="text-center">
-                <span style="display: block; font-size:.9em">'.number_format($producto->precio_compra_envase, 2, '.','').'</span>                    
+                <span style="display: block; font-size:.9em">'.number_format($precio_compra_envase, 2, '.','').'</span>                    
             </td>';
             }
         }else{
@@ -564,6 +624,7 @@ class ComprasController extends Controller
                 <span style="display: block; font-size:.9em"> - </span>                    
             </td>';
         }
+
         $cadena .= '<td class="text-center">
                     <span style="display: block; font-size:.9em">'.number_format($subtotal, 2, '.','').'</span>                    
                 </td>';

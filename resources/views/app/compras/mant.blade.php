@@ -82,9 +82,9 @@ $hoy = date("Y-m-d");
 		</div>
 	</div>
 	<div class="col-lg-8 col-md-8 col-sm-8">
-		<div class="form-group col-lg-12 col-md-12 col-sm-12" style="height: 12px;">
-			{!! Form::label('nombreproducto', 'Producto:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
-			<div class="col-lg-5 col-md-5 col-sm-5">
+		<div class="form-group col-lg-6 col-md-6 col-sm-6" style="height: 12px; margin-top: 28px;">
+			{!! Form::label('nombreproducto', 'Producto:', array('class' => 'col-lg-3 col-md-3 col-sm-3 control-label')) !!}
+			<div class="col-lg-7 col-md-7 col-sm-7">
 				{!! Form::text('nombreproducto', null, array('class' => 'form-control input-sm', 'id' => 'nombreproducto', 'placeholder' => 'Ingrese nombre','onkeyup' => 'buscarProducto($(this).val());')) !!}
 			</div>
 			<div class="col-lg-0 col-md-0 col-sm-0">
@@ -92,7 +92,21 @@ $hoy = date("Y-m-d");
     		</div>
 			{!! Form::hidden('producto_id', null, array( 'id' => 'producto_id')) !!}
 			{!! Form::hidden('stock', null, array('id' => 'stock')) !!}
+			{!! Form::hidden('envases_vacios', null, array('id' => 'envases_vacios')) !!}
 			{!! Form::hidden('recargable', null, array('id' => 'recargable')) !!}
+		</div>
+		
+		<div class="col-lg-3 col-md-3 col-sm-3 divEnvaseBalon" style="display: none;">
+			{!! Form::label('envases_sucursal', 'Envases por sucursal:', array('class' => 'col-lg-6 col-md-6 col-sm-6 control-label')) !!}
+			<div class="col-lg-6 col-md-6 col-sm-6" style="margin-top: 18px;">
+				{!! Form::text('envases_sucursal', null, array('class' => 'form-control input-sm', 'id' => 'envases_sucursal', 'readOnly')) !!}
+			</div>		
+		</div>
+		<div class="col-lg-3 col-md-3 col-sm-3 divEnvaseBalon" style="display: none;">
+			{!! Form::label('total_envases', 'Total de envases:', array('class' => 'col-lg-6 col-md-6 col-sm-6 control-label')) !!}
+			<div class="col-lg-6 col-md-6 col-sm-6" style="margin-top: 12px;">
+				{!! Form::text('total_envases', null, array('class' => 'form-control input-sm', 'id' => 'total_envases', 'readOnly')) !!}
+			</div>		
 		</div>
 
 		<div class="form-group col-lg-12 col-md-12 col-sm-12" id="divProductos" style="margin-top: 20px; overflow:auto; height:180px; padding-right:10px; border:1px outset">
@@ -104,6 +118,7 @@ $hoy = date("Y-m-d");
 						<th class='text-center' style='width:110px;'><span style='display: block;'>Precio Venta</span></th>
 						<th class='text-center' style='width:110px;'><span style='display: block;'>Stock</span></th>
 						<th class='text-center' style='width:110px;'><span style='display: block;'>Recargable</span></th>
+						<th class='text-center' style='width:110px;'><span style='display: block;'>Envases Vacíos</span></th>
 					</tr>
 				</thead>
 				<tbody id='tablaProducto'>
@@ -414,7 +429,7 @@ function buscarProducto(valor){
                 var a = '';
                 if(datos.length > 0) {
 	                for(c=0; c < datos.length; c++){
-	                    a +="<tr style='cursor:pointer' class='escogerFila' id='"+datos[c].idproducto+"' onclick=\"seleccionarProducto('"+datos[c].idproducto+"')\"><td><span style='display: block; font-size:.9em'>"+datos[c].nombre+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_compra+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_venta+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].stock+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].recargable+"</span></td></tr>";
+	                    a +="<tr style='cursor:pointer' class='escogerFila' id='"+datos[c].idproducto+"' onclick=\"seleccionarProducto('"+datos[c].idproducto+"')\"><td><span style='display: block; font-size:.9em'>"+datos[c].nombre+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_compra+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].precio_venta+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].stock+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].recargable+"</span></td><td align='center'><span style='display: block; font-size:.9em'>"+datos[c].envases_vacios+"</span></td></tr>";
 	                }	                
 	            } else {
 	            	a +="<tr><td align='center' colspan='8'>Productos no encontrados.</td></tr>";
@@ -463,14 +478,20 @@ function seleccionarProducto(idproducto){
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="producto_id"]').val(datos[0]);
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="precio_compra"]').val(datos[1]);
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="precio_venta"]').val(datos[2]);
-		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="stock"]').val(datos[3]);
+		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="precioventa"]').val(datos[2]);
+		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="stock"]').val(datos[3]); 
 		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="recargable"]').val(datos[4]);
+		$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="envases_vacios"]').val(datos[7]);
 		if(datos[4] == 1){
 			$(".divEnvase").css('display','');
+			$(".divEnvaseBalon").css('display','');
 			$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="precio_compra_envase"]').val(datos[5]);
 			$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="precio_venta_envase"]').val(datos[6]);
+			$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="envases_sucursal"]').val(datos[8]);
+			$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="total_envases"]').val(datos[9]);
 		}else{
 			$(".divEnvase").css('display','none');
+			$(".divEnvaseBalon").css('display','none');
 		}
 	});
 	$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="cantidad"]').focus();
@@ -479,12 +500,31 @@ function seleccionarProducto(idproducto){
 function addpurchasecart(elemento){
 	var cantidad = $('#cantidad').val();
 	var cantidad_envase = $('#cantidad_envase').val();
+	var envases_sucursal = $('#envases_sucursal').val();
+	var total_envases = $('#total_envases').val();
 	var precio_compra = $('#precio_compra').val();
 	var precio_compra_envase = $('#precio_compra_envase').val();
 	var precio_venta = $('#precio_venta').val();
 	var precio_venta_envase = $('#precio_venta_envase').val();
 	var product_id = $('#producto_id').val();
 	var stock = $('#stock').val();
+	var recargable = parseInt($('#recargable').val());
+	var envases_vacios = $('#envases_vacios').val();
+
+	if( cantidad =="" && cantidad_envase =="" ){
+		swal({
+			type: 'error',
+			title: 'INGRESE CANTIDAD',
+			});
+		return false;
+	}
+
+	if( cantidad ==""){
+		cantidad = 0;
+	}
+	if( cantidad_envase ==""){
+		cantidad_envase = 0;
+	}
 
 	var _token =$('input[name=_token]').val();
 
@@ -492,16 +532,6 @@ function addpurchasecart(elemento){
 		swal({
 			type: 'error',
 			title: 'INGRESE UN PRECIO DE VENTA MAYOR AL DE COMPRA',
-			});
-	}else if(cantidad.trim() == '' ){
-		swal({
-			type: 'error',
-			title: 'INGRESE CANTIDAD DEL PRODUCTO A AGREGAR',
-			});
-	}else if(cantidad.trim() == 0){
-		swal({
-			type: 'error',
-			title: 'LA CANTIDAD DEL PRODUCTO A AGREGAR DEBE SER MAYOR A 0',
 			});
 	}else if( is_numeric(cantidad) != true){
 		swal({
@@ -544,6 +574,26 @@ function addpurchasecart(elemento){
 			title: 'SELECCIONE UN PRODUCTO',
 			});
 	}else{
+
+		if( recargable == 1){
+			if( cantidad > envases_vacios){
+				swal({
+				type: 'error',
+				title: 'NO HAY SUFICIENTES ENVASES VACÍOS',
+				});
+				return false;
+			}
+			if( product_id == 4 || product_id == 5){
+				if( cantidad_envase > (envases_sucursal - total_envases)){
+					swal({
+					type: 'error',
+					title: 'SUPERA EL LÍMITE DE ENVASES POR SUCURSAL',
+					});
+					return false;
+				}
+			}
+		}
+
 		$.post('{{ URL::route("compras.agregarcarritocompra")}}', {cantidad: cantidad, cantidad_envase: cantidad_envase, precio_compra: precio_compra, precio_compra_envase: precio_compra_envase, producto_id: product_id, precio_venta: precio_venta, precio_venta_envase: precio_venta_envase, detalle: $('#detalle').val(),_token: _token} , function(data){
 			$('#detalle').val(true);
 			if(data === '0-0') {
@@ -574,6 +624,8 @@ function addpurchasecart(elemento){
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_venta"]').val('');
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_compra_envase"]').val('');
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_venta_envase"]').val('');
+				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="envases_sucursal"]').val('');
+				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="total_envases"]').val('');
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="cantidad_envase"]').val('');
 				$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="nombreproducto"]').focus();
 				$('.escogerFila').css('background-color', 'white');

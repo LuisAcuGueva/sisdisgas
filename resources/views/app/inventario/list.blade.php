@@ -23,6 +23,17 @@
 			<td align="center">{{ $value->precio_venta }}</td>
 			<td align="center">{{ $value->precio_compra }}</td>
 			<td align="center">{{ $value->cantidad }}</td>
+			@if( $value->recargable == 1)
+			<td align="center">{{ $value->envases_total }}</td>
+			<td align="center">{{ $value->envases_llenos }}</td>
+			<td align="center">{{ $value->envases_vacios }}</td>
+			<td align="center">{{ $value->envases_prestados }}</td>
+			@else
+			<td align="center"> - </td>
+			<td align="center"> - </td>
+			<td align="center"> - </td>
+			<td align="center"> - </td>
+			@endif
 
 		</tr>
 		<?php
