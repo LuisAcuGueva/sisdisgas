@@ -102,27 +102,6 @@ $(document).ready(function() {
 		}
 	}); 
 
-	/*var total = $('#total').val();
-	if(saldocaja < total){
-		$("#monto").keyup(function(){
-			if( $("#monto").val() == ""){
-				$('#total').val(saldo.toFixed(2));
-			}else{ 
-				if( is_numeric( $("#monto").val())){
-					var monto = parseFloat($("#monto").val());
-					var saldo_caja = parseFloat($("#saldo_caja").val());
-					if(monto > saldo_caja){
-						$("#monto").val("");
-						$('#total').val(saldo.toFixed(2));
-					}
-				}else{
-					$("#monto").val("");
-					$('#total').val(saldo.toFixed(2));
-				}
-			}
-		}); 
-	}*/
-
 }); 
 
 function is_numeric(value) {
@@ -190,26 +169,6 @@ function generarSaldoCaja(){
 		saldocaja = info;
 	}).always(function(){
 		$('#saldo_caja').val(saldocaja);
-		/*var total = $('#total').val();
-		if(saldocaja < total){
-			$("#monto").keyup(function(){
-				if( $("#monto").val() == ""){
-					$('#total').val(saldo.toFixed(2));
-				}else{ 
-					if( is_numeric( $("#monto").val())){
-						var monto = parseFloat($("#monto").val());
-						var saldo_caja = parseFloat($("#saldo_caja").val());
-						if(monto > saldo_caja){
-							$("#monto").val("");
-							$('#total').val(saldo.toFixed(2));
-						}
-					}else{
-						$("#monto").val("");
-						$('#total').val(saldo.toFixed(2));
-					}
-				}
-			}); 
-		}*/
 	});
 }
 </script>

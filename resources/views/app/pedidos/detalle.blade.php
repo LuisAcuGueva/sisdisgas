@@ -49,7 +49,7 @@
 				<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 				<div class="col-lg-6 col-md-6 col-sm-6" style="margin-bottom: 15px;">
 					{!! Form::label('venta_sucursal', 'Venta en sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -13px;'))!!}
-						@if($pedido->venta_sucursal == 1)
+						@if($pedido->pedido_sucursal == 1)
 							SI
 						@else
 							NO

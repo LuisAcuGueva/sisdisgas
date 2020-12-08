@@ -48,6 +48,17 @@
 			<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->pedido->fecha )) }}</td>
 
 			<td> {{  $value->pedido->concepto->concepto }} </td>
+			
+			@if($value->pedido->tipomovimiento_id == 2)
+				@if($value->pedido->tipodocumento->abreviatura != null && $value->pedido->num_venta != null )
+					<td> {{  $value->pedido->tipodocumento->abreviatura . '' . $value->pedido->num_venta }} </td>
+				@else
+					<td align="center"> - </td>
+				@endif
+			@else
+				<td align="center"> - </td>
+			@endif
+
 
 			@if (!is_null($value->pedido->persona))
 				@if(!is_null($value->pedido->persona->dni))
@@ -75,16 +86,6 @@
 
 			<td> {{ $value->pedido->sucursal->nombre }} </td>
 		
-			@if($value->pedido->estado == 1)
-				@if (!is_null($value->pedido->comentario))
-					<td> {{ $value->pedido->comentario }} </td>
-				@else
-					<td align="center"> - </td>
-				@endif
-			@elseif($value->pedido->estado == 0)
-				<td> {{ $value->pedido->comentario }} | Anulado por: {{ $value->pedido->comentario_anulado }} </td>
-			@endif
-			
 			@if(($value->pedido->tipomovimiento_id == 1 || $value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5) && $value->pedido->concepto->tipo != 0 || $value->pedido->concepto_id == 3 || $value->pedido->concepto_id == 16 )
 				<td align="center" style="color:green;font-weight: bold;"> {{ $value->pedido->total }} </td>
 			@elseif($value->pedido->tipomovimiento_id == 6)

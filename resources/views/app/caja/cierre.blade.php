@@ -7,7 +7,7 @@
 		{!! Form::hidden('persona_id', $persona_id,array('id'=>'persona_id')) !!}
 	</div>
 
-	@if($turnos_cerrados == "NO" && $sucursal_id == 1)
+	@if($turnos_cerrados == "NO")
 	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">EXISTEN REPARTIDORES EN TURNO</h4><h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: black;">DEBE CERRAR TODOS LOS TURNOS DE REPARTIDORES</h4>
 	@endif
 
@@ -71,7 +71,7 @@
 	</div>
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-		@if( ($turnos_cerrados == "NO" || $sucursales_cerradas_no_ingresadas > 0 || $cant_cajas_sucursales_abiertas > 0 ) && $sucursal_id == 1)
+		@if( ($turnos_cerrados == "NO" || (  $sucursales_cerradas_no_ingresadas > 0 || $cant_cajas_sucursales_abiertas > 0 ) && $sucursal_id == 1))
 			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'disabled' => 'true', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
 		@else
 			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar','onclick' => 'guardar(\''.$entidad.'\', this)')) !!}

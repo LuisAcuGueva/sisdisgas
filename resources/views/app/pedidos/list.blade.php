@@ -39,14 +39,10 @@
 
 			<td> {{  $value->persona->direccion }} </td>
 
-			@if($value->estado == 1)
-				@if (!is_null($value->comentario))
-					<td> {{ $value->comentario }} </td>
-				@else
-					<td align="center"> - </td>
-				@endif
-			@elseif($value->estado == 0)
-				<td> {{ $value->comentario }} | Anulado por: {{ $value->comentario_anulado }} </td>
+			@if($value->pedido_sucursal == 1)
+				<td style ="background-color: #fdf8c1b0 !important">SUCURSAL: {{  $value->sucursal->nombre }} </td>
+			@else
+				<td style ="background-color: #b5e7ffb0 !important">{{ $value->trabajador->apellido_pat.' '.$value->trabajador->apellido_mat.' '.$value->trabajador->nombres  }}</td>
 			@endif
 
 			@if($value->vale_balon_subcafae == 1)

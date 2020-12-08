@@ -149,7 +149,7 @@ class ComprasController extends Controller
             $compra->tipomovimiento_id = 3;
             $compra->persona_id =  $request->input('proveedor_id');
             $compra->concepto_id = 4;
-            $compra->num_compra = $request->input('serie') . '-' . $request->input('numerodocumento');
+            $compra->num_compra = str_replace("_","", $request->input('serie')) . '-' . str_replace("_","", $request->input('numerodocumento'));
             //$compra->fecha  = $request->input('fecha');
             $compra->estado = 1;
             $compra->total = $total;
@@ -219,6 +219,7 @@ class ComprasController extends Controller
                 $cantidadenvase  = $request->input('cantidadenvase'.$i);
                 $precioenvase    = $request->input('preciocompraenvase'.$i);
                 $precio    = $request->input('preciocompra'.$i);
+                
                 if( $cantidadenvase == ""){
                     $cantidadenvase = 0;
                     $precioenvase = 0;
@@ -257,7 +258,7 @@ class ComprasController extends Controller
 
                 // ingresamos nuevo kardex
                 if ($ultimokardex === NULL) {
-                    $stockactual = $cantidad;
+                    $stockactual = $cantidad + $cantidadenvase;
                     $kardex = new Kardex();
                     $kardex->tipo = 'I';
                     $kardex->fecha =  $request->input('fecha');
@@ -273,7 +274,7 @@ class ComprasController extends Controller
                     
                 }else{
                     $stockanterior = $ultimokardex->stock_actual;
-                    $stockactual = $ultimokardex->stock_actual + $cantidad;
+                    $stockactual = $ultimokardex->stock_actual + $cantidad + $cantidadenvase;
                     $kardex = new Kardex();
                     $kardex->tipo = 'I';
                     $kardex->fecha =  $request->input('fecha');
@@ -524,15 +525,25 @@ class ComprasController extends Controller
         if( $producto->recargable != 1){
             $envases_vacios = 0;
         }else{
-            if( $producto_id == 4){
-                $envases_sucursal = $sucursal->cant_balon_premium;
+            if($stock != null){
+                if( $producto_id == 4){
+                    $envases_sucursal = $sucursal->cant_balon_premium;
+                    $total_envases = $stock->envases_total;
+                }else if( $producto_id == 5){ //normal
+                    $envases_sucursal = $sucursal->cant_balon_normal;
+                    $total_envases = $stock->envases_total;
+                }
                 $total_envases = $stock->envases_total;
-            }else if( $producto_id == 5){ //normal
-                $envases_sucursal = $sucursal->cant_balon_normal;
-                $total_envases = $stock->envases_total;
+                $envases_vacios = $stock->envases_vacios;
+            }else{
+                if( $producto_id == 4){
+                    $envases_sucursal = $sucursal->cant_balon_premium;
+                }else if( $producto_id == 5){
+                    $envases_sucursal = $sucursal->cant_balon_normal;
+                }
+                $total_envases = 0;
+                $envases_vacios = 0;
             }
-            $total_envases = $stock->envases_total;
-            $envases_vacios = $stock->envases_vacios;
         }
 
         if ($stock == null) {

@@ -77,7 +77,7 @@ class VentaController extends Controller
     }
 
     public function guardarventa(Request $request){
-        $reglas     = array('empleado_id' => 'required',
+        $reglas     = array(
                             'serieventa' => 'required',
                             'cliente_id' => 'required',
                             //'montoefectivo' => 'required',
@@ -90,11 +90,7 @@ class VentaController extends Controller
         
         $error = DB::transaction(function() use($request){
 
-            /*$num_caja = Movimiento::where('tipomovimiento_id', 1)
-                                    ->where('sucursal_id', $request->input('sucursal_id'))
-                                    ->where('estado', "=", 1)
-                                    ->max('num_caja');
-            $num_caja = $num_caja + 1;*/
+            //guardar pedido
 
             $movimiento                       = new Movimiento();
             $movimiento->tipomovimiento_id    = 2;
@@ -107,16 +103,19 @@ class VentaController extends Controller
             $subtotal                         = round($total/(1.18),2);
             $movimiento->subtotal             = $subtotal;
             $movimiento->igv                  = round($total - $subtotal,2);
+
             if($request->input('montoefectivo') != null){
                 $movimiento->montoefectivo        = $request->input('montoefectivo') - $request->input('vuelto');
             }else{
                 $movimiento->montoefectivo        = 0.00;
             }
+
             if($request->input('montovisa') != null){
                 $movimiento->montovisa        = $request->input('montovisa');
             }else{
                 $movimiento->montovisa        = 0.00;
             }
+
             if($request->input('montomaster') != null){
                 $movimiento->montomaster        = $request->input('montomaster');
             }else{
@@ -130,13 +129,6 @@ class VentaController extends Controller
             }
 
             $movimiento->estado               = 1;
-
-            $balon_nuevo                = $request->input('balon_nuevo');
-            if($balon_nuevo == true){
-                $movimiento->balon_nuevo    = 1;
-            }else{
-                $movimiento->balon_nuevo    = 0;
-            }
 
             $balon_a_cuenta                = $request->input('balon_a_cuenta');
             if($balon_a_cuenta == true){
@@ -171,98 +163,168 @@ class VentaController extends Controller
                 $movimiento->vale_balon_fise    = 0;
             }
 
-
-            $movimiento->persona_id           = $request->input('cliente_id');
-            $movimiento->trabajador_id        = $request->input('empleado_id');
+            $movimiento->persona_id           = $request->input('cliente_id');            
             $user           = Auth::user();
             $movimiento->usuario_id           = $user->id;
+
+            $venta_sucursal = $request->input('venta_sucursal');
+            if($venta_sucursal != true){ //venta repartidor
+                $movimiento->trabajador_id        = $request->input('empleado_id');
+                $movimiento->pedido_sucursal = 0;
+            }else{ //venta sucursal
+                $movimiento->trabajador_id        = $user->person_id;
+                $movimiento->pedido_sucursal = 1;
+            }
+
             $movimiento->sucursal_id          = $request->input('sucursal_id');
             $movimiento->comentario =  strtoupper ($request->input('comentario') );
             $movimiento->save();
 
-            /*
-
-            $movimientocaja                       = new Movimiento();
-            $movimientocaja->tipomovimiento_id    = 1;
-            $movimientocaja->concepto_id          = 3;
-            $movimientocaja->num_caja             = $num_caja;
-            $movimientocaja->total                = $request->input('total');
-            $movimientocaja->subtotal             = $request->input('total');
-            $movimientocaja->estado               = 1;
-            $movimientocaja->persona_id           = $request->input('cliente_id');
-            $movimientocaja->trabajador_id        = $request->input('empleado_id');
-            $user           = Auth::user();
-            $movimientocaja->usuario_id           = $user->id;
-            $movimientocaja->sucursal_id          = $request->input('sucursal_id');
-            $movimientocaja->venta_id             = $movimiento->id;
-
-            if($request->input('tipodocumento_id') == 1){
-                $movimientocaja->comentario           = "Pago de: B".$request->input('serieventa');  
-            }else if($request->input('tipodocumento_id') == 2){
-                $movimientocaja->comentario           = "Pago de: F".$request->input('serieventa');  
-            }else if($request->input('tipodocumento_id') == 3){
-                $movimientocaja->comentario           = "Pago de: T".$request->input('serieventa');  
-            }
-            
-            $movimientocaja->save();*/
+            //ELIMINE CAMPOR baalon_nuevo de tabla movimiento
 
             // GUARDAR DETALLE TURNO PEDIDO
 
-            if($balon_a_cuenta != true){
+            if($balon_a_cuenta != true){ // sin credito
 
-                $trabajador = $request->input('empleado_id');
+                if($venta_sucursal != true){ //venta con repartidor 
 
-                $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
-                                    ->max('id');
+                    $trabajador = $request->input('empleado_id');
+    
+                    $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
+                                        ->max('id');
+    
+                    $turno_maximo = Turnorepartidor::find($max_turno);
+    
+                    $detalle_turno_pedido =  new Detalleturnopedido();
+                    $detalle_turno_pedido->pedido_id = $movimiento->id;
+                    $detalle_turno_pedido->turno_id = $turno_maximo->id;
+                    $detalle_turno_pedido->save();
+    
+                }else{ //venta en sucursal
+    
+                    $num_caja = Movimiento::where('tipomovimiento_id', 1)
+                                            ->where('sucursal_id', $request->input('sucursal_id'))
+                                            ->where('estado', "=", 1)
+                                            ->max('num_caja');
+                    $num_caja = $num_caja + 1;
+                        
+                    $movimientocaja                       = new Movimiento();
+                    $movimientocaja->tipomovimiento_id    = 1;
+                    $movimientocaja->concepto_id          = 3;
+                    $movimientocaja->num_caja             = $num_caja;
+                    $movimientocaja->total                = $request->input('total');
+                    $subtotal                             = round($total/(1.18),2);
+                    $movimientocaja->subtotal             = $subtotal;
+                    $movimientocaja->estado               = 1;
+                    $movimientocaja->persona_id           = $request->input('cliente_id');
+                    $user           = Auth::user();
+                    $movimientocaja->trabajador_id        = $user->person_id;
+                    $movimientocaja->usuario_id           = $user->id;
+                    $movimientocaja->sucursal_id          = $request->input('sucursal_id');
+                    $movimientocaja->venta_id             = $movimiento->id;
 
-                $turno_maximo = Turnorepartidor::find($max_turno);
+                    if($request->input('tipodocumento_id') == 1){
+                        $movimientocaja->comentario           = "Pago de: BV".$request->input('serieventa');  
+                    }else if($request->input('tipodocumento_id') == 2){
+                        $movimientocaja->comentario           = "Pago de: FV".$request->input('serieventa');  
+                    }else if($request->input('tipodocumento_id') == 3){
+                        $movimientocaja->comentario           = "Pago de: TK".$request->input('serieventa');  
+                    }
+                    
+                    $movimientocaja->save();
 
-                $detalle_turno_pedido =  new Detalleturnopedido();
-                $detalle_turno_pedido->pedido_id = $movimiento->id;
-                $detalle_turno_pedido->turno_id = $turno_maximo->id;
-                $detalle_turno_pedido->save();
-                
-            }else{
+                }
+
+            }else if($balon_a_cuenta == true){ //credito
 
                 $montocredito = $request->input('montoefectivo');
 
-                if($montocredito > 0){
+                if($montocredito > 0){ //paga parte del credito
 
                     $movimientopago                       = new Movimiento();
                     $movimientopago->tipomovimiento_id    = 5;
-                    $movimientopago->concepto_id          = 16;
+                    $movimientopago->concepto_id          = 3;
                     $movimientopago->total                = $request->input('montoefectivo');
                     $movimientopago->subtotal             = $request->input('montoefectivo');
                     $movimientopago->estado               = 1;
                     $movimientopago->persona_id           = $request->input('cliente_id');
-                    $movimientopago->trabajador_id        = $request->input('empleado_id');
                     $user           = Auth::user();
+
+                    if($venta_sucursal != true){ //venta repartidor
+                        $movimientopago->trabajador_id        = $request->input('empleado_id');
+                    }else{ //venta sucursal
+                        $movimientopago->trabajador_id        = $user->person_id;
+                    }
+
                     $movimientopago->usuario_id           = $user->id;
                     $movimientopago->sucursal_id          = $request->input('sucursal_id');
                     $movimientopago->venta_id             = $movimiento->id;
                     $movimientopago->comentario             = "PAGO DE PEDIDO A CRÉDITO: ". $movimiento->tipodocumento->abreviatura."-". $movimiento->num_venta;
                     $movimientopago->save();
 
-                    $trabajador = $request->input('empleado_id');
-
-                    $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
-                                        ->max('id');
-
-                    $turno_maximo = Turnorepartidor::find($max_turno);
-
-                    $detalle_turno_pedido =  new Detalleturnopedido();
-                    $detalle_turno_pedido->pedido_id = $movimientopago->id;
-                    $detalle_turno_pedido->turno_id = $turno_maximo->id;
-                    $detalle_turno_pedido->save();
-
                     $detalle_pagos = new Detallepagos();
                     $detalle_pagos->pedido_id = $movimiento->id;
                     $detalle_pagos->pago_id = $movimientopago->id;
                     $detalle_pagos->monto   = $request->input('montoefectivo');
-                    $detalle_pagos->tipo   =  'R';
+
+                    if($venta_sucursal != true){ //venta repartidor
+                        $detalle_pagos->tipo   =  'R';
+                    }else{ //venta sucursal
+                        $detalle_pagos->tipo   =  'S';
+                    }
+
                     $detalle_pagos->save();
 
-                }else if($montocredito == 0){
+                    if($venta_sucursal != true){ //venta con repartidor 
+
+                        $trabajador = $request->input('empleado_id');
+        
+                        $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
+                                            ->max('id');
+        
+                        $turno_maximo = Turnorepartidor::find($max_turno);
+        
+                        $detalle_turno_pedido =  new Detalleturnopedido();
+                        $detalle_turno_pedido->pedido_id = $movimientopago->id;
+                        $detalle_turno_pedido->turno_id = $turno_maximo->id;
+                        $detalle_turno_pedido->save();
+        
+                    }else{ //venta en sucursal
+        
+                        $num_caja = Movimiento::where('tipomovimiento_id', 1)
+                                                ->where('sucursal_id', $request->input('sucursal_id'))
+                                                ->where('estado', "=", 1)
+                                                ->max('num_caja');
+                        $num_caja = $num_caja + 1;
+                            
+                        $movimientocaja                       = new Movimiento();
+                        $movimientocaja->tipomovimiento_id    = 1;
+                        $movimientocaja->concepto_id          = 3;
+                        $movimientocaja->num_caja             = $num_caja;
+                        $movimientocaja->total                = $request->input('montoefectivo');
+                        $movimientocaja->subtotal             = $request->input('montoefectivo');
+                        $movimientocaja->estado               = 1;
+                        $movimientocaja->persona_id           = $request->input('cliente_id');
+                        $user           = Auth::user();
+                        $movimientocaja->trabajador_id        = $user->person_id;
+                        $movimientocaja->usuario_id           = $user->id;
+                        $movimientocaja->sucursal_id          = $request->input('sucursal_id');
+                        $movimientocaja->venta_id             = $movimiento->id;
+    
+                        if($request->input('tipodocumento_id') == 1){
+                            $movimientocaja->comentario           = "Pago de: BV".$request->input('serieventa');  
+                        }else if($request->input('tipodocumento_id') == 2){
+                            $movimientocaja->comentario           = "Pago de: FV".$request->input('serieventa');  
+                        }else if($request->input('tipodocumento_id') == 3){
+                            $movimientocaja->comentario           = "Pago de: TK".$request->input('serieventa');  
+                        }
+                        
+                        $movimientocaja->save();
+    
+                    }
+
+
+                }else if($montocredito == 0){ // no pago nada del credito
 
                     $movimientopago                       = new Movimiento();
                     $movimientopago->tipomovimiento_id    = 5;
@@ -271,7 +333,9 @@ class VentaController extends Controller
                     $movimientopago->subtotal             = 0;
                     $movimientopago->estado               = 1;
                     $movimientopago->persona_id           = $request->input('cliente_id');
-                    $movimientopago->trabajador_id        = $request->input('empleado_id');
+                    if($venta_sucursal != true){
+                        $movimientopago->trabajador_id        = $request->input('empleado_id');
+                    }
                     $user           = Auth::user();
                     $movimientopago->usuario_id           = $user->id;
                     $movimientopago->sucursal_id          = $request->input('sucursal_id');
@@ -279,17 +343,21 @@ class VentaController extends Controller
                     $movimientopago->comentario             = "Pedido a crédito: ". $movimiento->tipodocumento->abreviatura."-". $movimiento->num_venta;
                     $movimientopago->save();
 
-                    $trabajador = $request->input('empleado_id');
+                    if($venta_sucursal != true){ // venta repartidor
 
-                    $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
-                                        ->max('id');
+                        $trabajador = $request->input('empleado_id');
 
-                    $turno_maximo = Turnorepartidor::find($max_turno);
+                        $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)
+                                            ->max('id');
 
-                    $detalle_turno_pedido =  new Detalleturnopedido();
-                    $detalle_turno_pedido->pedido_id = $movimientopago->id;
-                    $detalle_turno_pedido->turno_id = $turno_maximo->id;
-                    $detalle_turno_pedido->save();
+                        $turno_maximo = Turnorepartidor::find($max_turno);
+
+                        $detalle_turno_pedido =  new Detalleturnopedido();
+                        $detalle_turno_pedido->pedido_id = $movimientopago->id;
+                        $detalle_turno_pedido->turno_id = $turno_maximo->id;
+                        $detalle_turno_pedido->save();
+
+                    }
 
                 }
             }
@@ -347,7 +415,7 @@ class VentaController extends Controller
                                         ->first();
 
                 if ($ultimokardex === NULL) {
-                    $stockactual = $cantidad;
+                    $stockactual = $cantidad + $cantidad_envase;
                     $kardex = new Kardex();
                     $kardex->tipo = 'E';
                     $kardex->fecha =  $request->input('fecha');
@@ -363,7 +431,7 @@ class VentaController extends Controller
                     
                 }else{
                     $stockanterior = $ultimokardex->stock_actual;
-                    $stockactual = $ultimokardex->stock_actual - $cantidad;
+                    $stockactual = $ultimokardex->stock_actual - $cantidad - $cantidad_envase;
                     $kardex = new Kardex();
                     $kardex->tipo = 'E';
                     $kardex->fecha =  $request->input('fecha');

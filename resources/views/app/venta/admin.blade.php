@@ -55,9 +55,9 @@ operaciones
 				<div style="    border: solid 1px; border-radius: 5px; height: 35px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54;">
 					<h4 class="page-venta" style ="margin-top: 8px;  font-weight: 600;">SELECCIONE REPARTIDOR</h4>
 				</div>
-
+				<h4 id="ventasucursalh4" class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red; display: none;"> VENTA EN SUCURSAL</h4>
 				@if(!empty($empleados))
-				<h4 class="page-ventaa" style ="margin: 10px 0px;  font-weight: 600; text-align: center;"></h4>
+				<h4 class="page-ventaa" style ="margin: 10px 0px; display: none;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES EN TURNO</h4>
 				<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
 					@foreach($empleados  as $key => $value)
 						<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
@@ -68,12 +68,14 @@ operaciones
 				</div>
 				{!! Form::hidden('empleado_id',null,array('id'=>'empleado_id')) !!}
 				{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
+				{!! Form::hidden('empleados_existe', 1 ,array('id'=>'empleados_existe')) !!}
 				@else
 				<h4 class="page-ventaa" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES EN TURNO</h4>
 				<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
 				</div>
 				{!! Form::hidden('empleado_id',null,array('id'=>'empleado_id')) !!}
 				{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
+				{!! Form::hidden('empleados_existe', 0 ,array('id'=>'empleados_existe')) !!}
 				@endif
 			</div>
 
@@ -87,6 +89,7 @@ operaciones
 					<div class="col-lg-12 col-md-12 col-sm-12" style="margin-bottom: 15px;">
 						{!! Form::label('venta_sucursal', 'Venta en sucursal:' ,array('class' => 'input-lg', 'style' => 'margin-bottom: -13px;'))!!}
 						<input name="venta_sucursal" type="checkbox" id="venta_sucursal">
+						{!! Form::hidden('venta_sucursal2', 0 ,array('id'=>'venta_sucursal2')) !!}
 					</div>
 				</div>
 
@@ -287,8 +290,8 @@ $(document).ready(function(){
 	$("#tipodocumento_id").val(3);
 
 	$("#serieventa").inputmask({"mask": "9999-9999999"});
-	$("#codigo_vale_subcafae").inputmask({"mask": "99999"});
-	$("#codigo_vale_fise").inputmask({"mask": "99999999*************"});
+	//$("#codigo_vale_subcafae").inputmask({"mask": "99999"});
+	//$("#codigo_vale_fise").inputmask({"mask": "99999999*************"});
 
 	$("#monto_vale_balon").keyup(function(){
 		if( $("#monto_vale_balon").val() != ""){
@@ -331,6 +334,7 @@ $(document).ready(function(){
 
 	$('#activar_checkbox').val(0);
 	var activar_checkbox = $('#activar_checkbox').val();
+
 	clickVales();
 
 	mostrarultimo();
@@ -438,6 +442,7 @@ $(document).ready(function(){
 		var sucursal = document.getElementById("sucursal_id");
 		var empleado = $('#empleado_id').val();
 		var cliente = $('#cliente_id').val();
+		var venta_sucursal2 = $('#venta_sucursal2').val();
 		var cant = parseInt($("#cant"). val());
 		var tipo = $('#tipodocumento_id').val();
 		var total = parseFloat($("#total").val());
@@ -459,9 +464,9 @@ $(document).ready(function(){
 		}
 
 
-		if(!empleado || cant==0 || !cliente || ( $("#vale_balon_fise").parent().hasClass('checked') && $("#codigo_vale_fise").val() == "" ) || ( $("#vale_balon_subcafae").parent().hasClass('checked') && $("#codigo_vale_subcafae").val() == "" ) || ( $("#vale_balon_monto").parent().hasClass('checked') && ( $("#codigo_vale_monto").val() == "" || $("#monto_vale_balon").val()  == "" ))  ){  // $("balon_a_cuenta").prop('checked') 
+		if( (!empleado && venta_sucursal2 == 0) || cant==0 || !cliente || ( $("#vale_balon_fise").parent().hasClass('checked') && $("#codigo_vale_fise").val() == "" ) || ( $("#vale_balon_subcafae").parent().hasClass('checked') && $("#codigo_vale_subcafae").val() == "" ) || ( $("#vale_balon_monto").parent().hasClass('checked') && ( $("#codigo_vale_monto").val() == "" || $("#monto_vale_balon").val()  == "" ))  ){  // $("balon_a_cuenta").prop('checked') 
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-			if(!empleado){
+			if(!empleado  && venta_sucursal2 == 0){
 				cadenaError += ' <li> El campo Empleado es obligatorio.</li>';
 			}
 			if(!cliente){
@@ -505,8 +510,14 @@ $(document).ready(function(){
 				+"</p><p><label>Monto del Vale:  </label>  S/."+ parseFloat($('#monto_vale_balon').val()).toFixed(2)
 			}
 
-			mensaje +="</p><p><label>Empleado:  </label>  "+ $('#empleado_nombre').val()
-					+"</p><p><label>Cliente:  </label>  "+ $('#cliente').val()
+
+			if(venta_sucursal2 == 1){
+				mensaje +="</p><p><label align='center'>VENTA EN SUCURSAL</label>";
+			}else{
+				mensaje +="</p><p><label>Empleado:  </label>  "+ $('#empleado_nombre').val();
+			}
+
+			mensaje +="</p><p><label>Cliente:  </label>  "+ $('#cliente').val()
 					+"</p><p><label>Dirección:  </label>  "+ $('#cliente_direccion').val()
 					+"</p><p><label>Total:  </label>  S/."+  total.toFixed(2);
 
@@ -571,6 +582,39 @@ $(document).ready(function(){
 
 	});
 
+	//venta sucursal
+	$('.iCheck-helper').on('click', function(){
+		var divpadre = $(this).parent();
+		var input = divpadre.find('input');
+
+		if( input.attr('id') == 'venta_sucursal'){ 
+			if( divpadre.hasClass('checked')) { //ventasucursalh4
+				$("#venta_sucursal2").val("1");
+				$("#empleado_id").val("");
+				$(".empleado").css('background', 'rgb(255,255,255)');
+				$('#empleados').css('display', 'none');
+				$('#ventasucursalh4').css('display', '');
+				$('#venta_sucursal').prop('checked',true);
+				$('#divMensajeErrorVenta').html("");
+				$('.page-ventaa').css("display","none");
+			}else{
+				$("#empleado_id").val("");
+				$("#venta_sucursal2").val("0");
+				if( $("#empleados_existe").val() == 0){
+					$('#empleados').css('display', 'none');
+					$('.page-ventaa').css("display","");
+				}else{
+					$('.page-ventaa').css("display","none");
+					$('#empleados').css('display', '-webkit-inline-box');
+				}
+				$('#ventasucursalh4').css('display', 'none');
+				$('#venta_sucursal').prop('checked',false);
+				
+			}
+		}
+
+	});
+
 
 });
 
@@ -594,13 +638,37 @@ function generarEmpleados(){
 	}).always(function(){
 
 		if( empleados != ""){
-			$('.page-ventaa').html("SELECCIONE REPARTIDOR");
-			$('.page-ventaa').css("display","none");
-			$('.page-ventaa').css("color","black");
+			$('#empleados_existe').val(1);
 		}else{
-			$('.page-ventaa').html("NO HAY REPARTIDOR EN TURNO");
-			$('.page-ventaa').css("display","");
-			$('.page-ventaa').css("color","red");
+			$('#empleados_existe').val(0);
+		}
+		
+		if($("#venta_sucursal2").val() == 0 ){
+
+			if( empleados != ""){
+				//$('.page-ventaa').html("SELECCIONE REPARTIDOR");
+				$('.page-ventaa').css("display","none");
+				//$('.page-ventaa').css("color","black");
+				$('#empleados').css('display', '-webkit-inline-box');
+			}else{
+				$('.page-ventaa').html("NO HAY REPARTIDOR EN TURNO");
+				$('.page-ventaa').css("display","");
+				$('.page-ventaa').css("color","red");
+				$('#empleados').css('display', 'none');
+			}
+		}else{
+			if( empleados != ""){
+				//$('.page-ventaa').html("SELECCIONE REPARTIDOR");
+				$('.page-ventaa').css("display","none");
+				//$('.page-ventaa').css("color","black");
+				//$('#empleados').css('display', '-webkit-inline-box');
+			}else{
+				//$('.page-ventaa').html("NO HAY REPARTIDOR EN TURNO");
+				//$('.page-ventaa').css("display","");
+				console.log("entro");
+				$('.page-ventaa').css("color","red");
+				$('#empleados').css('display', 'none');
+			}
 		}
 
 		$.each(empleados, function(i, item) {
@@ -888,7 +956,7 @@ function agregarProducto(){
 						var precio_envase = 0;
 					}
 
-					if(stockactual >= cantidadnueva ){
+					if(stockactual >= (cantidadnueva + envases_nuevos)){
 						//var cantidad = $(tr).attr('cantidad');
 						//$(tr).attr('precio',precioactual);
 
@@ -952,32 +1020,57 @@ function agregarProducto(){
 			if( is_numeric(cant_nuevo) ){
 				if(cant_nuevo >= 0){
 
-					$('#divMensajeErrorVenta').html("");
+					//$('#divMensajeErrorVenta').html("");
 					var tr = $(this).parent().parent();
 
 					var precioactual = parseFloat($(tr).attr('precio'));
+					var stockactual = parseInt($(tr).attr('stock'));
+
 					var cantidadactual = parseInt($(tr).attr('cantidad'));
-					var precio_envase = parseFloat($(tr).attr('precio_envase'));
+					//var precio_envase = parseFloat($(tr).attr('precio_envase'));
+
+					if( $(tr).attr('envases_nuevos') != undefined ){
+						var envases_nuevos = parseInt($(tr).attr('envases_nuevos'));
+						var precio_envase = parseFloat($(tr).attr('precio_envase'));
+
+					}else{
+						var envases_nuevos = 0;
+						var precio_envase = 0;
+					}
 
 					//var cantidad = $(tr).attr('cantidad');
 					//$(tr).attr('precio',precioactual);
-					$(tr).attr('envases_nuevos',cant_nuevo);
 
-					var trprecioacumulado = $(tr).find('.precioacumulado');
+					if(stockactual >= (cantidadactual + cant_nuevo)){
 
-					var acumulado = parseFloat( ( cantidadactual * precioactual ) + ( cant_nuevo * precio_envase) );
+						$(tr).attr('envases_nuevos',cant_nuevo);
 
-					$(trprecioacumulado).html( ( cantidadactual * precioactual ) + " + " + ( cant_nuevo * precio_envase) + " = " + (acumulado).toFixed(2));
-					var btneliminar = $(tr).find('.btnEliminar');
-					$(btneliminar).attr('precio',(acumulado).toFixed(2));
+						var trprecioacumulado = $(tr).find('.precioacumulado');
+
+						var acumulado = parseFloat( ( cantidadactual * precioactual ) + ( cant_nuevo * precio_envase) );
+
+						$(trprecioacumulado).html( ( cantidadactual * precioactual ) + " + " + ( cant_nuevo * precio_envase) + " = " + (acumulado).toFixed(2));
+						var btneliminar = $(tr).find('.btnEliminar');
+						$(btneliminar).attr('precio',(acumulado).toFixed(2));
 
 
-					calcularTotal();
-					$("#montoefectivo").val("");
-					$("#montovisa").val("");
-					$("#montomaster").val("");
-					$("#vuelto").val((0).toFixed(2));
-					//$('#btnGuardar').prop('disabled', false);
+						calcularTotal();
+						$("#montoefectivo").val("");
+						$("#montovisa").val("");
+						$("#montomaster").val("");
+						$("#vuelto").val((0).toFixed(2));
+						$('#divMensajeErrorVenta').html("");
+						//$('#btnGuardar').prop('disabled', false);
+
+					}else{
+						swal({
+							title: 'NO HAY STOCK SUFICIENTE',
+							type: 'error',
+						});
+						var tr = $(this).parent().parent();
+						var envases_nuevos = $(tr).attr('envases_nuevos');
+						$(this).val(envases_nuevos);
+					}
 		
 
 				}else{
@@ -1464,7 +1557,7 @@ function generarProductos(){
 	}).always(function(){
 
 		$.each(productos, function(i, item) {
-			tabla =  tabla +'<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="' + item.id  + '"  precio="' + item.precio_venta + '" descripcion="' + item.descripcion + '" editable="' + item.editable + '" recargable="' + item.recargable + '" stock="' + item.cantidad + '" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" ><label style="font-size: 9.5px; color: #2a3f54; padding-top: 13px;">' + item.descripcion + '</label><label style="font-size: 9.5px; color: #2a3f54;">STOCK: ' + item.cantidad + '</label></div>';
+			tabla =  tabla +'<div class="servicio_frecuente col-lg-3 col-md-3 col-sm-3" id="' + item.id  + '"  precio="' + item.precio_venta + '" precio_envase="' + item.precio_venta_envase + '" descripcion="' + item.descripcion + '" editable="' + item.editable + '" recargable="' + item.recargable + '" stock="' + item.cantidad + '" style="margin: 5px; width: 85px; height: 75px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" ><label style="font-size: 9.5px; color: #2a3f54; padding-top: 13px;">' + item.descripcion + '</label><label style="font-size: 9.5px; color: #2a3f54;">STOCK: ' + item.cantidad + '</label></div>';
 		});
 
 		$('#servicios_frecuentes').html(tabla);

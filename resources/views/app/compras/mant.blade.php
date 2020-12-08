@@ -22,10 +22,10 @@ $hoy = date("Y-m-d");
 		<div class="form-group" style="height: 12px; margin: 25px 0px;">
 			{!! Form::label('numerodocumento', 'Nro Doc:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 			<div class="col-lg-3 col-md-3 col-sm-3">
-				{!! Form::text('serie', null, array('class' => 'form-control input-sm', 'id' => 'serie', 'placeholder' => 'Serie')) !!} 
+				{!! Form::text('serie', null, array('class' => 'form-control input-sm', 'id' => 'serie', 'placeholder' => 'Serie', 'data-inputmask' => "'mask': '9999'")) !!} 
 			</div> 
 			<div class="col-lg-5 col-md-5 col-sm-5">
-				{!! Form::text('numerodocumento', null, array('class' => 'form-control input-sm', 'id' => 'numerodocumento', 'placeholder' => 'Número Documento')) !!}
+				{!! Form::text('numerodocumento', null, array('class' => 'form-control input-sm', 'id' => 'numerodocumento', 'placeholder' => 'Número Documento', 'data-inputmask' => "'mask': '9999999'")) !!}
 			</div>
 		</div>
 		<div id="opcEmpresa">
@@ -275,6 +275,9 @@ $(document).ready(function() {
 	configurarAnchoModal('1200');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
+	$("#serie").inputmask({"mask": "9999"});
+	$("#numerodocumento").inputmask({"mask": "9999999"});
+	
 	permisoRegistrar();
 
 	generarSaldoCaja();
@@ -465,6 +468,8 @@ function generarSaldoCaja(){
 		saldocaja = info;
 	}).always(function(){
 		$('#saldo_caja').val(saldocaja);
+		$("#nombreproducto").val("");
+		$("#tablaProducto").html("<tr><td align='center' colspan='8'>Digite más de 3 caracteres.</td></tr>");
 	});
 }
 

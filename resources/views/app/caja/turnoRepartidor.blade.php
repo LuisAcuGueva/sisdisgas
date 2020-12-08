@@ -62,6 +62,14 @@
 	@endif
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
+			{!! Form::label('saldo_caja', 'Saldo en caja:')!!}
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-4">
+			{!! Form::text('saldo_caja', number_format(0, 2, '.', ''), array('style' => 'background-color: #c3ffd6; margin-top:8px;', 'readOnly' ,'class' => 'form-control input-sm', 'id' => 'saldo_caja' )) !!}
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('total', 'Monto:')!!}<div class="" style="display: inline-block;color: red;">*</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
@@ -94,6 +102,8 @@ $(document).ready(function() {
 	//SUCURSAL
 	var sucursal = $('#sucursal_id').val();
 	$('#sucursal').val(sucursal);
+
+	generarSaldoCaja();
 
 	// a continuacion creamos la fecha en la variable date
 	var date = new Date()
@@ -128,6 +138,27 @@ $(document).ready(function() {
 	mueveReloj();
 
 }); 
+
+
+function generarSaldoCaja(){
+	var saldocaja = null;
+
+	var sucursal_id = $('#sucursal_id').val();
+
+	var serieajax = $.ajax({
+		"method": "POST",
+		"url": "{{ url('/caja/saldoCaja') }}",
+		"data": {
+			"sucursal_id" : sucursal_id, 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		saldocaja = info;
+	}).always(function(){
+		$('#saldo_caja').val(saldocaja);
+	});
+}
+	
 
 $(document).ready(function() {
 

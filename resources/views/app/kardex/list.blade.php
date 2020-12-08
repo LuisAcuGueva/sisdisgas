@@ -83,6 +83,10 @@
 				<td align="center"> - </td>
 			@endif
 
+			<td align="center">{{ $value->stock_anterior }}</td>
+
+			<td align="center">{{ $value->stock_actual }}</td>
+
 		</tr>
 		@endforeach
 		</tbody>

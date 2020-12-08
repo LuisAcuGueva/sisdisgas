@@ -219,7 +219,7 @@ class BaloncreditoController extends Controller
                 $detalle_pagos->save();
                 
             }else if($tipo_pago == "S"){
-                $sucursal_id = $request->input('sucursal_id');
+                $sucursal_id = $request->input('sucursal');
 
                 $num_caja = Movimiento::where('tipomovimiento_id', 1)
                                     ->where('sucursal_id', $sucursal_id)

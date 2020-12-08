@@ -103,7 +103,7 @@ class PedidosController extends Controller
         $cabecera[]       = array('valor' => 'NRO DOC', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'REPARTIDOR / SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'VALE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CRÉDITO', 'numero' => '1');
         //$cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
@@ -179,6 +179,8 @@ class PedidosController extends Controller
                     ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
                     ->where('estado',1)
                     ->get();  
+
+        
         return view($this->folderview.'.detalle')->with(compact('pedido', 'detallespago','detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
