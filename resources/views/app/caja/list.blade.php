@@ -211,7 +211,7 @@ $container = "'container'";
 				<td align="center"> - </td>
 			@endif
 		@elseif($value->estado == 0)
-			<td> {{ $value->comentario }} | Anulado por: {{ $value->comentario_anulado }} </td>
+			<td> {{ $value->comentario }} | ANULADO POR: {{ $value->comentario_anulado }} </td>
 		@endif
 
 		@if($concepto->tipo == 0)

@@ -188,6 +188,7 @@ class CompraspagarController extends Controller
             $movimientocaja->estado             = 1;
             $movimientocaja->persona_id         = $compra->persona->id;
             $user           = Auth::user();
+            $movimientocaja->comentario         = "PAGO DE COMPRA: ". $compra->tipodocumento->abreviatura."-". $compra->num_compra;
             $movimientocaja->usuario_id     = $user->id;
             $movimientocaja->save();
 

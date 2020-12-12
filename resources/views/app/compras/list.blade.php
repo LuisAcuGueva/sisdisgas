@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Menuoption;
 use App\OperacionMenu;
+use App\Detallepagos;
 ?>
 
 @if(count($lista) == 0)
@@ -24,11 +25,21 @@ use App\OperacionMenu;
 		$contador = $inicio + 1;
 		?>
 		@foreach ($lista as $key => $value)
+		<?php
+			$pagos = Detallepagos::where('pedido_id', $value->id)
+			->leftjoin('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')                       
+			->where('movimiento.estado', 1)
+			->get();
+		?>
 		@if($value->estado == 1)
 			<tr style ="background-color: #ffffff !important">
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
 			@if(date("Y-m-d",strtotime($value->fecha)) == $hoy )
-				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloEliminar.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
+				@if( count( $pagos) >= 2)
+					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloEliminar.'\', this);', 'disabled', 'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-remove')) !!}</td>
+				@else
+					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloEliminar.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
+				@endif
 			@else
 				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloEliminar.'\', this);', 'disabled', 'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-remove')) !!}</td>
 			@endif

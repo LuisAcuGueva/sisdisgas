@@ -203,7 +203,7 @@ class BaloncreditoController extends Controller
                 $movimiento->usuario_id           = $user->id;
                 $movimiento->sucursal_id          = $pedido->sucursal_id;
                 $movimiento->venta_id             = $pedido->id;
-                $movimiento->comentario             = "Pago de pedido a crédito: ". $pedido->tipodocumento->abreviatura."-". $pedido->num_venta;
+                $movimiento->comentario             = "PAGO DE PEDIDO A CRÉDITO: ". $pedido->tipodocumento->abreviatura."-". $pedido->num_venta;
                 $movimiento->save();
 
                 $detalle_turno_pedido =  new Detalleturnopedido();
@@ -240,7 +240,7 @@ class BaloncreditoController extends Controller
                 $movimientocaja->usuario_id           = $user->id;
                 $movimientocaja->sucursal_id          = $sucursal_id;
                 $movimientocaja->venta_id             = $pedido->id;
-                $movimientocaja->comentario             = "Pago de pedido a crédito: ". $pedido->tipodocumento->abreviatura."-". $pedido->num_venta;
+                $movimientocaja->comentario             = "PAGO DE PEDIDO A CRÉDITO: ". $pedido->tipodocumento->abreviatura."-". $pedido->num_venta;
                 $movimientocaja->save();
 
                 $detalle_pagos = new Detallepagos();

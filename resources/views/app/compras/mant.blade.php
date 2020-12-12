@@ -514,7 +514,7 @@ function addpurchasecart(elemento){
 	var product_id = $('#producto_id').val();
 	var stock = $('#stock').val();
 	var recargable = parseInt($('#recargable').val());
-	var envases_vacios = $('#envases_vacios').val();
+	var envases_vacios = parseInt($('#envases_vacios').val());
 
 	if( cantidad =="" && cantidad_envase =="" ){
 		swal({

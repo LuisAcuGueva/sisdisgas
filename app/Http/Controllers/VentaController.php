@@ -408,9 +408,10 @@ class VentaController extends Controller
                 $venta = Movimiento::find($venta_id);
 
                 $ultimokardex = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
-                                        //->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
+                                        ->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
                                         ->where('detalle_mov_almacen.producto_id', '=', $producto_id)
                                         ->where('kardex.sucursal_id', '=',$venta->sucursal_id)
+                                        ->where('movimiento.estado','=',1)
                                         ->orderBy('kardex.id', 'DESC')
                                         ->first();
 

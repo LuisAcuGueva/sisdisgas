@@ -55,6 +55,12 @@
 				@else
 					<td align="center"> - </td>
 				@endif
+			@elseif($value->pedido->tipomovimiento_id == 5)
+				@if($value->pedido->venta->tipodocumento->abreviatura != null && $value->pedido->venta->num_venta != null )
+					<td> {{  $value->pedido->venta->tipodocumento->abreviatura . '' . $value->pedido->venta->num_venta }} </td>
+				@else
+					<td align="center"> - </td>
+				@endif
 			@else
 				<td align="center"> - </td>
 			@endif
