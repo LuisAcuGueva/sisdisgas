@@ -325,6 +325,7 @@ class ComposerStaticInitaaa4cfa15868b42d594bae9e34032c97
         'CrearTablaConcepto' => __DIR__ . '/../..' . '/database/migrations/2018_10_24_184336_crear_tabla_concepto.php',
         'CrearTablaContribuyente' => __DIR__ . '/../..' . '/database/migrations/2020_02_28_113740_crear_tabla_contribuyente.php',
         'CrearTablaDepartamento' => __DIR__ . '/../..' . '/database/migrations/2017_03_22_142422_crear_tabla_departamento.php',
+        'CrearTablaDetallePrestamo' => __DIR__ . '/../..' . '/database/migrations/2020_12_21_205832_crear_tabla_detalle_prestamo.php',
         'CrearTablaDetalleTurnoPedido' => __DIR__ . '/../..' . '/database/migrations/2020_07_09_232818_crear_tabla_detalle_turno_pedido.php',
         'CrearTablaDetalleVenta' => __DIR__ . '/../..' . '/database/migrations/2018_05_23_182532_crear_tabla_detalle_venta.php',
         'CrearTablaDistrito' => __DIR__ . '/../..' . '/database/migrations/2017_03_22_142546_crear_tabla_distrito.php',

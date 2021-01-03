@@ -12,6 +12,7 @@ use App\Sucursal;
 use App\Movimiento;
 use App\Detalleturnopedido;
 use App\Detallemovalmacen;
+use App\Detalleprestamo;
 use App\Detallepagos;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
@@ -27,6 +28,8 @@ class PedidosController extends Controller
     protected $tituloAnulacion  = 'Anular pedido';
     protected $rutas           = array(
             'detalle' => 'pedidos.detalle', 
+            'prestar' => 'pedidos.prestar', 
+            'prestarbalon' => 'pedidos.prestarbalon', 
             'search'   => 'pedidos.buscar',
             'index'    => 'pedidos.index',
             'delete'   => 'pedidos.eliminar',
@@ -42,61 +45,18 @@ class PedidosController extends Controller
         $pagina           = $request->input('page');
         $filas            = $request->input('filas');
         $entidad          = 'Pedidos';
-        $sucursal_id         = Libreria::getParam($request->input('sucursal_id'));
-        $lista            = array();
-        
-        $ingresos_repartidor = 0.00;
-        $ingresos_credito = 0.00;
-        $vueltos_repartidor = 0.00;
-        $total_ingresos = 0.00;
-        $egresos_repartidor = 0.00;
-        $saldo_repartidor = 0.00;
+        $sucursal_id      = Libreria::getParam($request->input('sucursal_id'));
+        $cliente          = Libreria::getParam($request->input('cliente'));
+        $fechainicio      = Libreria::getParam($request->input('fechai'));
+        $fechafin         = Libreria::getParam($request->input('fechaf'));
+        $tipo             = Libreria::getParam($request->input('tipo'));
+        $tipodocumento    = Libreria::getParam($request->input('tipodocumento'));
+        $trabajador_id    = Libreria::getParam($request->input('trabajador_id'));
+        $tipovale         = Libreria::getParam($request->input('tipovale'));
 
-        //max apertura
-        $maxapertura = Movimiento::where('concepto_id', 1)
-                ->where('sucursal_id', "=", $sucursal_id)
-                ->where('estado', "=", 1)
-                ->max('num_caja');
-        //max cierre
-        $maxcierre = Movimiento::where('concepto_id', 2)
-                ->where('sucursal_id', "=", $sucursal_id)
-                ->where('estado', "=", 1)
-                ->max('num_caja');
+        $resultado        = Movimiento::listarpedidos($fechainicio, $fechafin, $sucursal_id, $cliente, $trabajador_id, $tipo, $tipodocumento, $tipovale);
+        $lista            = $resultado->get();
 
-        //cantidad de aperturas
-        $aperturas = Movimiento::where('concepto_id', 1)
-        ->where('sucursal_id', "=", $sucursal_id)
-        ->where('estado', "=", 1)
-        ->count();
-
-        //cantidad de cierres
-        $cierres = Movimiento::where('concepto_id', 2)
-            ->where('sucursal_id', "=", $sucursal_id)
-            ->where('estado', "=", 1)
-            ->count();
-
-        $aperturaycierre = null;
-
-        if($aperturas == $cierres){ // habilitar apertura de caja
-        $aperturaycierre = 0;
-        }else if($aperturas != $cierres){ //habilitar cierre de caja
-        $aperturaycierre = 1;
-        }
-
-        if (!is_null($maxapertura) && !is_null($maxcierre)) { // Ya existe una apertura y un cierre
-            if($aperturaycierre == 0){ //apertura y cierre iguales ---- mostrar desde apertura a cierre
-                $resultado = Movimiento::listarpedidos($sucursal_id, $aperturaycierre, $maxapertura, $maxcierre, 2);
-            }else if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura hasta ultimo movimiento
-                $resultado = Movimiento::listarpedidos($sucursal_id, $aperturaycierre, $maxapertura, $maxcierre, 2);
-            }
-            $lista            = $resultado->get();
-        }else if(!is_null($maxapertura) && is_null($maxcierre)) { //existe apertura pero no existe cierre
-            $resultado = Movimiento::listarpedidos($sucursal_id, $aperturaycierre, $maxapertura, $maxcierre, 2);
-            $lista            = $resultado->get();
-        }else{
-            $lista = null;
-        }
-        
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
         $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
@@ -137,7 +97,25 @@ class PedidosController extends Controller
         $title            = $this->tituloAdmin;
         $ruta             = $this->rutas;
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        return view($this->folderview.'.admin')->with(compact('entidad', 'cboSucursal','title', 'ruta'));
+        $cboTipo = array(
+            '' => 'SELECCIONE',
+            'S' => 'SUCURSAL',
+            'R' => 'REPARTIDOR',
+        );
+        $cboTipoDocumento = array(
+            '' => 'SELECCIONE',
+            '1' => 'BOLETA DE VENTA',
+            '2' => 'FACTURA DE VENTA',
+            '3' => 'TICKET DE VENTA',
+        );
+        
+        $cboTipoVale = array(
+            '' => 'SELECCIONE',
+            '1' => 'VALE FISE',
+            '2' => 'VALE SUBCAFAE',
+            '3' => 'VALE MONTO',
+        );
+        return view($this->folderview.'.admin')->with(compact('entidad', 'cboTipo', 'cboTipoDocumento', 'cboTipoVale','cboSucursal','title', 'ruta'));
     }
 
     /**
@@ -183,5 +161,39 @@ class PedidosController extends Controller
         
         return view($this->folderview.'.detalle')->with(compact('pedido', 'detallespago','detalles','formData', 'entidad', 'boton', 'listar'));
     }
-
 }
+
+/**
+ * Tabla pedido agregar campo balon_prestado y fecha hora prestamo
+ * 
+ * Crear detalle prestamo 
+ id
+ cantidad
+ fecha hora
+ detalle_mov_id
+ * 
+ * 
+ * listar todos los pedidos
+ * 
+ * rango de fechas ya
+ * sucursal ya 
+ * cliente ya 
+ * venta sucursal o repartidor ya
+ * tipo comprobante ya
+ * tipo de vale ya
+ * repartidor autocompletar
+ * 
+ * prestamos y devoluciones 
+ * 
+ * rango fecha
+ * cliente
+ * repartidor
+ * repartidor o venta sucursal
+ * sucursal
+ * 
+ * 
+ * agregar 
+ * repartidor autocompletar
+ * 
+ * 
+ */

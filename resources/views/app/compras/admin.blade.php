@@ -39,14 +39,14 @@ use App\Sucursal;
 					</div>
 					<div class="col-sm-12" style="margin-top:10px;">
 						<div class="form-group">
-							{!! Form::label('fechai', 'Fecha Inicio:') !!}
+							{!! Form::label('fechai', 'Desde:') !!}
 							{!! Form::date('fechai', $desde, array('class' => 'form-control input-sm', 'id' => 'fechai')) !!}
 						</div>
-						<div class="form-group">
-							{!! Form::label('fechaf', 'Fecha Fin:') !!}
+						<div class="form-group" style="margin-left:10px;">		
+							{!! Form::label('fechaf', 'Hasta:') !!}
 							{!! Form::date('fechaf', $hasta, array('class' => 'form-control input-sm', 'id' => 'fechaf')) !!}
 						</div>
-						<div class="form-group">
+						<div class="form-group" style="margin-left:10px;">		
 							{!! Form::label('filas', 'Filas a mostrar:')!!}
 							{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 						</div>

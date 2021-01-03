@@ -13,7 +13,7 @@
 <!-- Bootstrap -->
 {!! Html::script('js/bootstrap.min.js') !!}
 <!-- FastClick -->
-{!! Html::script('js/fastclick.js') !!}s
+{!! Html::script('js/fastclick.js') !!}
 
 <!-- bootbox code -->
 {!! Html::script('js/bootbox.min.js') !!}
@@ -26,6 +26,9 @@
 
 <!-- bootbox code -->
 {!! Html::script('dist/js/bootbox.min.js') !!}
+
+<!-- ECharts -->
+{!! Html::script('dist/echarts/echarts.min.js') !!}
 
 {!! Html::script('js/jquery.core.js') !!}
 

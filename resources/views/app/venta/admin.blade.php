@@ -244,7 +244,7 @@ operaciones
 						{!! Form::hidden('credito', 0 ,array('id'=>'credito')) !!}
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-4 m-b-15" style="text-align:right">
-						{!! Form::button('<i class="glyphicon glyphicon-floppy-disk"></i> Guardar', array( 'class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md btnGuardar', 'id' => 'btnGuardar' , 'style' => 'margin-top: 23px;' )) !!}
+						{!! Form::button('<i class="fa fa-check"></i> Guardar', array( 'class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md btnGuardar', 'id' => 'btnGuardar' , 'style' => 'margin-top: 23px;' )) !!}
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 						{!! Form::label('comentario', 'Comentario:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
@@ -542,7 +542,7 @@ $(document).ready(function(){
 					if (result.value) {
 						guardarventa();
 						setTimeout(function(){
-							cargarRutaMenu('pedidos', 'container', '15');
+							cargarRutaMenu('pedidos_actual', 'container', '15');
 						},1000);
 					}
 				});

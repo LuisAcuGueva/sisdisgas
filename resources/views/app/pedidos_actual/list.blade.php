@@ -1,3 +1,6 @@
+<?php
+use App\Detallemovalmacen;
+?>
 @if(count($lista) == 0)
 <h3 class="text-warning">No se encontraron resultados.</h3>
 @else
@@ -23,6 +26,29 @@
 		@endif
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
 
+			@php
+				$detalles = Detallemovalmacen::where('movimiento_id',$value->id)->get();
+				$balones = false;
+					foreach($detalles as $i => $det_mov){
+						if($det_mov->producto_id == 4 || $det_mov->producto_id == 5){
+							$balones = true;
+						}
+					}
+			@endphp
+
+			@if($value->estado == 1)
+				@if($balones)
+					@if($value->balon_prestado == 1)
+						<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["prestar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-dark glyphicon glyphicon-download-alt')) !!}</td>
+					@else
+						<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["prestar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-warning glyphicon glyphicon-download-alt')) !!}</td>
+					@endif
+				@else
+					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["prestar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'disabled' ,'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-download-alt')) !!}</td>
+				@endif
+			@elseif($value->estado == 0)
+				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["prestar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'disabled' ,'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-download-alt')) !!}</td>
+			@endif
 			<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->fecha )) }}</td>
 
 			<td> {{ $value->tipodocumento->abreviatura . $value->num_venta  }} </td>
@@ -81,7 +107,26 @@
 
 
 <script>
+	/*var vueltos_repartidor = {{$vueltos_repartidor}};
+	var ingresos_repartidor = {{$ingresos_repartidor}};
+	var ingresos_credito = {{$ingresos_credito}};
+	var total_ingresos = {{$total_ingresos}};
+	var egresos_repartidor = {{$egresos_repartidor}};
+	var saldo_repartidor = {{$saldo_repartidor}};
 	
+	$(document).ready(function () {
+
+		if($(".btnEliminar").attr('activo')=== 'no'){
+			$('.btnEliminar').attr("disabled", true);
+		}
+
+		$('#montovuelto').html(vueltos_repartidor.toFixed(2));
+		$('#ingresopedidos').html(ingresos_repartidor.toFixed(2));
+		$('#ingresos_credito').html(ingresos_credito.toFixed(2));
+		$('#egresos').html(egresos_repartidor.toFixed(2));
+		$('#saldo').html(saldo_repartidor.toFixed(2));
+		$('#total_ingresos').html(total_ingresos.toFixed(2));
+	});*/
 
 </script>
 

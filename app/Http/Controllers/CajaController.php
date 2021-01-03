@@ -2104,7 +2104,7 @@ class CajaController extends Controller
 
         $ingresos = Movimiento::leftjoin('concepto','movimiento.concepto_id','=','concepto.id')
                             ->where('concepto.tipo','=', 0)
-                            ->where('concepto.id','!=', 3)
+                            //->where('concepto.id','!=', 3)
                             ->where('concepto.id','!=', 1)
                             //->where('movimiento.estado','=', 1)
                             ->where('movimiento.sucursal_id', '=', $sucursal_id)
@@ -2144,13 +2144,13 @@ class CajaController extends Controller
                 }
                 $pdf::Cell(50,7,$nombrepersona_trabajador,1,0,'L');
 
-                if($row->concepto_id == 16){
+                if($row->venta_id != null){
                     $tipodoc = Tipodocumento::find($row->venta->tipodocumento_id);
-                    $pdf::Cell(10,7,$tipodoc->abreviatura,1,0,'C');
+                    $pdf::Cell(10,7, $tipodoc->abreviatura,1,0,'C');
                     $pdf::Cell(18,7, $row->venta->num_venta ,1,0,'C');
                 }else{
                     $tipodoc = Tipodocumento::find($row['tipodocumento_id']);
-                    $pdf::Cell(10,7,"",1,0,'C');
+                    $pdf::Cell(10,7,'',1,0,'C');
                     $pdf::Cell(18,7, $row['num_venta'] ,1,0,'C');
                 }
 
@@ -2163,7 +2163,11 @@ class CajaController extends Controller
                     $total = number_format($row['total'],2,'.','');
                     if($total == 0){$total='';}
                     $pdf::Cell(15,7,$total,1,0,'R');                    
-                    $pdf::Cell(45,7,$row->comentario,1,0,'L');     
+                    if($row->venta_id != null){
+                        $pdf::Cell(45,7,'',1,0,'L');     
+                    }else{
+                        $pdf::Cell(45,7,$row->comentario,1,0,'L');     
+                    }
                     $totalingresos += number_format($row['total'],2,'.','');
                     $subtotalingresos += number_format($row['total'],2,'.','');
                 } else {
@@ -2218,9 +2222,17 @@ class CajaController extends Controller
                     }
                 }
                 $pdf::Cell(50,7,"",1,0,'L');
-                $tipodoc = Tipodocumento::find($row['tipodocumento_id']);
-                $pdf::Cell(10,7,"",1,0,'C');
-                $pdf::Cell(18,7, $row['num_venta'] ,1,0,'C');
+
+                if($row->compra_id != null){
+                    $tipodoc = Tipodocumento::find($row->compra->tipodocumento_id);
+                    $pdf::Cell(10,7, $tipodoc->abreviatura,1,0,'C');
+                    $pdf::Cell(18,7, $row->compra->num_compra ,1,0,'C');
+                }else{
+                    $tipodoc = Tipodocumento::find($row['tipodocumento_id']);
+                    $pdf::Cell(10,7,'',1,0,'C');
+                    $pdf::Cell(18,7, $row['num_compra'] ,1,0,'C');
+                }
+                
                 $concepto = Concepto::find($row['concepto_id']);
                 $pdf::Cell(45,7,$concepto->concepto,1,0,'L');
                 //$trabajador = Persona::find($row['trabajador_id']);
@@ -2229,7 +2241,11 @@ class CajaController extends Controller
                     $pdf::Cell(15,7,number_format($row['total'],2,'.',''),1,0,'R');
                     $totalegresos += number_format($row['total'],2,'.','');
                     $pdf::Cell(15,7,"",1,0,'R');
-                    $pdf::Cell(45,7,$row->comentario,1,0,'L');   
+                    if($row->compra_id != null){
+                        $pdf::Cell(45,7,'',1,0,'L');     
+                    }else{
+                        $pdf::Cell(45,7,$row->comentario,1,0,'L');     
+                    }
                 }else{
                     $pdf::Cell(30,7,'ANULADO',1,0,'C');
                     $pdf::Cell(45,7, $row->comentario_anulado ,1,0,'L');     

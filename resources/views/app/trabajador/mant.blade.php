@@ -18,7 +18,7 @@
 	<div class="col-lg-5 col-md-5 col-sm-5">
 		{!! Form::text('dni', null, array('class' => 'form-control input-xs', 'id' => 'dni', 'placeholder' => 'Ingrese DNI')) !!}
 	</div>
-	{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-primary waves-effect waves-light btn-sm', 'id' => 'btnConsultaDNI')) !!}
+	{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-primary waves-effect waves-light btn-sm', 'style' => 'display: none;', 'id' => 'btnConsultaDNI')) !!}
 </div>
 <div class="form-group">
 	{!! Form::label('nombres', 'Nombre:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}

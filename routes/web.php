@@ -47,6 +47,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('profile/save','ProfileController@save')->name('profile.save');
     Route::resource('profile', 'ProfileController', array('except' => array('show')));
 
+    Route::post('inicio/save','InicioController@save')->name('inicio.save');
+    Route::resource('inicio', 'InicioController', array('except' => array('show')));
+
     Route::get('venta/clienteautocompletar/{searching}', 'VentaController@clienteautocompletar')->name('venta.clienteautocompletar');
     //Route::get('venta/servicioautocompletar/{searching}', 'VentaController@servicioautocompletar')->name('venta.servicioautocompletar');
     //Route::get('venta/productoautocompletar/{searching}', 'VentaController@productoautocompletar')->name('venta.productoautocompletar');
@@ -142,6 +145,20 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('pedidos/detalle/{id}/', 'PedidosController@detalle')->name('pedidos.detalle');
     Route::get('pedidos/eliminar/{id}/{listarluego}','PedidosController@eliminar')->name('pedidos.eliminar');
     Route::resource('pedidos', 'PedidosController', array('except' => array('show')));
+
+    Route::post('pedidos_actual/buscar','PedidosActualController@buscar')->name('pedidos_actual.buscar');
+    Route::get('pedidos_actual/detalle/{id}/', 'PedidosActualController@detalle')->name('pedidos_actual.detalle');
+    Route::get('pedidos_actual/prestar/{id}/', 'PedidosActualController@prestar')->name('pedidos_actual.prestar');
+    Route::post('pedidos_actual/prestarbalon/', 'PedidosActualController@prestarbalon')->name('pedidos_actual.prestarbalon');
+    Route::get('pedidos_actual/eliminar/{id}/{listarluego}','PedidosActualController@eliminar')->name('pedidos_actual.eliminar');
+    Route::resource('pedidos_actual', 'PedidosActualController', array('except' => array('show')));
+
+    Route::post('prestamoenvase/buscar','PrestamoController@buscar')->name('prestamoenvase.buscar');
+    Route::get('prestamoenvase/detalle/{id}/', 'PrestamoController@detalle')->name('prestamoenvase.detalle');
+    Route::get('prestamoenvase/prestar/{id}/', 'PrestamoController@prestar')->name('prestamoenvase.prestar');
+    Route::post('prestamoenvase/prestarbalon/', 'PrestamoController@prestarbalon')->name('prestamoenvase.prestarbalon');
+    Route::get('prestamoenvase/eliminar/{id}/{listarluego}','PrestamoController@eliminar')->name('prestamoenvase.eliminar');
+    Route::resource('prestamoenvase', 'PrestamoController', array('except' => array('show')));
 
     Route::get('turnoscompletados/pdfDetalleTurno', 'TurnoscompletadosController@pdfDetalleTurno')->name('turnoscompletados.pdfDetalleTurno');
     Route::post('turnoscompletados/buscar','TurnoscompletadosController@buscar')->name('turnoscompletados.buscar');

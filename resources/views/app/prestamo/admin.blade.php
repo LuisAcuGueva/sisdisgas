@@ -1,6 +1,6 @@
 <?php
 $hasta = date("Y-m-d");
-$desde = strtotime ( '-3 day' , strtotime ( $hasta ) ) ;
+$desde = strtotime ( '-14 day' , strtotime ( $hasta ) ) ;
 $desde = date( 'Y-m-d' , $desde );
 ?>
 <div class="row">
@@ -72,7 +72,27 @@ $desde = date( 'Y-m-d' , $desde );
 	$(document).ready(function () {
 		buscar('{{ $entidad }}');
 		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
-
+		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="cliente"]').keyup(function (e) {
+			var key = window.event ? e.keyCode : e.which;
+			if (key == '13') {
+				buscar('{{ $entidad }}');
+			}
+		});
+		
+		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="fechai"]').keyup(function (e) {
+			var key = window.event ? e.keyCode : e.which;
+			if (key == '13') {
+				buscar('{{ $entidad }}');
+			}
+		});
+		
+		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="fechaf"]').keyup(function (e) {
+			var key = window.event ? e.keyCode : e.which;
+			if (key == '13') {
+				buscar('{{ $entidad }}');
+			}
+		});
+		
 		$('.btnBorrar').on('click', function(){
 			$('#trabajador_id').val("");
 			$('#trabajador').val("");
@@ -111,24 +131,6 @@ $desde = date( 'Y-m-d' , $desde );
 			buscar('{{ $entidad }}');
 		});
 
-		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="cliente"]').keyup(function (e) {
-			var key = window.event ? e.keyCode : e.which;
-			if (key == '13') {
-				buscar('{{ $entidad }}');
-			}
-		});
-		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="fechai"]').keyup(function (e) {
-			var key = window.event ? e.keyCode : e.which;
-			if (key == '13') {
-				buscar('{{ $entidad }}');
-			}
-		});
-		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="fechaf"]').keyup(function (e) {
-			var key = window.event ? e.keyCode : e.which;
-			if (key == '13') {
-				buscar('{{ $entidad }}');
-			}
-		});
 		$("#tipob").change(function () {
 			buscar('{{ $entidad }}');
 		});
