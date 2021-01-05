@@ -789,7 +789,9 @@ class CajaController extends Controller
         $trabajadores_iniciados = array();
         foreach ($turnos_iniciados as $key => $value) {
             $trabajador = Person::find($value->trabajador_id);
-            array_push($trabajadores_iniciados, $trabajador);
+            if($trabajador->sucursal_id == $sucursal_id){
+                array_push($trabajadores_iniciados, $trabajador);
+            }
         }
 
         if(!empty($trabajadores_iniciados)){

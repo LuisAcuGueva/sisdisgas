@@ -7,7 +7,6 @@
 <!-- /footer content -->
     </div>
 </div>
-
 <!-- jQuery -->
 {!! Html::script('js/jquery.min.js') !!}
 <!-- Bootstrap -->
@@ -26,9 +25,6 @@
 
 <!-- bootbox code -->
 {!! Html::script('dist/js/bootbox.min.js') !!}
-
-<!-- ECharts -->
-{!! Html::script('dist/echarts/echarts.min.js') !!}
 
 {!! Html::script('js/jquery.core.js') !!}
 
@@ -63,6 +59,12 @@
 {{-- typeahead.js-bootstrap: para autocompletar --}}
 {!! HTML::script('plugins/x-editable/dist/inputs-ext/typeaheadjs/typeahead.bundle.min.js') !!}
 {!! HTML::script('plugins/x-editable/dist/inputs-ext/typeaheadjs/bloodhound.min.js') !!}
+
+<script>
+$(document).ready(function () {
+    cargarRutaMenu('inicio', 'container', '15');
+});
+</script>
 
 </body>
 </html>

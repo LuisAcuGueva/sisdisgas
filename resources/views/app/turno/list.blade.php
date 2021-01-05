@@ -122,27 +122,27 @@
         </tr>
         <tr>
             <th>INGRESOS DE PEDIDOS :</th>
-            <th class="text-right"><div id ="ingresopedidos"> {{ $ingresos_repartidor }} </div></th>
+            <th class="text-right"><div id ="ingresopedidos"> {{ number_format( $ingresos_repartidor ,2) }} </div></th>
         </tr>
 		<tr>
             <th>INGRESOS DE PEDIDOS A CRÉDITO:</th>
-            <th class="text-right"><div id ="ingresocredito"> {{ $ingresos_credito }} </div></th>
+            <th class="text-right"><div id ="ingresocredito"> {{ number_format( $ingresos_credito,2) }} </div></th>
         </tr>
 		<tr>
             <th>TOTAL INGRESOS:</th>
-            <th class="text-right"><div id ="total_ingresos"> {{ $total_ingresos }} </div></th>
+            <th class="text-right"><div id ="total_ingresos"> {{ number_format( $total_ingresos,2) }} </div></th>
         </tr>
         <tr>
             <th>GASTOS DEL REPARTIDOR:</th>
-            <th class="text-right"><div id ="gastos"> {{ $gastos_repartidor }} </div></th>
+            <th class="text-right"><div id ="gastos"> {{ number_format( $gastos_repartidor,2) }} </div></th>
         </tr>
         <tr>
             <th>EGRESOS A CAJA:</th>
-            <th class="text-right"><div id ="egresos"> {{ $egresos_repartidor }} </div></th>
+            <th class="text-right"><div id ="egresos"> {{ number_format( $egresos_repartidor,2) }} </div></th>
         </tr>
         <tr>
             <th>SALDO :</th>
-            <th class="text-right"><div id ="saldo"> {{ $saldo_repartidor }} </div></th>
+            <th class="text-right"><div id ="saldo"> {{ number_format( $saldo_repartidor,2) }} </div></th>
         </tr>
     </tbody>
 </table>

@@ -1,5 +1,4 @@
 @include('dashboard.header')
-
 <!-- page content -->
 <div class="right_col" role="main" ">
     <div class="content-page">

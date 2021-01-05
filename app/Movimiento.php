@@ -221,6 +221,29 @@ class Movimiento extends Model
         			->orderBy('num_caja','DESC')->orderBy('fecha', 'ASC');
 	}
 
+	//listar detalles
+	public function scopelistardetallespedidosactual($query, $sucursal_id, $aperturaycierre, $maxima_apertura, $maximo_cierre)
+    {
+		return $query->join('detalle_mov_almacen', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
+					->join('producto', 'detalle_mov_almacen.producto_id', '=', 'producto.id')
+					->where(function($subquery) use( $aperturaycierre, $maxima_apertura, $maximo_cierre)
+		            {
+						if (!is_null($maxima_apertura) && !is_null($maximo_cierre)) {
+							if($aperturaycierre == 0){ //apertura y cierre iguales ---- no mostrar nada
+								$subquery->Where('movimiento.id','>=', $maxima_apertura)->Where('movimiento.id','<=', $maximo_cierre);
+							}else if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura
+								$subquery->Where('movimiento.id','>=', $maxima_apertura);
+							}
+						}else if(!is_null($maxima_apertura) && is_null($maximo_cierre)) {
+							$subquery->Where('movimiento.id','>=', $maxima_apertura);
+						}
+					})
+					->where('movimiento.sucursal_id', "=", $sucursal_id)
+					->where('movimiento.tipomovimiento_id', "=" , 2)
+					->orderBy('producto.descripcion','ASC')
+					->groupBy('detalle_mov_almacen.producto_id');
+	}
+
 	public function trabajador(){
 		return $this->belongsTo('App\Person', 'trabajador_id');
 	}
