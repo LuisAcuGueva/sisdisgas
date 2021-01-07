@@ -51,6 +51,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('inicio/buscarproductosvendidos','InicioController@buscarproductosvendidos')->name('inicio.buscarproductosvendidos');
     Route::post('inicio/buscarinventario','InicioController@buscarinventario')->name('inicio.buscarinventario');
     Route::post('inicio/buscarturnos','InicioController@buscarturnos')->name('inicio.buscarturnos');
+    Route::post('inicio/buscarcredito','InicioController@buscarcredito')->name('inicio.buscarcredito');
     Route::post('inicio/save','InicioController@save')->name('inicio.save');
     Route::resource('inicio', 'InicioController', array('except' => array('show')));
 

@@ -33,6 +33,7 @@ class InicioController extends Controller
             'search_turnos'  => 'inicio.buscarturnos',
             'search_vendidos'  => 'inicio.buscarproductosvendidos',
             'search_caja'  => 'inicio.buscarcaja',
+            'search_credito'  => 'inicio.buscarcredito',
             'update'  => 'inicio.update',
         );
 
@@ -814,6 +815,41 @@ class InicioController extends Controller
         return view($this->folderview.'.list_turno')->with(compact('lista', 'entidad'));
     }
 
+    public function buscarcredito(Request $request)
+    {
+        $pagina           = $request->input('page');
+        $filas            = $request->input('filas');
+        $entidad          = 'Credito';
+        $sucursal_id      = Libreria::getParam($request->input('sucursal_id_credito'));
+        $resultado        = Movimiento::iniciocredito( $sucursal_id);
+        $lista            = $resultado->get();
+        $cabecera         = array();
+        $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DEBE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'PAGÓ', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'DETALLE DE PAGOS', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'PAGAR', 'numero' => '1');
+        
+        $ruta             = $this->rutas;
+        if (count($lista) > 0) {
+            $clsLibreria     = new Libreria();
+            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
+            $paginacion      = $paramPaginacion['cadenapaginacion'];
+            $inicio          = $paramPaginacion['inicio'];
+            $fin             = $paramPaginacion['fin'];
+            $paginaactual    = $paramPaginacion['nuevapagina'];
+            $lista           = $resultado->paginate($filas);
+            $request->replace(array('page' => $paginaactual));
+            return view($this->folderview.'.list_credito')->with(compact('lista', 'tituloPagos', 'tituloPagar', 'tituloDetalle','paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'ruta'));
+        }
+        return view($this->folderview.'.list_credito')->with(compact('lista', 'entidad'));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -823,6 +859,7 @@ class InicioController extends Controller
     {
         $entidad_inventario       = 'Inventario';
         $entidad_caja             = 'Caja';
+        $entidad_credito          = 'Credito';
         $entidad_productos        = 'Productos';
         $entidad_turnos           = 'Turno';
         $entidad                  = 'Inicio';
@@ -842,7 +879,7 @@ class InicioController extends Controller
         }
         $formData                 = array('profile.update', $user->id);
         $formData                 = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal' , 'id' => 'formMantenimientoPassword', 'autocomplete' => 'off');
-        return view($this->folderview.'.admin')->with(compact('entidad', 'entidad_turnos','turnos_iniciados','entidad_caja', 'entidad_productos' , 'entidad_inventario','cboSucursal','formData', 'user','listar', 'person', 'title', 'titulo_registrar', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'entidad_credito','entidad_turnos','turnos_iniciados','entidad_caja', 'entidad_productos' , 'entidad_inventario','cboSucursal','formData', 'user','listar', 'person', 'title', 'titulo_registrar', 'ruta'));
     }
 
     /**

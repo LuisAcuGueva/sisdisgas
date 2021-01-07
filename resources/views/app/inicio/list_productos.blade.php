@@ -5,7 +5,6 @@ use App\Movimiento;
 @if(count($lista) == 0)
 <h3 class="text-warning">No se encontraron resultados.</h3>
 @else
-{!! $paginacion or '' !!}
 <div class="table-responsive">
 <table id="example1" class="table table-bordered table-hover" style="font-size: 13px;">
 	<thead>

@@ -244,6 +244,14 @@ class Movimiento extends Model
 					->groupBy('detalle_mov_almacen.producto_id');
 	}
 
+	public function scopeiniciocredito($query, $sucursal_id )
+    {
+		return $query->where('sucursal_id', "=", $sucursal_id)
+					->where('balon_a_cuenta', "=", 1)
+					->where('tipomovimiento_id', "=", 2)
+        			->orderBy('num_caja','DESC')->orderBy('fecha', 'ASC');
+	}
+
 	public function trabajador(){
 		return $this->belongsTo('App\Person', 'trabajador_id');
 	}
