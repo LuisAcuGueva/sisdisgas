@@ -51,7 +51,7 @@
 					
 					<div class="form-group" style="display:none;">
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
-						{!! Form::selectRange('filas', 1, 30, 15, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad_credito.'\')')) !!}
+						{!! Form::selectRange('filas', 1, 30, 1, array('class' => 'form-control input-xs', 'onchange' => 'buscar(\''.$entidad_credito.'\')')) !!}
 					</div>
 
 					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-md', 'id' => 'btnBuscar', 'style' => 'margin-top: 5px; display:none;', 'onclick' => 'buscar(\''.$entidad_credito.'\')')) !!}

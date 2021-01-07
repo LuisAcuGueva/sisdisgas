@@ -843,7 +843,7 @@ class InicioController extends Controller
             $inicio          = $paramPaginacion['inicio'];
             $fin             = $paramPaginacion['fin'];
             $paginaactual    = $paramPaginacion['nuevapagina'];
-            $lista           = $resultado->paginate($filas);
+            //$lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
             return view($this->folderview.'.list_credito')->with(compact('lista', 'tituloPagos', 'tituloPagar', 'tituloDetalle','paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'ruta'));
         }
