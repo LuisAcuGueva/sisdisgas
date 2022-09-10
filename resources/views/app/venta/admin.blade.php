@@ -161,7 +161,7 @@ operaciones
 						<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 20px;">
 							{!! Form::button('<i class="glyphicon glyphicon-plus"></i>', array( 'id' => 'btnclientenuevo' , 'class' => 'btn btn-success waves-effect waves-light btn-sm btnCliente', 'onclick' => 'modal (\''.URL::route($ruta["cliente"], array('listar'=>'SI')).'\', \''.$titulo_cliente.'\', this);', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'NUEVO')) !!}
 						</div>
-						<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 10px; display:none;">
+						<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 10px;">
 							{!! Form::button('<i class="glyphicon glyphicon-user"></i>', array('id' => 'btnclientevarios' , 'class' => 'btn btn-primary waves-effect waves-light btn-sm btnDefecto', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'VARIOS')) !!}
 						</div>
 						<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 10px;">
@@ -339,6 +339,17 @@ $(document).ready(function(){
 
 	mostrarultimo();
 
+	/* //CLIENTE ANÓNIMO
+	$('#cliente_id').val({{ $anonimo->id }});
+	$('#cliente').val('VARIOS');
+	$("#cliente").prop('disabled',true); */
+
+	$('.btnDefecto').on('click', function(){
+		$('#cliente_id').val({{ $anonimo->id }});
+		$('#cliente').val('VARIOS');
+		$("#cliente").prop('disabled',true);
+	});
+
 	$('.btnBorrar').on('click', function(){
 		$('#cliente_id').val("");
 		$('#cliente').val("");
@@ -421,7 +432,7 @@ $(document).ready(function(){
 
 			if(montoefectivo - vuelto  + montovisa + montomaster != total){
 				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-				cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
+				cadenaError += '<li>El monto EFECTIVO debe ser igual o mayor al TOTAL.</li></ul></div>';
 				$('#divMensajeErrorVenta').html(cadenaError);
 				$('#btnGuardar').prop('disabled', true);
 			}else{
@@ -1191,7 +1202,7 @@ function agregarProducto(){
 			
 			if(montoefectivo - vuelto  + montovisa + montomaster != total){
 				var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-				cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
+				cadenaError += '<li>El monto EFECTIVO debe ser igual o mayor al TOTAL.</li></ul></div>';
 				$('#divMensajeErrorVenta').html(cadenaError);
 				$('#btnGuardar').prop('disabled', true);
 			}else{
@@ -1896,7 +1907,7 @@ function eliminarDetalle(comp){
 
 		if(montoefectivo - vuelto  + montovisa + montomaster != total){
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
-			cadenaError += '<li>La SUMA de los montos EFECTIVO, VISA y MASTERCARD debe ser igual o mayor al TOTAL.</li></ul></div>';
+			cadenaError += '<li>El monto EFECTIVO debe ser igual o mayor al TOTAL.</li></ul></div>';
 			$('#divMensajeErrorVenta').html(cadenaError);
 			$('#btnGuardar').prop('disabled', true);
 		}else{

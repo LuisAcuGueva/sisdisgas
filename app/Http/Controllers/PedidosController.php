@@ -23,17 +23,17 @@ class PedidosController extends Controller
 {
 
     protected $folderview      = 'app.pedidos';
-    protected $tituloAdmin     = 'Pedidos';
+    protected $tituloAdmin     = 'Buscar pedidos';
     protected $tituloDetalle  = 'Detalle de pedido';
     protected $tituloAnulacion  = 'Anular pedido';
     protected $rutas           = array(
-            'detalle' => 'pedidos.detalle', 
-            'prestar' => 'pedidos.prestar', 
-            'prestarbalon' => 'pedidos.prestarbalon', 
-            'search'   => 'pedidos.buscar',
-            'index'    => 'pedidos.index',
-            'delete'   => 'pedidos.eliminar',
-        );
+        'detalle' => 'pedidos.detalle',
+        'prestar' => 'pedidos.prestar',
+        'prestarbalon' => 'pedidos.prestarbalon',
+        'search'   => 'pedidos.buscar',
+        'index'    => 'pedidos.index',
+        'delete'   => 'pedidos.eliminar',
+    );
 
     public function __construct()
     {
@@ -81,9 +81,9 @@ class PedidosController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloAnulacion', 'tituloDetalle', 'ruta'));
+            return view($this->folderview . '.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor', 'saldo_repartidor', 'fin', 'entidad', 'cabecera', 'tituloAnulacion', 'tituloDetalle', 'ruta'));
         }
-        return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
+        return view($this->folderview . '.list')->with(compact('lista', 'entidad'));
     }
 
     /**
@@ -108,14 +108,14 @@ class PedidosController extends Controller
             '2' => 'FACTURA DE VENTA',
             '3' => 'TICKET DE VENTA',
         );
-        
+
         $cboTipoVale = array(
             '' => 'SELECCIONE',
             '1' => 'VALE FISE',
             '2' => 'VALE SUBCAFAE',
             '3' => 'VALE MONTO',
         );
-        return view($this->folderview.'.admin')->with(compact('entidad', 'cboTipo', 'cboTipoDocumento', 'cboTipoVale','cboSucursal','title', 'ruta'));
+        return view($this->folderview . '.admin')->with(compact('entidad', 'cboTipo', 'cboTipoDocumento', 'cboTipoVale', 'cboSucursal', 'title', 'ruta'));
     }
 
     /**
@@ -143,23 +143,23 @@ class PedidosController extends Controller
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $pedido = Movimiento::find($id);
-        if($pedido->tipomovimiento_id == 5){
+        if ($pedido->tipomovimiento_id == 5) {
             $pedido = Movimiento::find($pedido->venta_id);
-            $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
-        }else{
-            $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
+            $detalles = Detallemovalmacen::where('movimiento_id', $pedido->id)->get();
+        } else {
+            $detalles = Detallemovalmacen::where('movimiento_id', $pedido->id)->get();
         }
         $entidad  = 'Pedidos';
         $formData = array('turno.store', $id);
-        $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento' . $entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
         $detallespago = Detallepagos::where('pedido_id', '=', $id)
-                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
-                    ->where('estado',1)
-                    ->get();  
+            ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+            ->where('estado', 1)
+            ->get();
 
-        
-        return view($this->folderview.'.detalle')->with(compact('pedido', 'detallespago','detalles','formData', 'entidad', 'boton', 'listar'));
+
+        return view($this->folderview . '.detalle')->with(compact('pedido', 'detallespago', 'detalles', 'formData', 'entidad', 'boton', 'listar'));
     }
 }
 
