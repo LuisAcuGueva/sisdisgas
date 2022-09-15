@@ -72,7 +72,11 @@
 				@else
 				<td>{{ $value->pedido->persona->razon_social  }}</td>
 				@endif
+				@if($value->pedido->persona->id == 1)
+				<td>{{ $value->pedido->comentario  }}</td>
+				@else
 				<td>{{ $value->pedido->persona->direccion  }}</td>
+				@endif
 			@else
 				<td align="center"> - </td>
 				<td align="center"> - </td>

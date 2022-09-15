@@ -37,7 +37,11 @@
 				<td align="center"> - </td>
 			@endif
 
+			@if($value->persona->id == 1)
+			<td>{{ $value->comentario  }}</td>
+			@else
 			<td> {{  $value->persona->direccion }} </td>
+			@endif
 
 			@if($value->pedido_sucursal == 1)
 				<td style ="background-color: #fdf8c1b0 !important">SUCURSAL: {{  $value->sucursal->nombre }} </td>

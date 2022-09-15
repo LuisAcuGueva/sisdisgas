@@ -7,7 +7,6 @@
 		{!! Form::text('ruc', null, array('class' => 'form-control input-xs', 'id' => 'ruc', 'placeholder' => 'Ingrese RUC')) !!}
 		{!! Form::hidden('cantc', null, array('id' => 'cantc')) !!}
 	</div>
-	{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-primary waves-effect waves-light btn-sm', 'id' => 'btnConsultaDNI')) !!}
 </div>
 
 <div class="form-group">

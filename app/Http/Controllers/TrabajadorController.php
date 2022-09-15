@@ -278,7 +278,7 @@ class TrabajadorController extends Controller
     {
         $entidad    = 'Trabajador';
         $resultado = Person::where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
-        ->where('tipo_persona','T')
+        ->where('tipo_persona','A')
         ->whereNull('person.deleted_at')
         ->orderBy('apellido_pat', 'ASC')
         ->orderBy('apellido_mat', 'ASC')

@@ -205,7 +205,7 @@ $(document).ready(function() {
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
 			cadenaError += '<li>El monto a ingresar debe ser mayor a 0.</li></ul></div>';
 			$('#divMensajeErrorCaja').html(cadenaError);
-		}else if( total >= caja_efectivo){
+		}else if( total > caja_efectivo){
 			$('#btnGuardar').prop('disabled', true);
 			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
 			cadenaError += '<li>El monto a ingresar debe ser menor al monto actual en caja.</li></ul></div>';
