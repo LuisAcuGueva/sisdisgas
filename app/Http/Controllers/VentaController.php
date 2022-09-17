@@ -585,7 +585,6 @@ class VentaController extends Controller
             $reglas = array(
                 'apellido_pat'    => 'required|max:100',
                 'direccion'    => 'required|max:400',
-                'celular'       => 'numeric|digits:9',
                 );
         }
         $validacion = Validator::make($request->all(),$reglas);
