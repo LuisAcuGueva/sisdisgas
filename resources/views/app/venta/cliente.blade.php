@@ -128,43 +128,6 @@ if(!is_null($cliente)){
 
 		});
 
-		$('#btnConsultaDNI').on('click', function(){
-			var cantc = $("#dni").val();
-			if(cantc.length == 8){
-				var dni = $('#dni').val();
-				var url = 'reniec/consulta_reniec.php';
-				$.ajax({
-					type:'POST',
-					url:url,
-					data:'dni='+dni,
-					beforeSend(){
-						alert("Consultando DNI...");
-			        },
-					success: function(datos_dni){
-						var datos = eval(datos_dni);
-						//$('#mostrar_dni').text(datos[0]);
-						$('#nombres').val(datos[1]);
-						$('#apellido_pat').val(datos[2]);
-						$('#apellido_mat').val(datos[3]);
-					}
-				});
-				return false;
-			}else if(cantc.length == 11){
-				var ruc = $("#dni").val();
-			    $.ajax({
-			        type: 'GET',
-			        url: "SunatPHP/demo.php",
-			        data: "ruc="+ruc,
-			        beforeSend(){
-						alert("Consultando RUC...");
-			        },
-			        success: function (data, textStatus, jqXHR) {
-			            $("#razon_social").val(data.RazonSocial);
-			        }
-			    });
-			}
-		});
-
 }); 
 
 
@@ -184,7 +147,7 @@ function mostrarultimo(){
 		}else{
 			if( $("#ultimo_cliente").val() != cliente.id){
 				if(cliente.dni != null){
-					$('#cliente').val(cliente.apellido_pat + " " + cliente.apellido_mat + " " + cliente.nombres);
+					$('#cliente').val(cliente.nombres + " " + cliente.apellido_pat + " " + cliente.apellido_mat );
 				}else{
 					$('#cliente').val(cliente.razon_social);
 				}
