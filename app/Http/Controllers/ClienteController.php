@@ -319,10 +319,10 @@ class ClienteController extends Controller
 
         foreach ($list as $key => $value) {
             $mostrar = null;
-            if($value->dni != null){
-                $mostrar = $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat;
-            }else{
+            if($value->razon_social != ""){
                 $mostrar = $value->razon_social;
+            }else{
+                $mostrar = $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat;
             }
             $data[] = array(
                             'id'    => $value->id,

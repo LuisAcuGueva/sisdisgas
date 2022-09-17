@@ -146,7 +146,7 @@ function mostrarultimo(){
 			$("#ultimo_cliente").val(cliente.id);
 		}else{
 			if( $("#ultimo_cliente").val() != cliente.id){
-				if(cliente.razon_social != null){
+				if(cliente.razon_social != ""){
 					$('#cliente').val(cliente.razon_social);
 				}else{
 					$('#cliente').val(cliente.nombres + " " + cliente.apellido_pat + " " + cliente.apellido_mat );
