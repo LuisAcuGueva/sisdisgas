@@ -600,12 +600,12 @@ class VentaController extends Controller
                 $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
                 $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
                 $cliente->ruc           = null;
-                $cliente->razon_social  = null;
+                $cliente->razon_social  = strtoupper($request->input('razon_social'));
             }else{
                 $cliente->dni           = null;
-                $cliente->nombres       = null;
-                $cliente->apellido_pat  = null;
-                $cliente->apellido_mat  = null;
+                $cliente->nombres       = strtoupper($request->input('nombres'));
+                $cliente->apellido_pat  = strtoupper($request->input('apellido_pat'));
+                $cliente->apellido_mat  = strtoupper($request->input('apellido_mat'));
                 $cliente->ruc           = $request->input('dni');
                 $cliente->razon_social  = strtoupper($request->input('razon_social'));
             }
