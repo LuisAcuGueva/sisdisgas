@@ -146,10 +146,10 @@ function mostrarultimo(){
 			$("#ultimo_cliente").val(cliente.id);
 		}else{
 			if( $("#ultimo_cliente").val() != cliente.id){
-				if(cliente.dni != null){
-					$('#cliente').val(cliente.nombres + " " + cliente.apellido_pat + " " + cliente.apellido_mat );
-				}else{
+				if(cliente.razon_social != null){
 					$('#cliente').val(cliente.razon_social);
+				}else{
+					$('#cliente').val(cliente.nombres + " " + cliente.apellido_pat + " " + cliente.apellido_mat );
 				}
 				$('#cliente_id').val(cliente.id);
 				$('#cliente_direccion').val(cliente.direccion);
