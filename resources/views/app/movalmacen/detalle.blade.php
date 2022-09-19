@@ -2,7 +2,7 @@
 {!! Form::model($compra, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 	<div class="col-lg-12 col-md-12 col-sm-12">
-		<div class="col-lg-4 col-md-4 col-sm-4" id="divDatosDocumento1">
+		<div class="col-lg-4 col-md-4 col-sm-4">
 			<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
 				<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS DEL DOCUMENTO</h4>
 			</div>
