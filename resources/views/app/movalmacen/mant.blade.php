@@ -689,7 +689,7 @@ function guardarCompra(entidad, idboton) {
 			showCancelButton: true,
 			confirmButtonColor: '#54b359',
 			cancelButtonColor: '#d33',
-			confirmButtonText: 'Guardar Compra'
+			confirmButtonText: 'Guardar movimiento de almacen'
 		}).then((result) => {
 			if (result.value) {
 				guardar("{{$entidad}}");
