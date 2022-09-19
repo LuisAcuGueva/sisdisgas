@@ -86,7 +86,7 @@ function generarMenu($idtipousuario)
                 if (strtoupper($aux[$i]['nombre']) === 'SEPARADOR') {
                     //$cadenaMenu .= '<li class="divider"></li>';
                 }else{
-                    $cadenaMenu .= '<li id="'.$aux[$i]['id'].'"><a href="#" onclick="cargarRutaMenu(\''.URL::to($aux[$i]['link']).'\', \'container\', \''.$aux[$i]['id'].'\');"> '.$aux[$i]['nombre'].'</a></li>';
+                    $cadenaMenu .= '<li id="'.$aux[$i]['id'].'"><a href="#" onclick="cargarRutaMenu(\''.URL::to($aux[$i]['link']).'\', \'container\', \''.$aux[$i]['id'].'\');esconderSubMenu(this);"> '.$aux[$i]['nombre'].'</a></li>';
                 }
             }
             if (count($aux) > 0 && $hijos != '' ) {
@@ -160,3 +160,10 @@ function buscarHijos($categoriaopcionmenu_id, $tipousuario_id)
     return $cadenaMenu;
 }
 ?>
+<script>
+    function esconderSubMenu(option){
+        $(option).parent().parent().css('display','none');
+        $(option).parent().parent().parent().removeClass("active");
+
+    }
+</script>
