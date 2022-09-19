@@ -529,8 +529,13 @@ $(document).ready(function(){
 			}
 
 			mensaje +="</p><p><label>Cliente:  </label>  "+ $('#cliente').val()
-					+"</p><p><label>Dirección:  </label>  "+ $('#cliente_direccion').val()
-					+"</p><p><label>Total:  </label>  S/."+  total.toFixed(2);
+					+"</p><p><label>Dirección:  </label>  "+ $('#cliente_direccion').val();
+
+			if($('#comentario').val() != ""){
+				mensaje += "</p><p><label>Comentario:  </label>  "+ $('#comentario').val();
+			}
+
+			mensaje +="</p><p><label>Total:  </label>  S/."+  total.toFixed(2);
 
 			
 			if( $("#balon_a_cuenta").prop('checked') ){
