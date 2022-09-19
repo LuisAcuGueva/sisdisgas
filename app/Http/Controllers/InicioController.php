@@ -711,108 +711,17 @@ class InicioController extends Controller
 
     public function buscarturnos(Request $request)
     {
-        $pagina           = $request->input('page');
-        $filas            = $request->input('filas');
-        $entidad          = 'Turnorepartidor';
-        $turno_id         = Libreria::getParam($request->input('turno_id'));
-        $lista            = array();
-        $ingresos_repartidor = 0.00;
-        $ingresos_credito = 0.00;
-        $vueltos_repartidor = 0.00;
-        $total_ingresos = 0.00;
-        $egresos_repartidor = 0.00;
-        $gastos_repartidor = 0.00;
-        $saldo_repartidor = 0.00;
-        if($turno_id != null){
-            $resultado        = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                ->orderby('fecha', 'DESC');
-            $lista            = $resultado->get();
+        $trabajador = Person::find($request->input('trabajador_id'));
+        $cboSucursal = Sucursal::pluck('nombre', 'id')->all();
+        return view($this->folderview.'.list_turno')->with(compact('trabajador', 'cboSucursal'));
+    }
 
-            $ingresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                                        ->where('estado',1)
-                                                        ->where(function($subquery)
-                                                            {
-                                                                $subquery->where('concepto.id','=', 3);
-                                                            })
-                                                        ->sum('total');
-                                                    
-            $ingresos_credito = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                                        ->where('estado',1)
-                                                        ->where(function($subquery)
-                                                            {
-                                                                $subquery->where('concepto.id','=', 16);
-                                                            })
-                                                        ->sum('total');
-
-            $vueltos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                                        ->where('estado',1)
-                                                        ->where(function($subquery)
-                                                            {
-                                                                $subquery->where('concepto.id','=', 12)->orwhere('concepto.id','=', 15);
-                                                            })
-                                                        ->sum('total');
-
-            $egresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                                        ->where('estado',1)
-                                                        ->where(function($subquery)
-                                                            {
-                                                                $subquery->where('concepto.id','=', 13)->orwhere('concepto.id','=', 14);
-                                                            })
-                                                        ->sum('total');
-
-            $gastos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_id)
-                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-                                                        ->where('estado',1)
-                                                        ->where('tipomovimiento_id',6)
-                                                        ->sum('total');
-
-            round($ingresos_repartidor,2);
-            round($ingresos_credito,2);
-            round($vueltos_repartidor,2);
-            round($egresos_repartidor,2);
-            round($gastos_repartidor,2);
-
-            $total_ingresos = $ingresos_repartidor + $vueltos_repartidor + $ingresos_credito;
-
-            $saldo_repartidor = $ingresos_repartidor + $ingresos_credito + $vueltos_repartidor - $egresos_repartidor - $gastos_repartidor;
-
-            round($saldo_repartidor,2);
-
-        }
-        $cabecera         = array();
-        $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'ANUL', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'NRO DOC', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'VALE', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
-
-        $ruta             = $this->rutas;
-        if (count($lista) > 0) {
-            $clsLibreria     = new Libreria();
-            $paramPaginacion = $clsLibreria->generarPaginacion($lista, $pagina, $filas, $entidad);
-            $paginacion      = $paramPaginacion['cadenapaginacion'];
-            $inicio          = $paramPaginacion['inicio'];
-            $fin             = $paramPaginacion['fin'];
-            $paginaactual    = $paramPaginacion['nuevapagina'];
-            $lista           = $resultado->paginate($filas);
-            $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list_turno')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'gastos_repartidor','total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloAnulacion', 'tituloDetalle', 'ruta'));
-        }
-        return view($this->folderview.'.list_turno')->with(compact('lista', 'entidad'));
+    public function guardarSucursalRepartidor(Request $request)
+    {
+        $trabajador = Person::find($request->input('trabajador_id'));
+        $trabajador->sucursal_id = $request->input('repartidor_sucursal_id');
+        $trabajador->save();
+        return $request->input('repartidor_sucursal_id');
     }
 
     public function buscarcredito(Request $request)
@@ -877,9 +786,10 @@ class InicioController extends Controller
             $trabajador = Person::find($value->trabajador_id);
             array_push($empleados, $trabajador);
         }
+        $empleados = Person::where('tipo_persona','T')->get();
         $formData                 = array('profile.update', $user->id);
         $formData                 = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal' , 'id' => 'formMantenimientoPassword', 'autocomplete' => 'off');
-        return view($this->folderview.'.admin')->with(compact('entidad', 'entidad_credito','entidad_turnos','turnos_iniciados','entidad_caja', 'entidad_productos' , 'entidad_inventario','cboSucursal','formData', 'user','listar', 'person', 'title', 'titulo_registrar', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'entidad_credito', 'empleados', 'entidad_turnos', 'turnos_iniciados','entidad_caja', 'entidad_productos' , 'entidad_inventario','cboSucursal','formData', 'user','listar', 'person', 'title', 'titulo_registrar', 'ruta'));
     }
 
     /**

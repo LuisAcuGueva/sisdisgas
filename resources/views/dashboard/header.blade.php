@@ -31,6 +31,6 @@
         {{-- typeahead.js-bootstrap: para autocompletar --}}
         {!! HTML::style('plugins/x-editable/dist/inputs-ext/typeaheadjs/lib/typeahead.js-bootstrap.css', array('media' => 'screen')) !!}
     </head>
-<body class="nav-md footer_fixed" style="position: relative;">
+<body class="nav-sm footer_fixed" style="position: relative;">
 
 @include('dashboard.left_sidebar')

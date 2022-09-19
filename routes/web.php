@@ -47,6 +47,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('profile/save','ProfileController@save')->name('profile.save');
     Route::resource('profile', 'ProfileController', array('except' => array('show')));
 
+    Route::post('inicio/guardarSucursalRepartidor','InicioController@guardarSucursalRepartidor')->name('inicio.guardarSucursalRepartidor');
     Route::post('inicio/buscarcaja','InicioController@buscarcaja')->name('inicio.buscarcaja');
     Route::post('inicio/buscarproductosvendidos','InicioController@buscarproductosvendidos')->name('inicio.buscarproductosvendidos');
     Route::post('inicio/buscarinventario','InicioController@buscarinventario')->name('inicio.buscarinventario');
