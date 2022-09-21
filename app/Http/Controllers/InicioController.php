@@ -779,14 +779,25 @@ class InicioController extends Controller
         $person                   = Person::where('id','=',$user->person_id)->first();
         $cboSucursal              = Sucursal::pluck('nombre', 'id')->all();
         $listar                   = Libreria::getParam($request->input('listar'), 'SI');
-        $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
-        // TRABAJADORES EN TURNO
-        $empleados = array();
+        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
+                                            ->where('turno_repartidor.estado','I')
+                                            ->get();
+        //* TRABAJADORES EN TURNO
+        $trabajadores_iniciados = array();
         foreach ($turnos_iniciados as $key => $value) {
             $trabajador = Person::find($value->trabajador_id);
-            array_push($empleados, $trabajador);
+            array_push($trabajadores_iniciados, $trabajador);
         }
-        $empleados = Person::where('tipo_persona','T')->get();
+        //* TODOS TRABAJADORES
+        $todos = Person::where('tipo_persona','T')
+                        ->get();
+        $todos_trabajadores = array();
+        foreach ($todos as $key => $value) {
+            $trabajador = Person::find($value->id);
+            array_push($todos_trabajadores, $trabajador);
+        }
+        //* TRABAJADORES POR INICIAR TURNO
+        $empleados = array_diff($todos_trabajadores, $trabajadores_iniciados);
         $formData                 = array('profile.update', $user->id);
         $formData                 = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal' , 'id' => 'formMantenimientoPassword', 'autocomplete' => 'off');
         return view($this->folderview.'.admin')->with(compact('entidad', 'entidad_credito', 'empleados', 'entidad_turnos', 'turnos_iniciados','entidad_caja', 'entidad_productos' , 'entidad_inventario','cboSucursal','formData', 'user','listar', 'person', 'title', 'titulo_registrar', 'ruta'));
