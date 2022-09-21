@@ -101,7 +101,7 @@ class CategoriaopcionmenuController extends Controller
         $cboPosition         = array('V'=>'Vertical','H' => 'Horizontal');
         $formData            = array('categoriaopcionmenu.store');
         $formData            = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton               = 'Registrar'; 
+        $boton               = 'Guardar'; 
         return view($this->folderview.'.mant')->with(compact('categoriaopcionmenu', 'formData', 'entidad', 'boton', 'cboCategoria', 'listar','cboPosition'));
     }
 

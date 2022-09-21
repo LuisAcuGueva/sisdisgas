@@ -560,7 +560,7 @@ class VentaController extends Controller
         $cliente        = null;
         $formData       = array('venta.guardarcliente');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
+        $boton          = 'Guardar'; 
         $accion = 0;
         return view($this->folderview.'.cliente')->with(compact('accion' ,'cliente', 'formData', 'entidad', 'boton', 'listar'));
     }

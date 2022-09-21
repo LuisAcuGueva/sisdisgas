@@ -106,7 +106,7 @@ class ContribuyenteController extends Controller
         $contribuyente        = null;
         $formData       = array('contribuyente.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
+        $boton          = 'Guardar'; 
         $accion = 0;
         return view($this->folderview.'.mant')->with(compact('accion' ,'contribuyente', 'formData', 'entidad', 'boton', 'listar'));
     }

@@ -106,7 +106,7 @@ class ClienteController extends Controller
         $cliente        = null;
         $formData       = array('cliente.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
+        $boton          = 'Guardar'; 
         $accion = 0;
         return view($this->folderview.'.mant')->with(compact('accion' ,'cliente', 'formData', 'entidad', 'boton', 'listar'));
     }

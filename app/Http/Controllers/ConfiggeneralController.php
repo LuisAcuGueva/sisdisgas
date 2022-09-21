@@ -89,7 +89,7 @@ class ConfiggeneralController extends Controller
         $configgeneral  = null;
         $formData     = array('configgeneral.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         return view($this->folderview.'.mant')->with(compact('configgeneral', 'formData', 'entidad', 'boton', 'listar'));
     }
 

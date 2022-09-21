@@ -87,7 +87,7 @@ class MetodopagoController extends Controller
         $metodopago  = null;
         $formData     = array('metodopago.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         return view($this->folderview.'.mant')->with(compact('metodopago', 'formData', 'entidad', 'boton', 'listar'));
     }
 

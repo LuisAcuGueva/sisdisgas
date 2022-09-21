@@ -94,7 +94,7 @@ class ProductoController extends Controller
         $producto  = null;
         $formData     = array('producto.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         return view($this->folderview.'.mant')->with(compact('producto', 'formData', 'entidad', 'boton', 'listar'));
     }
 

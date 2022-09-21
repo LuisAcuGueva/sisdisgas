@@ -102,7 +102,7 @@ class OpcionmenuController extends Controller
         $opcionmenu   = null;
         $formData     = array('opcionmenu.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         return view($this->folderview.'.mant')->with(compact('opcionmenu', 'formData', 'entidad', 'boton', 'cboCategoria', 'listar'));
     }
 

@@ -89,7 +89,7 @@ class ConceptoController extends Controller
         $concepto  = null;
         $formData     = array('concepto.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         return view($this->folderview.'.mant')->with(compact('concepto', 'formData', 'entidad', 'boton', 'listar'));
     }
 

@@ -637,7 +637,7 @@ class CajaController extends Controller
         $empresa_id = $user->empresa_id;
         $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
         $anonimo = Person::find(1);
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         return view($this->folderview.'.mant')->with(compact('anonimo','titulo_persona','ruta','num_caja' , 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
@@ -664,7 +664,7 @@ class CajaController extends Controller
                     ->where('num_caja',"=", $maxcierre)
                     ->first();
                     
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         return view($this->folderview.'.apertura')->with(compact('persona_id' , 'num_caja', 'movimiento', 'cierre_ultimo', 'formData', 'entidad', 'boton', 'listar'));
     }
 
@@ -713,7 +713,7 @@ class CajaController extends Controller
 
         // TRABAJADORES POR INICIAR TURNO
         $trabajadores_sinturno = array_diff($todos_trabajadores, $trabajadores_iniciados);
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         return view($this->folderview.'.turnoRepartidor')->with(compact('persona_id' , 'trabajadores_sinturno' ,'num_caja', 'movimiento', 'cierre_ultimo', 'formData', 'entidad', 'boton', 'listar'));
     }
 
@@ -800,7 +800,7 @@ class CajaController extends Controller
             $turnos_cerrados = "SI";
         }
 
-        $boton        = 'Registrar';
+        $boton        = 'Guardar';
         return view($this->folderview.'.cierre')->with(compact('sucursales_cerradas_no_ingresadas', 'cant_cajas_sucursales_abiertas', 'persona_id' , 'num_caja', 'sucursal_id','movimiento', 'turnos_cerrados' ,'formData', 'entidad', 'boton', 'listar'));
     }
 
@@ -946,8 +946,7 @@ class CajaController extends Controller
                     ->where('num_caja',"=", $maxcierre)
                     ->first();
                     
-        $boton        = 'Registrar'; 
-
+        $boton        = 'Guardar'; 
 
         $lstsucursal = Sucursal::all();
 
@@ -1886,7 +1885,7 @@ class CajaController extends Controller
         $persona        = null;
         $formData       = array('caja.guardarpersona');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
+        $boton          = 'Guardar'; 
         $ruta             = $this->rutas;
         $accion = 0;
         $tipo_persona     = array('T' => 'Trabajador',

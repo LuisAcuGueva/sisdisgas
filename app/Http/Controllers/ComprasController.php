@@ -118,7 +118,7 @@ class ComprasController extends Controller
         }
         $formData     = array('compras.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         return view($this->folderview.'.mant')->with(compact('compra', 'cboSucursal','cboDocumento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
@@ -717,7 +717,7 @@ class ComprasController extends Controller
         $proveedor     = null;
         $formData       = array('compras.guardarproveedor');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
+        $boton          = 'Guardar'; 
         $accion = 0;
         return view($this->folderview.'.proveedor')->with(compact('accion' ,'proveedor', 'formData', 'entidad', 'boton', 'listar'));
     }

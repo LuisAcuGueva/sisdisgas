@@ -112,7 +112,7 @@ class CartaController extends Controller
             "2" => "Notificada",
         ];
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
+        $boton          = 'Guardar'; 
         $accion = 0;
         return view($this->folderview.'.mant')->with(compact('accion', 'cboEstado', 'carta', 'formData', 'entidad', 'boton', 'listar'));
     }

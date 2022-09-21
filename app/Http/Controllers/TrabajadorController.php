@@ -108,7 +108,7 @@ class TrabajadorController extends Controller
         $trabajador     = null;
         $formData       = array('trabajador.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
+        $boton          = 'Guardar'; 
         $cboTipo = array(
             'A' => 'Administrador',
             'T' => 'Repartidor',

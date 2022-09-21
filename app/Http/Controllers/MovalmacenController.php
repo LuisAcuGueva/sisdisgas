@@ -116,7 +116,7 @@ class MovalmacenController extends Controller
         }
         $formData     = array('movalmacen.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         $cboTipo = array(
             'I' => 'INGRESO',
             'E' => 'SALIDA',

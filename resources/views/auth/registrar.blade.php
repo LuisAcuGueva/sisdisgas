@@ -182,7 +182,7 @@
                 <div class="form-group" style="text-align: center">
                     <div class="col-md-6">
                         <button class="btn btn-primary btn-custom w-md waves-effect waves-light" type="submit">
-                            Registrar
+                            Guardar
                         </button>
                     </div>
                     <div class="col-md-6">

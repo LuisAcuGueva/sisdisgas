@@ -105,7 +105,7 @@ class ProveedorController extends Controller
         $proveedor     = null;
         $formData       = array('proveedor.store');
         $formData       = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton          = 'Registrar'; 
+        $boton          = 'Guardar'; 
         $accion = 0;
         return view($this->folderview.'.mant')->with(compact('accion' ,'proveedor', 'formData', 'entidad', 'boton', 'listar'));
     }

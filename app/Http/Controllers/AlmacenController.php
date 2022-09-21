@@ -91,7 +91,7 @@ class AlmacenController extends Controller
         $almacen  = null;
         $formData     = array('almacen.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton        = 'Registrar'; 
+        $boton        = 'Guardar'; 
         return view($this->folderview.'.mant')->with(compact('almacen', 'formData', 'entidad', 'boton', 'listar'));
     }
 
