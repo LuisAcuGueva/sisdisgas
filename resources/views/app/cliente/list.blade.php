@@ -20,13 +20,8 @@
 		<tr>
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["edit"], array($value->id, 'listar'=>'SI')).'\', \''.$titulo_modificar.'\', this);', 'class' => 'btn btn-sm btn-warning glyphicon glyphicon-pencil')) !!}</td>
 			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
-			@if(!is_null($value->dni))
-			<td>{{ $value->dni }}</td>
-			<td>{{ $value->apellido_pat.' '.$value->apellido_mat.' '.$value->nombres  }}</td>
-			@else
-			<td>{{ $value->ruc }}</td>
-			<td>{{ $value->razon_social  }}</td>
-			@endif
+			<td>{{ $value->dni ? $value->dni : $value->RUC }}</td>
+			<td>{{ $value->razon_social ? $value->razon_social : $value->nombres .' '. $value->apellido_pat.' '.$value->apellido_mat }}</td>
 			<td>{{ $value->direccion  }}</td>
 			<td>{{ $value->celular  }}</td>
 		</tr>
