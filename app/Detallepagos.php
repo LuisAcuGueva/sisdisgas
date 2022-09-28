@@ -19,7 +19,7 @@ class Detallepagos extends Model
       return $this->belongsTo('App\Movimiento', 'pedido_id');
    }
 
-   public function pago(){
-      return $this->belongsTo('App\Movimiento', 'pago_id');
+   public function metodo_pago(){
+      return $this->belongsTo('App\Metodopago', 'metodo_pago_id');
    }
 }
