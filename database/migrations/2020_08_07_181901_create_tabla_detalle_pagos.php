@@ -15,10 +15,13 @@ class CreateTablaDetallePagos extends Migration
     {
         Schema::create('detalle_pagos', function (Blueprint $table) {
             $table->increments('id');
+            $table->decimal('monto',10,2);
+            $table->string('tipo',1); //* R -> repartidor --- S -> sucursal
+            $table->integer('credito');
             $table->integer('pedido_id')->unsigned();
-            $table->integer('pago_id')->unsigned();
             $table->foreign('pedido_id')->references('id')->on('movimiento')->onDelete('restrict')->onUpdate('restrict');
-            $table->foreign('pago_id')->references('id')->on('movimiento')->onDelete('restrict')->onUpdate('restrict');
+            $table->integer('metodo_pago_id')->unsigned();
+            $table->foreign('metodo_pago_id')->references('id')->on('metodo_pagos')->onDelete('restrict')->onUpdate('restrict');
             $table->timestamps();
             $table->softDeletes();
         });
