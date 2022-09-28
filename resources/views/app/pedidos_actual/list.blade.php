@@ -13,13 +13,8 @@
 			</tr>
 		</thead>
 		<tbody>
-			<?php $contador = $inicio + 1; ?>
 			@foreach ($lista as $key => $value)
-				@if($value->estado == 1)
-					<tr style ="background-color: #ffffff !important">
-				@elseif($value->estado == 0)
-					<tr style ="background-color: #ffc8cb !important">
-				@endif
+				<tr style ="background-color: {{ $value->estado == 1 ? '#ffffff' : '#ffc8cb' }} !important">
 					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
 
 					@php
@@ -46,11 +41,11 @@
 						<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["prestar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'disabled' ,'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-download-alt')) !!}</td>
 					@endif
 
-					<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->fecha )) }}</td>
+					<td>{{ date("d/m/Y h:i:s a",strtotime($value->fecha )) }}</td>
 					<td> {{ $value->tipodocumento->abreviatura . $value->num_venta  }} </td>
 
 					@if (!is_null($value->persona))
-						<td>{{ $value->persona->razon_social ? $value->persona->razon_social : $value->persona->apellido_pat.' '.$value->persona->apellido_mat.' '.$value->persona->nombres }}</td>
+						<td>{{ $value->persona->razon_social ? $value->persona->razon_social : $value->persona->nombres.' '.$value->persona->apellido_pat.' '.$value->persona->apellido_mat }}</td>
 					@else
 						<td align="center"> - </td>
 					@endif
@@ -60,7 +55,7 @@
 					@if($value->pedido_sucursal == 1)
 						<td style ="background-color: #fdf8c1b0 !important">SUCURSAL: {{  $value->sucursal->nombre }} </td>
 					@else
-						<td style ="background-color: #b5e7ffb0 !important">{{ $value->trabajador->apellido_pat.' '.$value->trabajador->apellido_mat.' '.$value->trabajador->nombres  }}</td>
+						<td style ="background-color: #b5e7ffb0 !important">{{ $value->trabajador->nombres.' '.$value->trabajador->apellido_pat.' '.$value->trabajador->apellido_mat }}</td>
 					@endif
 
 					@if($value->vale_balon_subcafae == 1)
@@ -76,7 +71,6 @@
 					<td align="center"> {{ $value->balon_a_cuenta == 1 ? 'SI' : 'NO' }} </td>
 					<td align="center" style="color:green;font-weight: bold;"> {{ $value->total }} </td>
 				</tr>
-				<?php $contador = $contador + 1; ?>
 			@endforeach
 		</tbody>
 	</table>
