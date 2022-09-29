@@ -24,7 +24,8 @@ class TurnoscompletadosController extends Controller
 
     protected $folderview      = 'app.turnoscompletados';
     protected $tituloAdmin     = 'Turnos de repartidores completados';
-    protected $tituloDetalle  = 'Detalle de Turno de Repartidor';
+    protected $tituloDetalle  = 'Detalle de Turno de';
+    protected $tituloDetallePedido  = 'Detalle de Pedido';
     protected $rutas           = array('detalle' => 'turno.detalle', 
             'detalleturno' => 'turnoscompletados.detalleturno', 
             'search'   => 'turnoscompletados.buscar',
@@ -62,7 +63,13 @@ class TurnoscompletadosController extends Controller
         $cabecera[]       = array('valor' => 'CIERRE SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'SALDO', 'numero' => '1');
 
-        $tituloDetalle = $this->tituloDetalle;
+        if($trabajador_id){
+            $repartidor = Person::find($trabajador_id);
+            $tituloDetalle = $this->tituloDetalle." ".$repartidor->nombres." ".$repartidor->apellido_pat." ".$repartidor->apellido_mat;
+        }else{
+            $tituloDetalle = $this->tituloDetalle;
+        }
+        
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -77,12 +84,7 @@ class TurnoscompletadosController extends Controller
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function index()
     {
         $entidad          = 'Turnorepartidor';
@@ -92,24 +94,7 @@ class TurnoscompletadosController extends Controller
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
         return view($this->folderview.'.admin')->with(compact('entidad', 'empleados', 'cboSucursal','title', 'ruta'));
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function detalleturno(Request $request, $id)
     {
         $existe = Libreria::verificarExistencia($id, 'turno_repartidor');
@@ -211,11 +196,10 @@ class TurnoscompletadosController extends Controller
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
         $cabecera[]       = array('valor' => 'VALE', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
 
-        $tituloDetalle = $this->tituloDetalle;
+        $tituloDetalle = $this->tituloDetallePedido;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();

@@ -6,7 +6,7 @@
 	{!! Form::hidden('turno_id', $turno->id, array('id' => 'turno_id')) !!}
 	
 	<div id="datos_turno" class="form-group">
-		<div class="col-lg-3 col-md-3 col-sm-3 form-group">
+		<div class="col-lg-4 col-md-4 col-sm-4 form-group">
 			{!! Form::label('filas', 'Repartidor:')!!}
 			{!! Form::text('trabajador', $turno->person->apellido_pat.' '.$turno->person->apellido_mat.' '.$turno->person->nombres, array('class' => 'form-control input-sm', 'id' => 'trabajador', 'readOnly')) !!}
 		</div>
@@ -18,13 +18,9 @@
 			{!! Form::label('filas', 'Fecha y hora de fin:')!!}
 			{!! Form::text('fin', $fechaformato = date("d/m/Y h:i:s a",strtotime($turno->fin))  , array('class' => 'form-control input-sm', 'id' => 'fin', 'readOnly')) !!}
 		</div>
-		<div class="col-lg-3 col-md-3 col-sm-3 form-group">
-			<div class="col-lg-6 col-md-6 col-sm-6" style="margin-top: 28px;">
-				{!! Form::label('filas', 'Filas a mostrar:')!!}
-			</div>
-			<div class="col-lg-6 col-md-6 col-sm-6" style="margin-top: 23px;">
-				{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-sm', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
-			</div>
+		<div class="col-lg-2 col-md-2 col-sm-2 form-group">
+			{!! Form::label('filas', 'Filas a mostrar:')!!}
+			{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-sm', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 		</div>
 	</div>
 
@@ -40,7 +36,7 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	configurarAnchoModal('1600');
+	configurarAnchoModal('850');
 	buscar('{{ $entidad }}');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
@@ -49,7 +45,6 @@ $(document).ready(function() {
 		radioClass: 'iradio_flat-green'
 	});
 }); 
-
 
 function imprimirDetalle(){
 	window.open("turnoscompletados/pdfDetalleTurno?turno_id="+$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="turno_id"]').val(),"_blank");
