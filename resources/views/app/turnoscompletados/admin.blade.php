@@ -3,6 +3,31 @@ $hasta = date("Y-m-d");
 $desde = strtotime ( '-14 day' , strtotime ( $hasta ) ) ;
 $desde = date( 'Y-m-d' , $desde );
 ?>
+<style>
+	.empleado{
+		cursor: pointer;
+		margin: 5px; 
+		width: 120px; 
+		height: 110px; 
+		text-align: center; 
+		border-style: solid; 
+		border-color: #2a3f54; 
+		border-radius: 10px;
+	}
+	.empleado-label{
+		cursor: pointer;
+		vertical-align: middle;
+		font-size: 12px; 
+		color: #2a3f54;
+	}
+	#empleados{
+		margin: 10px 0px; 
+		border-style: groove;
+		width: 100%; 
+		display: -webkit-inline-box; 
+		overflow-x: scroll; 
+	}
+</style>
 <div class="row">
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 45px;">
 		<div class="x_panel">
@@ -18,19 +43,15 @@ $desde = date( 'Y-m-d' , $desde );
 					@if(!empty($empleados))
 					<div id="empleados" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
 						@foreach($empleados  as $key => $value)
-							<div class="empleado" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
-								<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
-								<?php
-									$nombre_completo = $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat;
-								?>
-								<label style="font-size: 11px;  color: #2a3f54;">{{ $nombre_completo }}</label>
+							<div class="empleado" id="{{ $value->id}}">
+								<img src="assets/images/empleado.png" style="width: 60px; height: 60px">
+								<label class="empleado-label">{{ $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat }}</label>
 							</div>
 						@endforeach
 						{!! Form::hidden('trabajador_id',null,array('id'=>'trabajador_id')) !!}
-						{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 					</div>
 					@else
-					<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES EN TURNO</h4>
+					<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES</h4>
 					@endif
 				</div>
 				<div class="form-group">
@@ -61,23 +82,13 @@ $desde = date( 'Y-m-d' , $desde );
 <script>
 	$(document).ready(function () {
 		buscar('{{ $entidad }}');
-		init(IDFORMBUSQUEDA+'{{ $entidad }}', 'B', '{{ $entidad }}');
-		$(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="concepto"]').keyup(function (e) {
-			var key = window.event ? e.keyCode : e.which;
-			if (key == '13') {
-				buscar('{{ $entidad }}');
-			}
-		});
-		$("#tipob").change(function () {
-			buscar('{{ $entidad }}');
-		});
-		$(".empleado").on('click', function(){
-			var idempleado = $(this).attr('id');
-			$(".empleado").css('background', 'rgb(255,255,255)');
-			$(this).css('background', 'rgb(179,188,237)');
-			$('#trabajador_id').attr('value',idempleado);
-			$("#empleado_nombre").val($(this).children('label').html());
-			buscar('{{ $entidad }}');
-		});
+	});
+	$(".empleado").on('click', function(){
+		var idempleado = $(this).attr('id');
+		$(".empleado").css('background', 'rgb(255,255,255)');
+		$(this).css('background', 'rgb(179,188,237)');
+		$('#trabajador_id').attr('value',idempleado);
+		$("#empleado_nombre").val($(this).children('label').html());
+		buscar('{{ $entidad }}');
 	});
 </script>
