@@ -192,22 +192,10 @@ class TurnoController extends Controller
         $movimiento   = null;
         $formData     = array('turno.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-
         $num_caja   = null;
-
-        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
-                                            ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', 1)
-                                            ->get();
-        // TRABAJADORES EN TURNO
-        $trabajadores_iniciados = array();
-        foreach ($turnos_iniciados as $key => $value) {
-            $trabajador = Person::find($value->trabajador_id);
-            array_push($trabajadores_iniciados, $trabajador);
-        }
         $boton        = 'Guardar';
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        return view($this->folderview.'.montovuelto')->with(compact('persona_id' , 'cboSucursal', 'trabajadores_iniciados' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.montovuelto')->with(compact('persona_id' , 'cboSucursal','num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     public function descargadinero(Request $request)
@@ -217,22 +205,10 @@ class TurnoController extends Controller
         $movimiento   = null;
         $formData     = array('turno.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-
         $num_caja   = null;
-
-        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
-                                            ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', 1)
-                                            ->get();
-        // TRABAJADORES EN TURNO
-        $trabajadores_iniciados = array();
-        foreach ($turnos_iniciados as $key => $value) {
-            $trabajador = Person::find($value->trabajador_id);
-            array_push($trabajadores_iniciados, $trabajador);
-        }
         $boton        = 'Guardar';
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        return view($this->folderview.'.descargadinero')->with(compact('persona_id' , 'cboSucursal', 'trabajadores_iniciados' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.descargadinero')->with(compact('persona_id' , 'cboSucursal','num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     public function gastos(Request $request)
@@ -242,34 +218,20 @@ class TurnoController extends Controller
         $movimiento   = null;
         $formData     = array('turno.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-
         $num_caja   = null;
-
         $concepto5 = Concepto::find(5);
         $concepto7 = Concepto::find(7);
         $concepto8 = Concepto::find(8);
         $concepto9 = Concepto::find(9);
-
         $cboConcepto = array(
             "9" => $concepto9->concepto,
             "5" => $concepto5->concepto,
             "7" => $concepto7->concepto,
             "8" => $concepto8->concepto,
         );
-
-        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
-                                            ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', 1)
-                                            ->get();
-        // TRABAJADORES EN TURNO
-        $trabajadores_iniciados = array();
-        foreach ($turnos_iniciados as $key => $value) {
-            $trabajador = Person::find($value->trabajador_id);
-            array_push($trabajadores_iniciados, $trabajador);
-        }
         $boton        = 'Guardar';
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        return view($this->folderview.'.gastos')->with(compact('persona_id' , 'cboSucursal', 'cboConcepto','trabajadores_iniciados' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.gastos')->with(compact('persona_id' , 'cboSucursal', 'cboConcepto','num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     public function cierre(Request $request)
@@ -279,22 +241,10 @@ class TurnoController extends Controller
         $movimiento   = null;
         $formData     = array('turno.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-
         $num_caja   = null;
-
-        $turnos_iniciados = Turnorepartidor::join('person', 'person.id', '=', 'turno_repartidor.trabajador_id')
-                                            ->where('turno_repartidor.estado','I')
-                                            ->where('person.sucursal_id', 1)
-                                            ->get();
-        // TRABAJADORES EN TURNO
-        $trabajadores_iniciados = array();
-        foreach ($turnos_iniciados as $key => $value) {
-            $trabajador = Person::find($value->trabajador_id);
-            array_push($trabajadores_iniciados, $trabajador);
-        }
         $boton        = 'Guardar';
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
-        return view($this->folderview.'.cerrarturno')->with(compact('persona_id' , 'cboSucursal', 'trabajadores_iniciados' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.cerrarturno')->with(compact('persona_id' , 'cboSucursal' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -404,17 +354,6 @@ class TurnoController extends Controller
             }
         });
         return is_null($error) ? "OK" : $error;
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
     }
 
     /**
