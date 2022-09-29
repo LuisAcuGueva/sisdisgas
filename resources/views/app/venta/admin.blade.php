@@ -280,7 +280,7 @@
 							<input class="balon" name="pedido_credito" type="checkbox" id="pedido_credito">
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
-							{!! Form::button('<i class="fa fa-check"></i> Guardar', array( 'class' => 'btn btn-success waves-effect waves-light btn-md btnGuardar', 'id' => 'btnGuardar', 'onClick' => 'guardarPedido();')) !!}
+							{!! Form::button('<i class="fa fa-check"></i> Guardar', array( 'class' => 'btn btn-success waves-effect waves-light btn-md btnGuardar', 'id' => 'btnGuardar', 'disabled','onClick' => 'guardarPedido();')) !!}
 						</div>
 					</div>
 				</div>
@@ -485,7 +485,6 @@ function permisoRegistrar(){
 			$("#metodopago_id").prop('disabled',true);
 			bloquearCheckVentaSucursal();
 			bloquearCheckPedidoCredito();
-			$('#divMensajeErrorVenta').html("");
 			swal({
 				title: 'APERTURAR CAJA DE LA SUCURSAL',
 				type: 'error',
@@ -895,6 +894,10 @@ function calcularTotal(caja_abierta){
 	var total_pago = parseFloat($("#total_pago").val());
 	if(total == 0 && caja_abierta){
 		$('#btnGuardar').prop('disabled', false);
+	}else if(!caja_abierta){
+		var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
+		$('#divMensajeErrorVenta').html(cadenaError);
+		$('#btnGuardar').prop('disabled', true);
 	}else{
 		if($('#pedido_credito').parent().hasClass('checked')){
 			$('#btnGuardar').prop('disabled', false)
