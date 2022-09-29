@@ -1,15 +1,41 @@
+<style>
+	.empleadomv{
+		cursor: pointer;
+		margin: 5px; 
+		width: 120px; 
+		height: 110px; 
+		text-align: center; 
+		border-style: solid; 
+		border-color: #2a3f54; 
+		border-radius: 10px;
+	}
+	.empleado-label{
+		cursor: pointer;
+		vertical-align: middle;
+		font-size: 12px; 
+		color: #2a3f54;
+	}
+	#empleados_mant{
+		margin: 10px 0px; 
+		border-style: groove;
+		width: 100%; 
+		display: -webkit-inline-box; 
+		overflow-x: scroll; 
+	}
+	.repartidor-title{
+		padding-top: 10px; 
+		font-weight: 600; 
+		text-align: center;
+	}
+</style>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($movimiento, $formData) !!}	
-	<div class="form-group">
-		{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
-		{!! Form::hidden('sucursal',null,array('id'=>'sucursal')) !!}
-		{!! Form::hidden('tipopago',null,array('id'=>'tipopago')) !!}
-	</div>
+	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('sucursal_id', 'Sucursal:')!!}
 		</div>
-		<div class="col-lg-4 col-md-4 col-sm-4">
+		<div class="col-lg-6 col-md-6 col-sm-6">
 			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'style' => 'margin-top:8px;', 'id' => 'sucursal_id', 'onchange' => 'generarNumeroCaja();permisoRegistrar();generarEmpleados();')) !!}		
 		</div>
 	</div>
@@ -46,25 +72,9 @@
 			{!! Form::hidden('concepto_id',null,array('id'=>'concepto_id')) !!}
 		</div>
 	</div>
-	@if(empty($trabajadores_iniciados))
-	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;">NINGÚN REPARTIDOR EN TURNO</h4>
-	<div id="empleados_mant" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
-	</div>
+	<h4 class="repartidor-title"></h4>
+	<div id="empleados_mant"></div>
 	{!! Form::hidden('persona_id',null,array('id'=>'persona_id')) !!}
-	{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
-	@else
-	<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center;">SELECCIONE REPARTIDOR</h4>
-	<div id="empleados_mant" style=" margin: 10px 0px; display: -webkit-inline-box; width: 100%; overflow-x: scroll; border-style: groove;">
-		@foreach($trabajadores_iniciados  as $key => $value)
-			<div class="empleadomv" id="{{ $value->id}}" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;" >
-				<img src="assets/images/empleado.png" style="width: 50px; height: 50px">
-				<label style="font-size: 11px;  color: #2a3f54;">{{ $value->razon_social ? $value->razon_social : $value->nombres.' '.$value->apellido_pat.' '.$value->apellido_mat}}</label>
-			</div>
-		@endforeach
-	</div>
-	{!! Form::hidden('persona_id',null,array('id'=>'persona_id')) !!}
-	{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
-	@endif
 	<div class="form-group">
 		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
 			{!! Form::label('monto', 'Monto:')!!}
@@ -83,11 +93,7 @@
 	</div>
 	<div class="form-group">
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-			@if(empty($trabajadores_iniciados))
 			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'disabled' => 'true', 'onclick' => 'guardar(\''.$entidad.'\', this);  actualizarTurnos();')) !!}
-			@else
-			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this); actualizarTurnos();')) !!}
-			@endif
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 		</div>
 	</div>
@@ -96,117 +102,38 @@
 $(document).ready(function() {
 	configurarAnchoModal('600');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
-	//SUCURSAL
-	var sucursal = $('#sucursal_id').val();
-	$('#sucursal').val(sucursal);
-
-	// a continuacion creamos la fecha en la variable date
-	var date = new Date()
-	// Luego le sacamos los datos año, dia, mes 
-	// y numero de dia de la variable date
-	var año = date.getFullYear()
-	var mes = date.getMonth()
-	var ndia = date.getDate()
-	//Damos a los meses el valor en número
-	mes+=1;
-	if(mes<10) mes="0"+mes;
-	if(ndia<10) ndia="0"+ndia;
-	//juntamos todos los datos en una variable
-	var fecha = ndia + "/" + mes + "/" + año
-
-	$('#fecha').val(fecha);
-
+	
 	//CONCEPTO
 	$('#concepto').val('CIERRE DE TURNO DEL REPARTIDOR');
 	$('#concepto_id').val(14);
 
-	//NRO MOVIMIENTO
-	$('#num_caja').val({{$num_caja}});
-
-	//TIPO PAGO
-	$('#tipopago').val(1);
-
-	//TOTAL
-	//$('#monto').val(0);
-
-	//$('#monto').focus();
-
-	permisoRegistrar();
-
-	generarNumeroCaja();
-
+	generarFecha();
 	mueveReloj();
-
+	cambiarSucursal();
+	clickRepartidor();
 }); 
 
-function generarEmpleados(){
-
-//$('#empleados_mant').html("");
-
-var empleados = null;
-
-var tabla = "";
-
-var sucursal_id = $('#sucursal_id').val();
-
-$.ajax({
-	"method": "POST",
-	"url": "{{ url('/turno/cargarempleados') }}",
-	"data": {
-		"sucursal_id" : sucursal_id, 
-		"_token": "{{ csrf_token() }}",
-		}
-}).done(function(info){
-	empleados = info;
-}).always(function(){
-
-	if( empleados != ""){
-		$('.page-venta').html("SELECCIONE REPARTIDOR");
-		$('.page-venta').css("color","black");
+$("#monto").keyup(function(){
+	var monto = parseFloat($("#monto").val());
+	var saldo = parseFloat($("#totalrepartidor").val());
+	if( !is_numeric(monto) ){
+		$("#monto").val("");
+		return false;
 	}else{
-		$('.page-venta').html("NINGÚN REPARTIDOR EN TURNO");
-		$('.page-venta').css("color","red");
-	}
-
-	$.each(empleados, function(i, item) {
-		tabla =  tabla +'<div class="empleadomv" id="' + item.id + '" style="margin: 5px; width: 120px; height: 110px; text-align: center; border-style: solid; border-color: #2a3f54; border-radius: 10px;"><img src="assets/images/empleado.png" style="width: 50px; height: 50px"><label style="font-size: 11px;  color: #2a3f54;">' + item.nombres + ' ' + item.apellido_pat  + ' ' + item.apellido_mat +'</label></div>';   
-	});
-
-	$('#empleados_mant').html(tabla);
-	
-	$(".empleadomv").on('click', function(){
-		var idempleado = $(this).attr('id');
-		$(".empleadomv").css('background', 'rgb(255,255,255)');
-		$(this).css('background', 'rgb(179,188,237)');
-		$('#persona_id').attr('value',idempleado);
-		$("#empleado_nombre").val($(this).children('label').html());
-		generarSaldoRepartidor();
-	});
-	
-});
-
-}
-
-function generarNumeroCaja(){
-
-var num_caja = null;
-
-var sucursal_id = $('#sucursal_id').val();
-
-$.ajax({
-	"method": "POST",
-	"url": "{{ url('/turno/cargarnumerocaja') }}",
-	"data": {
-		"sucursal_id" : sucursal_id, 
-		"_token": "{{ csrf_token() }}",
+		if(monto > saldo){
+				$("#monto").val("");
 		}
-}).done(function(info){
-	num_caja = info;
-}).always(function(){
-	$('#num_caja').val(num_caja);
+	}
+	if( monto <= 0){
+		$('#btnGuardar').prop('disabled', true);
+		var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul>';
+		cadenaError += '<li>El monto a ingresar debe ser mayor a 0.</li></ul></div>';
+		$('#divMensajeErrorTurnorepartidor').html(cadenaError);
+	}else{
+		$('#btnGuardar').prop('disabled', false);
+		$('#divMensajeErrorTurnorepartidor').html("");
+	}
 });
-
-}
 
 function actualizarTurnos(){
 	setTimeout(function(){
@@ -214,74 +141,7 @@ function actualizarTurnos(){
 	},1000);
 }
 
-function permisoRegistrar(){
-
-var aperturaycierre = null;
-
-var sucursal_id = $('#sucursal_id').val();
-
-var ajax = $.ajax({
-	"method": "POST",
-	"url": "{{ url('/venta/permisoRegistrar') }}",
-	"data": {
-		"sucursal_id" : sucursal_id, 
-		"_token": "{{ csrf_token() }}",
-		}
-}).done(function(info){
-	aperturaycierre = info;
-}).always(function(){
-	if(aperturaycierre == 0){
-		$("#btnGuardar").prop('disabled',true);
-		$("#comentario").prop('disabled',true);
-
-		$('#divMensajeErrorTurnorepartidor').html("");
-
-		var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
-
-		var surcursal_id = $('#sucursal_id').val();
-
-		if(sucursal_id != null){
-			$('#divMensajeErrorTurnorepartidor').html(cadenaError);
-		}
-
-	}else if(aperturaycierre == 1){
-		$("#btnGuardar").prop('disabled',false);
-		$("#comentario").prop('disabled',false);
-
-		$('#divMensajeErrorTurnorepartidor').html("");
-
-	}
-});
-
-return aperturaycierre;
-}
-
-
-function generarSaldoRepartidor(){
-
-var saldo_repartidor = null;
-
-var persona_id = $('#persona_id').val();
-
-$.ajax({
-	"method": "POST",
-	"url": "{{ url('/turno/generarSaldoRepartidor') }}",
-	"data": {
-		"persona_id" : persona_id, 
-		"_token": "{{ csrf_token() }}",
-		}
-}).done(function(info){
-	saldo_repartidor = info;
-}).always(function(){
-	$('#monto').val(saldo_repartidor);
-});
-
-}
-
-
-
-$(document).ready(function() {
-
+function clickRepartidor(){
 	$(".empleadomv").on('click', function(){
 		var idempleado = $(this).attr('id');
 		$(".empleadomv").css('background', 'rgb(255,255,255)');
@@ -290,41 +150,138 @@ $(document).ready(function() {
 		$("#empleado_nombre").val($(this).children('label').html());
 		generarSaldoRepartidor();
 	});
-}); 
-
-	
-/*Script del Reloj */
-function mueveReloj() {
-marcacion = new Date()
-Hora = marcacion.getHours()
-Minutos = marcacion.getMinutes()
-Segundos = marcacion.getSeconds()
-
-/*variable para el apóstrofe de am o pm*/
-if (Hora < 12) {
-	dn = "a.m"
-}else{
-	dn = "p.m"
-	Hora = Hora - 12
 }
-if (Hora == 0)
-Hora = 12
 
-/* Si la Hora, los Minutos o los Segundos son Menores o igual a 9, le añadimos un 0 */
-if (Hora <= 9) Hora = "0" + Hora
-if (Minutos <= 9) Minutos = "0" + Minutos
-if (Segundos <= 9) Segundos = "0" + Segundos
-/* Termina el Script del Reloj */
+function generarFecha(){
+	var date = new Date();
+	var anio = date.getFullYear();
+	var mes = date.getMonth();
+	var ndia = date.getDate();
+	mes+=1;
+	if(mes<10) mes="0"+mes;
+	if(ndia<10) ndia="0"+ndia;
+	var fecha = ndia + "/" + mes + "/" + anio;
+	$('#fecha').val(fecha);
+}
 
-horaImprimible = Hora + ":" + Minutos + ":" + Segundos + " " + dn
+function is_numeric(value) {
+	return !isNaN(parseFloat(value)) && isFinite(value);
+}
 
-$('#hora').val(horaImprimible);
+function cambiarSucursal(){
+	generarNumeroCaja();
+	generarEmpleados();
+	permisoRegistrar();
+}
 
-//La función se tendrá que llamar así misma para que sea dinámica, 
-//de esta forma:
+function permisoRegistrar(){
+	var aperturaycierre = null;
+	var ajax = $.ajax({
+		"method": "POST",
+		"url": "{{ url('/venta/permisoRegistrar') }}",
+		"data": {
+			"sucursal_id" : $('#sucursal_id').val(), 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		aperturaycierre = info;
+		if(aperturaycierre == 0){
+			$("#btnGuardar").prop('disabled',true);
+			$("#comentario").prop('disabled',true);
+			$("#monto").prop('disabled',true);
+			$("#saldo_caja").val('');
+			var cadenaError = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>Por favor corrige los siguentes errores:</strong><ul><li>Aperturar caja de la sucursal escogida</li></ul></div>';
+			$('#divMensajeErrorTurnorepartidor').html(cadenaError);
+		}else if(aperturaycierre == 1){
+			$("#btnGuardar").prop('disabled',false);
+			$("#comentario").prop('disabled',false);
+			$("#monto").prop('disabled',false);
+			$('#divMensajeErrorTurnorepartidor').html("");
+		}
+	});
+	return aperturaycierre;
+}
 
-setTimeout(mueveReloj,1000)
+function generarNumeroCaja(){
+	$.ajax({
+		"method": "POST",
+		"url": "{{ url('/turno/cargarnumerocaja') }}",
+		"data": {
+			"sucursal_id" : $('#sucursal_id').val(), 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(num_caja){
+		$('#num_caja').val(num_caja);
+	});
+}
 
+function generarEmpleados(){
+	$('#persona_id').val('');
+	var empleados = null;
+	var tabla = "";
+	$.ajax({
+		"method": "POST",
+		"url": "{{ url('/turno/cargarempleados') }}",
+		"data": {
+			"sucursal_id" : $('#sucursal_id').val(), 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		empleados = info;
+		if( empleados != ""){
+			$('.repartidor-title').html("SELECCIONE REPARTIDOR");
+			$('.repartidor-title').css("color","#2a3f54");
+			$('#empleados_mant').css('display', '');
+		}else{
+			$('.repartidor-title').html("NINGÚN REPARTIDOR EN TURNO");
+			$('.repartidor-title').css("color","red");
+			$('#empleados_mant').css('display', 'none');
+		}
+		$.each(empleados, function(i, item) {
+			tabla =  tabla +'<div class="empleadomv" id="' + item.id + '"><img src="assets/images/empleado.png" style="width: 60px; height: 60px"><label class="empleado-label">' + item.nombres + ' ' + item.apellido_pat  + ' ' + item.apellido_mat +'</label></div>';   
+		});
+		$('#empleados_mant').html(tabla);
+		clickRepartidor();
+	});
+}
+
+function generarSaldoRepartidor(){
+	$.ajax({
+		"method": "POST",
+		"url": "{{ url('/turno/generarSaldoRepartidor') }}",
+		"data": {
+			"persona_id" : $('#persona_id').val(), 
+			"_token": "{{ csrf_token() }}",
+			}
+	}).done(function(info){
+		$('#monto').val(info);
+	});
+}
+
+function mueveReloj() {
+	marcacion = new Date()
+	Hora = marcacion.getHours()
+	Minutos = marcacion.getMinutes()
+	Segundos = marcacion.getSeconds()
+	/*variable para el apóstrofe de am o pm*/
+	if (Hora < 12) {
+		dn = "a.m"
+	}else{
+		dn = "p.m"
+		Hora = Hora - 12
+	}
+	if (Hora == 0)
+	Hora = 12
+	/* Si la Hora, los Minutos o los Segundos son Menores o igual a 9, le añadimos un 0 */
+	if (Hora <= 9) Hora = "0" + Hora
+	if (Minutos <= 9) Minutos = "0" + Minutos
+	if (Segundos <= 9) Segundos = "0" + Segundos
+	/* Termina el Script del Reloj */
+	horaImprimible = Hora + ":" + Minutos + ":" + Segundos + " " + dn
+	$('#hora').val(horaImprimible);
+	//La función se tendrá que llamar así misma para que sea dinámica, 
+	//de esta forma:
+	setTimeout(mueveReloj,1000)
 }
 </script>
 
