@@ -68,9 +68,6 @@
 <script>
 	$(document).ready(function () {
 		buscar('{{ $entidad }}');
-		$("#tipob").change(function () {
-			buscar('{{ $entidad }}');
-		});
 	});
 	$(".empleado").on('click', function(){
 		var idempleado = $(this).attr('id');
