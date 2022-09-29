@@ -26,7 +26,6 @@
 								}
 							}
 					@endphp
-
 					@if($value->estado == 1)
 						@if($balones)
 							@if($value->balon_prestado == 1)
