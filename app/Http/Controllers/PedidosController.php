@@ -117,18 +117,7 @@ class PedidosController extends Controller
         );
         return view($this->folderview . '.admin')->with(compact('entidad', 'cboTipo', 'cboTipoDocumento', 'cboTipoVale', 'cboSucursal', 'title', 'ruta'));
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
+    
     /**
      * Show the form for editing the specified resource.
      *
@@ -153,47 +142,9 @@ class PedidosController extends Controller
         $formData = array('turno.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento' . $entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        $detallespago = Detallepagos::where('pedido_id', '=', $id)
-            ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
-            ->where('estado', 1)
-            ->get();
-
-
-        return view($this->folderview . '.detalle')->with(compact('pedido', 'detallespago', 'detalles', 'formData', 'entidad', 'boton', 'listar'));
+        $detallespago = Detallepagos::where('pedido_id', '=', $id)->where('credito',0)->get();  
+        $detallespago_credito = Detallepagos::where('pedido_id', '=', $id)->where('credito',1)->get();  
+        $total_pagado = Detallepagos::where('pedido_id', '=', $id)->sum('monto');  
+        return view($this->folderview . '.detalle')->with(compact('pedido', 'total_pagado', 'detallespago', 'detallespago_credito', 'detalles', 'formData', 'entidad', 'boton', 'listar'));
     }
 }
-
-/**
- * Tabla pedido agregar campo balon_prestado y fecha hora prestamo
- * 
- * Crear detalle prestamo 
- id
- cantidad
- fecha hora
- detalle_mov_id
- * 
- * 
- * listar todos los pedidos
- * 
- * rango de fechas ya
- * sucursal ya 
- * cliente ya 
- * venta sucursal o repartidor ya
- * tipo comprobante ya
- * tipo de vale ya
- * repartidor autocompletar
- * 
- * prestamos y devoluciones 
- * 
- * rango fecha
- * cliente
- * repartidor
- * repartidor o venta sucursal
- * sucursal
- * 
- * 
- * agregar 
- * repartidor autocompletar
- * 
- * 
- */
