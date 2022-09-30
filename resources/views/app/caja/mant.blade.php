@@ -1,3 +1,11 @@
+<style>
+	input[type=number]::-webkit-inner-spin-button, 
+	input[type=number]::-webkit-outer-spin-button { 
+		-webkit-appearance: none; 
+		margin: 0; 
+	}
+	input[type=number] { -moz-appearance:textfield; }
+</style>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($movimiento, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
@@ -68,7 +76,7 @@
 				{!! Form::label('total', 'Total:')!!}<div class="" style="display: inline-block;color: red;">*</div>
 			</div>
 			<div class="col-lg-8 col-md-8 col-sm-8">
-				{!! Form::text('total', '', array('class' => 'form-control input-xs',  'id' => 'total', 'placeholder' => '0.00' )) !!}
+				{!! Form::number('total', '', array('class' => 'form-control input-xs',  'id' => 'total', 'placeholder' => '0.00' )) !!}
 			</div>
 		</div>
 	</div>
