@@ -376,6 +376,7 @@ class TurnoController extends Controller
         }else{
             $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
         }
+        $total_productos = Detallemovalmacen::where('movimiento_id',$pedido->id)->sum('subtotal');
         $entidad  = 'Turnorepartidor';
         $formData = array('turno.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
@@ -383,7 +384,7 @@ class TurnoController extends Controller
         $detallespago = Detallepagos::where('pedido_id', '=', $id)->where('credito',0)->get();  
         $detallespago_credito = Detallepagos::where('pedido_id', '=', $id)->where('credito',1)->get();
         $total_pagado = Detallepagos::where('pedido_id', '=', $id)->sum('monto');  
-        return view($this->folderview.'.detalle')->with(compact('pedido', 'total_pagado','detallespago', 'detallespago_credito', 'detalles','formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.detalle')->with(compact('pedido', 'total_pagado', 'total_productos','detallespago', 'detallespago_credito', 'detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function cargarnumerocaja(Request $request){

@@ -51,19 +51,21 @@
 					NO
 				@endif
 			</div>
-			@if($pedido->pedido_sucursal == 0)
-				<div class="col-lg-8 col-md-8 col-sm-8">
+			<div class="col-lg-8 col-md-8 col-sm-8">
+				@if($pedido->pedido_sucursal == 0)
 					{!! Form::label('repartidor', 'Repartidor:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
 					{!! Form::text('repartidor', $pedido->trabajador->nombres . ' ' . $pedido->trabajador->apellido_pat . ' ' . $pedido->trabajador->apellido_mat , array('class' => 'form-control input-sm', 'id' => 'repartidor', 'readOnly')) !!}
-				</div>
-			@endif
-			<div class="col-lg-6 col-md-6 col-sm-6">
-				{!! Form::label('tipodocumento', 'Tipo de Documento:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-				{!! Form::text('tipodocumento', $pedido->tipodocumento->descripcion , array('class' => 'form-control input-sm', 'id' => 'tipodocumento', 'readOnly')) !!}		
+				@endif
 			</div>
-			<div class="col-lg-6 col-md-6 col-sm-6">
-				{!! Form::label('serieventa', 'Número:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
-				{!! Form::text('serieventa', $pedido->tipodocumento->abreviatura . $pedido->num_venta , array('class' => 'form-control input-sm', 'id' => 'serieventa', 'data-inputmask' => "'mask': '9999-9999999'", 'readOnly')) !!}
+			<div class="col-lg-12 col-md-12 col-sm-12" style="padding: 0px;">
+				<div class="col-lg-6 col-md-6 col-sm-6">
+					{!! Form::label('tipodocumento', 'Tipo de Documento:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+					{!! Form::text('tipodocumento', $pedido->tipodocumento->descripcion , array('class' => 'form-control input-sm', 'id' => 'tipodocumento', 'readOnly')) !!}		
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-6">
+					{!! Form::label('serieventa', 'Número:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+					{!! Form::text('serieventa', $pedido->tipodocumento->abreviatura . $pedido->num_venta , array('class' => 'form-control input-sm', 'id' => 'serieventa', 'data-inputmask' => "'mask': '9999-9999999'", 'readOnly')) !!}
+				</div>
 			</div>
 			<div class="col-lg-7 col-md-7 col-sm-7">
 				{!! Form::label('cliente', 'Cliente:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
@@ -225,7 +227,7 @@
 				<tfoot>
 					<tr>
 						<td align="center" colspan="5">TOTAL</td>
-						<td>{!! Form::text('total', ($pedido->total + $monto_vale), array('class' => 'form-control input-xs inputDetPedido', 'id' => 'total', 'readOnly', 'style' => 'width: 100px;')) !!}</td>
+						<td align="center">{!! Form::text('total', $total_productos, array('class' => 'form-control input-xs inputDetPedido', 'id' => 'total', 'readOnly', 'style' => 'width: 100px;')) !!}</td>
 					</tr>
 				</tfoot>
 			</table>
