@@ -51,12 +51,12 @@ use App\Detallepagos;
 						@endif
 					@endif
 					@if($saldo == 0)
-						<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Pagar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-secondary' , 'disabled')) !!}</td>
+						<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Cobrar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-secondary' , 'disabled')) !!}</td>
 					@else
 						@if($value->estado == 1)
-							<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Pagar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-success')) !!}</td>
+							<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Cobrar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-success')) !!}</td>
 						@elseif($value->estado == 0)
-							<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Pagar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-secondary' , 'disabled')) !!}</td>
+							<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Cobrar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-secondary' , 'disabled')) !!}</td>
 						@endif
 					@endif
 				</tr>
