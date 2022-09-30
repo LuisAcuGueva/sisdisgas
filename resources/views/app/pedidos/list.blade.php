@@ -16,7 +16,7 @@
 				<tr style ="background-color: {{ $value->estado == 1 ? '#ffffff' : '#ffc8cb' }} !important">
 					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
 					<td>{{ date("d/m/Y h:i:s a",strtotime($value->fecha )) }}</td>
-					<td> {{ $value->tipodocumento->abreviatura . $value->num_venta  }} </td>
+					<td>{{ $value->tipodocumento->abreviatura . $value->num_venta }}</td>
 
 					@if (!is_null($value->persona))
 						<td>{{ $value->persona->razon_social ? $value->persona->razon_social : $value->persona->nombres.' '.$value->persona->apellido_pat.' '.$value->persona->apellido_mat }}</td>
