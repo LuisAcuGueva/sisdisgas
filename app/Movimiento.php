@@ -66,11 +66,7 @@ class Movimiento extends Model
 
 	public function scopelistarpedidos($query, $fechainicio, $fechafin, $sucursal_id ,$cliente, $trabajador_id, $tipo, $tipodocumento, $tipovale)
     {
-		return $query->select('movimiento.id','movimiento.fecha','movimiento.tipodocumento_id','movimiento.num_venta',
-							'movimiento.persona_id','movimiento.trabajador_id','movimiento.sucursal_id','movimiento.vale_balon_subcafae',
-							'movimiento.vale_balon_fise','movimiento.vale_balon_monto','movimiento.balon_a_cuenta','movimiento.concepto_id',
-							'movimiento.estado','movimiento.pedido_sucursal','movimiento.total')
-					->join('person', 'person.id', '=', 'movimiento.persona_id')
+		return $query->join('person', 'person.id', '=', 'movimiento.persona_id')
 					->where(function($subquery) use( $fechainicio, $fechafin, $cliente, $trabajador_id, $tipo, $tipodocumento, $tipovale)
 		            {
 						if (!is_null($fechainicio) && !is_null($fechafin)) {
@@ -112,11 +108,7 @@ class Movimiento extends Model
 
 	public function scopelistarprestamos($query, $fechainicio, $fechafin, $sucursal_id ,$cliente, $trabajador_id, $tipo, $tipodocumento, $tipovale)
     {
-		return $query->select('movimiento.id','movimiento.fecha','movimiento.tipodocumento_id','movimiento.num_venta',
-							'movimiento.persona_id','movimiento.trabajador_id','movimiento.sucursal_id','movimiento.vale_balon_subcafae',
-							'movimiento.vale_balon_fise','movimiento.vale_balon_monto','movimiento.balon_a_cuenta','movimiento.concepto_id',
-							'movimiento.estado','movimiento.pedido_sucursal','movimiento.total')
-					->join('person', 'person.id', '=', 'movimiento.persona_id')
+		return $query->join('person', 'person.id', '=', 'movimiento.persona_id')
 					->where(function($subquery) use( $fechainicio, $fechafin, $cliente, $trabajador_id, $tipo, $tipodocumento, $tipovale)
 		            {
 						if (!is_null($fechainicio) && !is_null($fechafin)) {
