@@ -73,6 +73,7 @@ class VentaController extends Controller
             $mov_pedido->concepto_id = 3;
             $total = $request->input('total');
             $mov_pedido->total = $total;
+            $mov_pedido->total_pagado = $request->input('total_pago');  
             $subtotal = round($total/(1.18),2);
             $mov_pedido->subtotal = $subtotal;
             $mov_pedido->igv = round($total - $subtotal,2);
@@ -120,7 +121,7 @@ class VentaController extends Controller
             foreach (json_decode($request->input('det_pagos')) as $pago) {
                 $detalle_pagos = new Detallepagos();
                 $detalle_pagos->monto = $pago->monto;
-                $detalle_pagos->credito = 0; //* Montos pagados
+                $detalle_pagos->credito = 0; //* Montos pagados  -> 1 si es pago a credito   -> 0 si se pago al hacer el pedido 
                 $detalle_pagos->tipo = $request->input('venta_sucursal') != 'on' ? 'R' : 'S';
                 $detalle_pagos->pedido_id = $mov_pedido->id;
                 $detalle_pagos->metodo_pago_id = $pago->metodopago_id;
@@ -146,6 +147,7 @@ class VentaController extends Controller
                 $movimientocaja->concepto_id          = 3;
                 $movimientocaja->num_caja             = $num_caja;
                 $movimientocaja->total                = $request->input('total');
+                $movimientocaja->total_pagado         = $request->input('total_pago');  
                 $subtotal                             = round($total/(1.18),2);
                 $movimientocaja->subtotal             = $subtotal;
                 $movimientocaja->estado               = 1;
@@ -170,93 +172,57 @@ class VentaController extends Controller
             $detalles = json_decode($request->input('det_productos'));
             
             foreach ($detalles as $detalle) {
-                $producto_id = $detalle->id ;
-                $cantidad = $detalle->cantidad;
-                $precio = $detalle->precio;
-                $subtotal = $detalle->total;
-                $cantidad_envase = $detalle->cantidad_envase ? $detalle->cantidad_envase : null;
-                $precio_envase = $detalle->precio_envase ? $detalle->precio_envase : null;
-
                 $detalleMovAlmacen = new Detallemovalmacen();
-                $detalleMovAlmacen->cantidad = $cantidad;
-                $detalleMovAlmacen->precio = $precio;
-                $detalleMovAlmacen->cantidad_envase = $cantidad_envase;
-                $detalleMovAlmacen->precio_envase = $precio_envase;
-                $detalleMovAlmacen->subtotal = $subtotal;
                 $detalleMovAlmacen->movimiento_id = $mov_pedido->id;
-                $detalleMovAlmacen->producto_id = $producto_id;
+                $detalleMovAlmacen->producto_id = $detalle->id;
+                $detalleMovAlmacen->cantidad = $detalle->cantidad;
+                $detalleMovAlmacen->precio = $detalle->precio;
+                $detalleMovAlmacen->subtotal = $detalle->total;
+                $detalleMovAlmacen->cantidad_envase = $detalle->cantidad_envase ? $detalle->cantidad_envase : 0;
+                $detalleMovAlmacen->precio_envase = $detalle->precio_envase ? $detalle->precio_envase : 0;
                 $detalleMovAlmacen->save();
-
-                $stockanterior = 0;
-                $stockactual = 0;
 
                 $ultimokardex = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
                                         ->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
-                                        ->where('detalle_mov_almacen.producto_id', '=', $producto_id)
-                                        ->where('kardex.sucursal_id', '=',$mov_pedido->sucursal_id)
+                                        ->where('detalle_mov_almacen.producto_id', '=', $detalle->id)
                                         ->where('movimiento.estado','=',1)
+                                        ->where('kardex.sucursal_id', '=',$mov_pedido->sucursal_id)
                                         ->orderBy('kardex.id', 'DESC')
                                         ->first();
 
-                if ($ultimokardex === NULL) {
-                    $stockactual = $cantidad + $cantidad_envase;
-                    $kardex = new Kardex();
-                    $kardex->tipo = 'E';
-                    $kardex->fecha =  $request->input('fecha');
-                    $kardex->stock_anterior = $stockanterior;
-                    $kardex->stock_actual = $stockactual;
-                    $kardex->cantidad = $cantidad;
-                    $kardex->cantidad_envase = $cantidad_envase;
-                    $kardex->precio_venta = $precio;
-                    $kardex->precio_venta_envase = $precio_envase;
-                    $kardex->sucursal_id = $mov_pedido->sucursal_id;
-                    $kardex->detalle_mov_almacen_id = $detalleMovAlmacen->id;
-                    $kardex->save();
-                    
-                }else{
-                    $stockanterior = $ultimokardex->stock_actual;
-                    $stockactual = $ultimokardex->stock_actual - $cantidad - $cantidad_envase;
-                    $kardex = new Kardex();
-                    $kardex->tipo = 'E';
-                    $kardex->fecha =  $request->input('fecha');
-                    $kardex->stock_anterior = $stockanterior;
-                    $kardex->stock_actual = $stockactual;
-                    $kardex->cantidad = $cantidad;
-                    $kardex->cantidad_envase = $cantidad_envase;
-                    $kardex->precio_venta = $precio;
-                    $kardex->precio_venta_envase = $precio_envase;
-                    $kardex->sucursal_id = $mov_pedido->sucursal_id;
-                    $kardex->detalle_mov_almacen_id = $detalleMovAlmacen->id;
-                    $kardex->save();    
+                $stockanterior = $ultimokardex->stock_actual;
+                $stockactual = $stockanterior - ($detalleMovAlmacen->cantidad + $detalleMovAlmacen->cantidad_envase);
 
-                }
+                $kardex = new Kardex();
+                $kardex->sucursal_id = $mov_pedido->sucursal_id;
+                $kardex->detalle_mov_almacen_id = $detalleMovAlmacen->id;
+                $kardex->tipo = 'E';
+                $kardex->fecha =  $request->input('fecha');
+                $kardex->stock_anterior = $stockanterior;
+                $kardex->stock_actual = $stockactual;
+                $kardex->cantidad = $detalleMovAlmacen->cantidad;
+                $kardex->precio_venta = $detalleMovAlmacen->precio;
+                $kardex->cantidad_envase = $detalleMovAlmacen->cantidad_envase;
+                $kardex->precio_venta_envase = $detalleMovAlmacen->precio_envase;
+                $kardex->save();    
 
                 //Reducir Stock
 
-                $stock = Stock::where('producto_id', $producto_id )->where('sucursal_id', $mov_pedido->sucursal_id)->first();
-                if (count($stock) == 0) {
-                    $stock = new Stock();
-                    $stock->producto_id = $producto_id;
-                    $stock->sucursal_id = $mov_pedido->sucursal_id;
-                }
-
-                $producto = Producto::find( $producto_id );
+                $stock = Stock::where('producto_id', $detalleMovAlmacen->producto_id)->where('sucursal_id', $mov_pedido->sucursal_id)->first();
+                $producto = Producto::find($detalleMovAlmacen->producto_id);
 
                 if($producto->recargable == 1){
-                    $stock->cantidad -= $cantidad;
-                    $stock->cantidad -= $cantidad_envase;
-                    $stock->envases_total -= $cantidad_envase;
-                    $stock->envases_llenos -= $cantidad;
-                    $stock->envases_llenos -= $cantidad_envase;
-                    $stock->envases_vacios += $cantidad;
+                    $stock->cantidad -= $detalleMovAlmacen->cantidad;
+                    $stock->cantidad -= $detalleMovAlmacen->cantidad_envase;
+                    $stock->envases_llenos = $stock->cantidad;
+                    $stock->envases_total -= $detalleMovAlmacen->cantidad_envase;
+                    $stock->envases_vacios += $detalleMovAlmacen->cantidad;
                     $stock->save();
                 }else{
-                    $stock->cantidad -= $cantidad;
+                    $stock->cantidad -= $detalleMovAlmacen->cantidad;
                     $stock->save();
                 }
-
             } 
-
         });
         return is_null($error) ? "OK" : $error;
     }
