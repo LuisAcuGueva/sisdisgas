@@ -1,29 +1,38 @@
+<style>
+	#cabecera th{
+		font-size: 18px;
+	}
+</style>
+<?php $cont = 1; ?>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($pedido, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
-	<?php
-	$cont = 1;
-	?>
 	<div class="col-lg-12 col-md-12 col-sm-12">
 		<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
-			<thead id="cabecera"><tr><th style="font-size: 13px !important;">#</th><th style="font-size: 13px !important;">Fecha</th><th style="font-size: 13px !important;">Tipo de pago</th><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Monto</th></tr></thead>
+			<thead id="cabecera">
+				<tr>
+					<th>#</th>
+					<th>Fecha</th>
+					<th>Tipo de pago</th>
+					<th>Descripción</th>
+					<th>Monto</th>
+				</tr>
+			</thead>
 			<tbody id="detalle">
 				@foreach($detalles  as $key => $value)
 					<tr>
-					<td>{{ $cont }} </td>
-					<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->pago->fecha )) }}</td>
-					@if($value->tipo == "R")
-					<td>PAGO CON REPARTIDOR</td>
-					<td>Repartidor: {{  $value->pago->trabajador->apellido_pat.' '.$value->pago->trabajador->apellido_mat.' '.$value->pago->trabajador->nombres  }}</td>
-					@elseif($value->tipo == "S")
-					<td>PAGO EN SUCURSAL</td>
-					<td>Sucursal: {{ $value->pago->sucursal->nombre }} </td>
-					@endif
-					<td>{{ $value->monto }} </td>
+						<td>{{ $cont }}</td>
+						<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->pedido->fecha )) }}</td>
+						@if($value->tipo == "R")
+							<td>PAGO CON REPARTIDOR</td>
+							<td>Repartidor: {{ $value->pedido->trabajador->nombres.' '.$value->pedido->trabajador->apellido_pat.' '.$value->pedido->trabajador->apellido_mat }}</td>
+						@elseif($value->tipo == "S")
+							<td>PAGO EN SUCURSAL</td>
+							<td>Sucursal: {{ $value->pedido->sucursal->nombre }}</td>
+						@endif
+						<td>{{ $value->monto }}</td>
 					</tr>
-					<?php
-					$cont++;
-					?>
+					<?php $cont++; ?>
 				@endforeach
 			</tbody>
 		</table>
@@ -37,11 +46,5 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	configurarAnchoModal('800');
-	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
-
-	$('input').iCheck({
-		checkboxClass: 'icheckbox_flat-green',
-		radioClass: 'iradio_flat-green'
-	});
 }); 
 </script>

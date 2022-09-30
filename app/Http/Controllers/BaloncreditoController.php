@@ -51,9 +51,9 @@ class BaloncreditoController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
         $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'NRO DOC', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'SUCURSAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DEBE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PAGÓ', 'numero' => '1');
@@ -126,7 +126,7 @@ class BaloncreditoController extends Controller
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $pedido = Movimiento::find($id);
         $detalles = Detallepagos::where('pedido_id', '=', $id)
-                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                    ->join('movimiento', 'detalle_pagos.pedido_id', '=', 'movimiento.id')
                     ->where('estado',1)
                     ->get();    
         $entidad  = 'Movimiento';
@@ -146,7 +146,7 @@ class BaloncreditoController extends Controller
         $pedido = Movimiento::find($id);
         $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
         $total_pagos = Detallepagos::where('pedido_id', '=', $id)
-                                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                                    ->join('movimiento', 'detalle_pagos.pedido_id', '=', 'movimiento.id')
                                     ->where('estado',1)
                                     ->sum('monto');
         round($total_pagos,2);
