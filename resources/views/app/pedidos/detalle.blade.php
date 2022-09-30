@@ -225,7 +225,7 @@
 				<tfoot>
 					<tr>
 						<td align="center" colspan="5">TOTAL</td>
-						<td>{!! Form::text('total', ($pedido->total + $monto_vale), array('class' => 'form-control input-xs inputDetPedido', 'id' => 'total', 'readOnly', 'style' => 'width: 100px;')) !!}</td>
+						<td align="center">{!! Form::text('total', $total_productos, array('class' => 'form-control input-xs inputDetPedido', 'id' => 'total', 'readOnly', 'style' => 'width: 100px;')) !!}</td>
 					</tr>
 				</tfoot>
 			</table>
