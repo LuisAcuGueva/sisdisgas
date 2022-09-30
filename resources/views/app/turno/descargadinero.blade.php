@@ -1,4 +1,10 @@
 <style>
+	input[type=number]::-webkit-inner-spin-button, 
+	input[type=number]::-webkit-outer-spin-button { 
+		-webkit-appearance: none; 
+		margin: 0; 
+	}
+	input[type=number] { -moz-appearance:textfield; }
 	.empleadomv{
 		cursor: pointer;
 		margin: 5px; 
@@ -88,7 +94,7 @@
 			{!! Form::label('monto', 'Monto:')!!}<div class="" style="display: inline-block; color: red;">*</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-4">
-			{!! Form::text('monto', '' , array('class' => 'form-control input-xs', 'style' => 'margin-top:8px;', 'id' => 'monto')) !!}
+			{!! Form::number('monto', '' , array('class' => 'form-control input-xs', 'style' => 'margin-top:8px;', 'id' => 'monto')) !!}
 		</div>
 	</div>
 	<div class="form-group">
