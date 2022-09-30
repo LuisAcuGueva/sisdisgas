@@ -308,10 +308,8 @@ $(document).ready(function(){
 	limpiarDetalleProductos();
 	generarFecha();
 	cambiarSucursal();
-	
-	// mostrarultimo();
 
-	$("#monto_vale_balon").keyup(function(){
+	$("#monto_vale_balon").blur(function(){
 		if( $("#monto_vale_balon").val() != ""){
 			if( is_numeric( $("#monto_vale_balon").val())){
 				var total = 0;
@@ -1240,18 +1238,13 @@ function guardarVenta() {
 		"method": "POST",
 		"url": "{{ url('/venta/guardarventa') }}",
 		"data": jQuery.param(params),
-	}).done(function(info){
-		respuesta = info;
-		console.log(respuesta);
-		/* if (respuesta === 'OK') {
-			detalleventa();
-			$('#divMensajeErrorVenta').html('');
-			mostrarMensaje('Accion realizada correctamente', 'OK')
+	}).done(function(data){
+		if (data === 'OK') {
+			mostrarMensaje('Accion realizada correctamente', 'OK');
 			cargarRutaMenu('pedidos_actual', 'container', '15');
 		} else {
-			mostrarErrores(respuesta, idformulario, 'Venta');
-			var empleado_id = $('#empleado_id').val();
-		} */
+			console.log("Error: " + data)
+		}
 	});
 }
 
