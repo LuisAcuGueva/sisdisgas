@@ -100,16 +100,21 @@ class BaloncreditoController extends Controller
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $pedido = Movimiento::find($id);
-        $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
-        $entidad  = 'Movimiento';
+        if ($pedido->tipomovimiento_id == 5) {
+            $pedido = Movimiento::find($pedido->venta_id);
+            $detalles = Detallemovalmacen::where('movimiento_id', $pedido->id)->get();
+        } else {
+            $detalles = Detallemovalmacen::where('movimiento_id', $pedido->id)->get();
+        }
+        $total_productos = Detallemovalmacen::where('movimiento_id',$pedido->id)->sum('subtotal');
+        $entidad  = 'Pedidos';
         $formData = array('turno.store', $id);
-        $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento' . $entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        $detallespago = Detallepagos::where('pedido_id', '=', $id)
-                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
-                    ->where('estado',1)
-                    ->get();  
-        return view($this->folderview.'.detalle')->with(compact('detallespago','pedido', 'detalles','formData', 'entidad', 'boton', 'listar'));
+        $detallespago = Detallepagos::where('pedido_id', '=', $id)->where('credito',0)->get();  
+        $detallespago_credito = Detallepagos::where('pedido_id', '=', $id)->where('credito',1)->get();  
+        $total_pagado = Detallepagos::where('pedido_id', '=', $id)->sum('monto');  
+        return view($this->folderview . '.detalle')->with(compact('pedido', 'total_pagado', 'total_productos', 'detallespago', 'detallespago_credito', 'detalles', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     public function pagos(Request $request, $id)
