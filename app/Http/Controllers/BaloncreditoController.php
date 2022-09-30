@@ -11,6 +11,7 @@ use App\Detallepagos;
 use App\Detalleturnopedido;
 use App\Turnorepartidor;
 use App\Sucursal;
+use App\Metodopago;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,7 @@ class BaloncreditoController extends Controller
     protected $tituloAdmin     = 'Pedidos a Crédito';
     protected $tituloDetalle  = 'Detalle de pedido';
     protected $tituloPagos  = 'Detalle de pagos';
-    protected $tituloPagar  = 'Pagar deuda';
+    protected $tituloPagar  = 'Cobrar deuda de cliente';
     protected $rutas           = array(
             'search'   => 'baloncredito.buscar',
             'index'    => 'baloncredito.index',
@@ -155,10 +156,11 @@ class BaloncreditoController extends Controller
         $entidad  = 'Movimiento';
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
         $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
+        $cboMetodoPago = Metodopago::pluck('nombre', 'id')->all();
         $formData = array('baloncredito.pagardeuda', $id);
         $formData = array('route' => $formData, 'method' => 'POST', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Pagar';
-        return view($this->folderview.'.pagar')->with(compact( 'turnos_iniciados', 'saldo','pedido', 'cboSucursal', 'detalles','formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.pagar')->with(compact( 'turnos_iniciados', 'cboMetodoPago','saldo','pedido', 'cboSucursal', 'detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function pagardeuda(Request $request){
