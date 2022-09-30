@@ -76,7 +76,7 @@
 
 				<td> {{ $value->pedido->sucursal->nombre }} </td>
 			
-				@if(($value->pedido->tipomovimiento_id == 1 || $value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5) && ($value->pedido->concepto->tipo == 0 || $value->pedido->concepto_id == 12 || $value->pedido->concepto_id == 15))
+				@if(($value->pedido->tipomovimiento_id == 1 && ($value->pedido->concepto_id == 12 || $value->pedido->concepto_id == 15) ) || $value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5 )
 					<td align="center" style="color:green;font-weight: bold;"> {{ $value->pedido->total_pagado ? $value->pedido->total_pagado : $value->pedido->total }} </td>
 				@else
 					<td align="center" style="color:red;font-weight: bold;"> {{ $value->pedido->total }} </td>
