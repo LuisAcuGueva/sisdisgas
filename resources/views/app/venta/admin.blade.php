@@ -225,19 +225,19 @@
 						<div class="col-lg-4 col-md-4 col-sm-4 vale_fise">
 							{!! Form::label('', 'FISE:' ,array('class' => 'input-sm'))!!}
 							<div  style="margin-left:12px">
-								<input class="balon"  name="vale_balon_fise" type="checkbox" id="vale_balon_fise" disabled>
+								<input name="vale_balon_fise" type="checkbox" id="vale_balon_fise" disabled>
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4 vale_subcafae">
 							{!! Form::label('', 'SUBCAFAE:' ,array('class' => 'input-sm'))!!}
 							<div  style="margin-left:28px">
-								<input class="balon" name="vale_balon_subcafae" type="checkbox" id="vale_balon_subcafae" disabled>
+								<input name="vale_balon_subcafae" type="checkbox" id="vale_balon_subcafae" disabled>
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4 vale_monto">
 							{!! Form::label('', 'DTO S/:' ,array('class' => 'input-sm'))!!}
 							<div  style="margin-left:25px">
-								<input class="balon"  name="vale_balon_monto" type="checkbox" id="vale_balon_monto" disabled>
+								<input name="vale_balon_monto" type="checkbox" id="vale_balon_monto" disabled>
 							</div>
 						</div>
 					</div>
@@ -277,7 +277,7 @@
 					<div class="row">
 						<div class="col-lg-8 col-md-8 col-sm-8 pedido-credito">
 							{!! Form::label('pedido_credito', 'Pedido a crédito:' ,array('class' => 'input-md', 'style' => 'margin-top: 5px;'))!!}
-							<input class="balon" name="pedido_credito" type="checkbox" id="pedido_credito">
+							<input name="pedido_credito" type="checkbox" id="pedido_credito">
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							{!! Form::button('<i class="fa fa-check"></i> Guardar', array( 'class' => 'btn btn-success waves-effect waves-light btn-md btnGuardar', 'id' => 'btnGuardar', 'disabled','onClick' => 'guardarPedido();')) !!}
