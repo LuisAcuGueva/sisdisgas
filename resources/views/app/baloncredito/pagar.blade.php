@@ -68,7 +68,7 @@
 				{!! Form::select('metodopago_id', $cboMetodoPago, null, array('class' => 'form-control input-sm', 'id' => 'metodopago_id')) !!}		
 				{!! Form::text('metodopago', 'EFECTIVO', array('class' => 'form-control input-md', 'id' => 'metodopago', 'readOnly', 'style' => 'display: none;' )) !!}
 			</div>
-			<div  class="col-lg-12 col-md-12 col-sm-12">
+			<div  class="col-lg-12 col-md-12 col-sm-12" style="margin-top: 10px;">
 				{!! Form::label('monto', 'Monto:' ,array('class' => 'input-md'))!!}
 				{!! Form::number('monto', '', array('class' => 'form-control input-lg montos', 'id' => 'monto', 'style' => 'text-align: right; font-size: 30px;', 'placeholder' => '0.00')) !!}
 			</div>
