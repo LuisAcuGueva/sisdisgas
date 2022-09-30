@@ -136,7 +136,6 @@ function clickRepartidor(){
 		$(".empleadomv").css('background', 'rgb(255,255,255)');
 		$(this).css('background', 'rgb(179,188,237)');
 		$('#persona_id').attr('value',idempleado);
-		$("#empleado_nombre").val($(this).children('label').html());
 		generarSaldoRepartidor();
 	});
 }
