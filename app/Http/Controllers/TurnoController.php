@@ -75,7 +75,9 @@ class TurnoController extends Controller
                                                             {
                                                                 $subquery->where('concepto.id','=', 3);
                                                             })
-                                                        ->sum('total');
+                                                        ->sum('total_pagado');
+
+            //ToDo: Sacar total por metodo de pago                                                            
                                                     
             $ingresos_credito = Detalleturnopedido::where('turno_id', '=', $turno_id)
                                                         ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
@@ -121,7 +123,7 @@ class TurnoController extends Controller
 
             $total_ingresos = $ingresos_repartidor + $vueltos_repartidor + $ingresos_credito;
 
-            $saldo_repartidor = $ingresos_repartidor + $ingresos_credito + $vueltos_repartidor - $egresos_repartidor - $gastos_repartidor;
+            $saldo_repartidor = $total_ingresos - ($egresos_repartidor + $gastos_repartidor);
 
             round($saldo_repartidor,2);
 
@@ -155,11 +157,6 @@ class TurnoController extends Controller
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $entidad          = 'Turnorepartidor';
@@ -180,11 +177,6 @@ class TurnoController extends Controller
         return view($this->folderview.'.admin')->with(compact('entidad', 'turnos_iniciados', 'cboSucursal','title', 'tituloCierreTurno', 'tituloGastos','tituloMontoVuelto', 'tituloDescargaDinero','ruta'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function vuelto(Request $request)
     {
         $listar       = Libreria::getParam($request->input('listar'), 'NO');
@@ -247,12 +239,6 @@ class TurnoController extends Controller
         return view($this->folderview.'.cerrarturno')->with(compact('persona_id' , 'cboSucursal' ,'num_caja', 'movimiento', 'formData', 'entidad', 'boton', 'listar'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
@@ -356,12 +342,6 @@ class TurnoController extends Controller
         return is_null($error) ? "OK" : $error;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function detalle(Request $request, $id)
     {
         $existe = Libreria::verificarExistencia($id, 'movimiento');
@@ -371,19 +351,17 @@ class TurnoController extends Controller
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $pedido = Movimiento::find($id);
         if($pedido->tipomovimiento_id == 5){
-            $pedido = Movimiento::find($pedido->venta_id);
-            $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
-        }else{
-            $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
+            $pedido = Movimiento::find($pedido->venta_id); 
         }
+        $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
+        $detallespago = Detallepagos::where('pedido_id', '=', $pedido->id)->where('credito',0)->get();  
+        $detallespago_credito = Detallepagos::where('pedido_id', '=', $pedido->id)->where('credito',1)->get();
+        $total_pagado = Detallepagos::where('pedido_id', '=', $pedido->id)->sum('monto');  
         $total_productos = Detallemovalmacen::where('movimiento_id',$pedido->id)->sum('subtotal');
         $entidad  = 'Turnorepartidor';
         $formData = array('turno.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        $detallespago = Detallepagos::where('pedido_id', '=', $id)->where('credito',0)->get();  
-        $detallespago_credito = Detallepagos::where('pedido_id', '=', $id)->where('credito',1)->get();
-        $total_pagado = Detallepagos::where('pedido_id', '=', $id)->sum('monto');  
         return view($this->folderview.'.detalle')->with(compact('pedido', 'total_pagado', 'total_productos','detallespago', 'detallespago_credito', 'detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
@@ -621,12 +599,6 @@ class TurnoController extends Controller
         return is_null($error) ? "OK" : $error;
     }
 
-    /**
-     * Función para confirmar la eliminación de un registrlo
-     * @param  integer $id          id del registro a intentar eliminar
-     * @param  string $listarLuego consultar si luego de eliminar se listará
-     * @return html              se retorna html, con la ventana de confirmar eliminar
-     */
     public function eliminar($id, $listarLuego)
     {
         $existe = Libreria::verificarExistencia($id, 'movimiento');
@@ -644,5 +616,4 @@ class TurnoController extends Controller
         $mensaje  = '<blockquote><p class="text-danger">¿Está seguro de anular el registro?</p></blockquote>';
         return view('app.caja.confirmarAnular')->with(compact( 'mensaje' ,'modelo', 'formData', 'entidad', 'boton', 'listar'));
     }
-
 }
