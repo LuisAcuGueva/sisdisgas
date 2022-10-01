@@ -218,7 +218,6 @@ class BaloncreditoController extends Controller
             $movimiento->comentario             = "PAGO DE PEDIDO A CRÉDITO: ". $pedido->tipodocumento->abreviatura. $pedido->num_venta;
             $movimiento->save();
 
-
             $detalle_pagos = new Detallepagos();
             $detalle_pagos->pedido_id = $pedido->id;
             $detalle_pagos->metodo_pago_id = $request->input('metodopago_id');
