@@ -159,7 +159,7 @@ class BaloncreditoController extends Controller
         $cboMetodoPago = Metodopago::pluck('nombre', 'id')->all();
         $formData = array('baloncredito.pagardeuda', $id);
         $formData = array('route' => $formData, 'method' => 'POST', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton    = 'Pagar';
+        $boton    = 'Guardar';
         return view($this->folderview.'.pagar')->with(compact( 'turnos_iniciados', 'cboMetodoPago','saldo','pedido', 'cboSucursal', 'detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
@@ -169,18 +169,17 @@ class BaloncreditoController extends Controller
             return $existe;
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
-        $tipo_pago = $request->input('tipo_pago');
-        if($tipo_pago == "R"){
+        if($request->input('pago_repartidor') == "on"){
         $reglas     = array(
                             'repartidor'      => 'required',    
                             'monto'      => 'required|numeric',
                         );
-        }else if($tipo_pago == "S"){                
+        }else if($request->input('pago_sucursal') == "on"){                
         $reglas     = array(
                             'monto'      => 'required|numeric',
                         );
         }
-        $mensajes   = array();
+        $mensajes   = array('repartidor.required' => 'El campo repartidor es obligatorio.');
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
         if ($validacion->fails()) {
             return $validacion->messages()->toJson();
@@ -188,76 +187,56 @@ class BaloncreditoController extends Controller
         $pedido = Movimiento::find($request->input('pedido_id'));
         $error = DB::transaction(function() use($request, $pedido){
 
-          /*  if($request->input('total') == 0 ){
-                $pedido->credito_cancelado = 1;
-                $pedido->save();
-            }*/
             $tipo_pago = $request->input('tipo_pago');
-            if($tipo_pago == "R"){
-                $repartidor = $request->input('repartidor');
+            $movimiento = new Movimiento();
+            $user = Auth::user();
 
-                $turno = Turnorepartidor::find($repartidor);
-
-                $movimiento                       = new Movimiento();
+            if($request->input('pago_repartidor') == "on"){
+                $turno = Turnorepartidor::find($request->input('repartidor'));
                 $movimiento->tipomovimiento_id    = 5;
-                $movimiento->concepto_id          = 16;
-                $movimiento->total                = $request->input('monto');
-                $movimiento->subtotal             = $request->input('monto');
-                $movimiento->estado               = 1;
-                $movimiento->persona_id           = $pedido->persona_id;
                 $movimiento->trabajador_id        = $turno->person->id;
-                $user           = Auth::user();
-                $movimiento->usuario_id           = $user->id;
                 $movimiento->sucursal_id          = $pedido->sucursal_id;
-                $movimiento->venta_id             = $pedido->id;
-                $movimiento->comentario             = "PAGO DE PEDIDO A CRÉDITO: ". $pedido->tipodocumento->abreviatura. $pedido->num_venta;
-                $movimiento->save();
+                
+            }else if($request->input('pago_sucursal') == "on"){   
+                $num_caja = Movimiento::where('tipomovimiento_id', 1)
+                                    ->where('sucursal_id', $request->input('sucursal'))
+                                    //->where('estado', "=", 1)
+                                    ->max('num_caja') + 1;
+                $movimiento->tipomovimiento_id    = 1;
+                $movimiento->trabajador_id        = $pedido->trabajador_id;
+                $movimiento->sucursal_id          = $request->input('sucursal');
+                $movimiento->num_caja             = $num_caja;
+            }
 
+            $movimiento->estado               = 1;
+            $movimiento->concepto_id          = 16;
+            $movimiento->persona_id           = $pedido->persona_id;
+            $movimiento->total                = $request->input('monto');
+            $movimiento->subtotal             = $request->input('monto');
+            $movimiento->usuario_id           = $user->id;
+            $movimiento->venta_id             = $pedido->id;
+            $movimiento->comentario             = "PAGO DE PEDIDO A CRÉDITO: ". $pedido->tipodocumento->abreviatura. $pedido->num_venta;
+            $movimiento->save();
+
+
+            $detalle_pagos = new Detallepagos();
+            $detalle_pagos->pedido_id = $pedido->id;
+            $detalle_pagos->metodo_pago_id = $request->input('metodopago_id');
+            $detalle_pagos->monto = $request->input('monto');
+            $detalle_pagos->credito = 1;
+            if($request->input('pago_repartidor') == "on"){
+                $detalle_pagos->tipo = 'R';
+            }else if($request->input('pago_sucursal') == "on"){   
+                $detalle_pagos->tipo = 'S';
+            }
+            $detalle_pagos->save();
+
+            if($request->input('pago_repartidor') == "on"){
                 $detalle_turno_pedido =  new Detalleturnopedido();
                 $detalle_turno_pedido->pedido_id = $movimiento->id;
-                $detalle_turno_pedido->turno_id = $repartidor;
+                $detalle_turno_pedido->turno_id = $request->input('repartidor');
                 $detalle_turno_pedido->save();
-
-                $detalle_pagos = new Detallepagos();
-                $detalle_pagos->pedido_id = $pedido->id;
-                $detalle_pagos->pago_id = $movimiento->id;
-                $detalle_pagos->monto   = $request->input('monto');
-                $detalle_pagos->tipo   = $tipo_pago;
-                $detalle_pagos->save();
-                
-            }else if($tipo_pago == "S"){
-                $sucursal_id = $request->input('sucursal');
-
-                $num_caja = Movimiento::where('tipomovimiento_id', 1)
-                                    ->where('sucursal_id', $sucursal_id)
-                                    //->where('estado', "=", 1)
-                                    ->max('num_caja');
-                $num_caja = $num_caja + 1;
-
-                $movimientocaja                       = new Movimiento();
-                $movimientocaja->tipomovimiento_id    = 1;
-                $movimientocaja->concepto_id          = 16;
-                $movimientocaja->num_caja             = $num_caja;
-                $movimientocaja->total                = $request->input('monto');
-                $movimientocaja->subtotal             = $request->input('monto');
-                $movimientocaja->estado               = 1;
-                $movimientocaja->persona_id           = $pedido->persona_id;
-                $movimientocaja->trabajador_id        = $pedido->trabajador_id;
-                $user           = Auth::user();
-                $movimientocaja->usuario_id           = $user->id;
-                $movimientocaja->sucursal_id          = $sucursal_id;
-                $movimientocaja->venta_id             = $pedido->id;
-                $movimientocaja->comentario             = "PAGO DE PEDIDO A CRÉDITO: ". $pedido->tipodocumento->abreviatura.$pedido->num_venta;
-                $movimientocaja->save();
-
-                $detalle_pagos = new Detallepagos();
-                $detalle_pagos->pedido_id = $pedido->id;
-                $detalle_pagos->pago_id = $movimientocaja->id;
-                $detalle_pagos->monto   = $request->input('monto');
-                $detalle_pagos->tipo   = $tipo_pago;
-                $detalle_pagos->save();
             }
-            
         });
         return is_null($error) ? "OK" : $error;
     }
