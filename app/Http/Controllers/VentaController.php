@@ -197,7 +197,6 @@ class VentaController extends Controller
                 $kardex->sucursal_id = $mov_pedido->sucursal_id;
                 $kardex->detalle_mov_almacen_id = $detalleMovAlmacen->id;
                 $kardex->tipo = 'E';
-                $kardex->fecha =  $request->input('fecha');
                 $kardex->stock_anterior = $stockanterior;
                 $kardex->stock_actual = $stockactual;
                 $kardex->cantidad = $detalleMovAlmacen->cantidad;

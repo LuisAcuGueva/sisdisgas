@@ -239,7 +239,6 @@ class MovalmacenController extends Controller
                         $stockactual = $cantidad + $cantidadenvase;
                         $kardex = new Kardex();
                         $kardex->tipo = 'I';
-                        $kardex->fecha =  $request->input('fecha');
                         $kardex->stock_anterior = $stockanterior;
                         $kardex->stock_actual = $stockactual;
                         $kardex->cantidad = $cantidad;
@@ -255,7 +254,6 @@ class MovalmacenController extends Controller
                         $stockactual = $ultimokardex->stock_actual + $cantidad + $cantidadenvase;
                         $kardex = new Kardex();
                         $kardex->tipo = 'I';
-                        $kardex->fecha =  $request->input('fecha');
                         $kardex->stock_anterior = $stockanterior;
                         $kardex->stock_actual = $stockactual;
                         $kardex->cantidad = $cantidad;
@@ -304,7 +302,6 @@ class MovalmacenController extends Controller
                         $stockactual = $ultimokardex->stock_actual - $cantidad - $cantidadenvase;
                         $kardex = new Kardex();
                         $kardex->tipo = 'E';
-                        $kardex->fecha =  $request->input('fecha');
                         $kardex->stock_anterior = $stockanterior;
                         $kardex->stock_actual = $stockactual;
                         $kardex->cantidad = $cantidad;
