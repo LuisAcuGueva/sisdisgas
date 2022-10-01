@@ -97,21 +97,15 @@ $(document).ready(function() {
 }); 
 
 $("#monto").keyup(function(){
-	if( $("#monto").val() == ""){
-		$('#total').val(saldo.toFixed(2));
-	}else{ 
+	if( $("#monto").val() != ""){
 		if( is_numeric( $("#monto").val())){
 			var monto = parseFloat($("#monto").val());
 			var total = parseFloat($("#total").val());
 			if(monto < 0 ||  monto > total){
 				$("#monto").val("");
-				$('#total').val(saldo.toFixed(2));
-			}else{
-				$("#total").val((total - monto).toFixed(2));
 			}
 		}else{
 			$("#monto").val("");
-			$('#total').val(saldo.toFixed(2));
 		}
 	}
 }); 
