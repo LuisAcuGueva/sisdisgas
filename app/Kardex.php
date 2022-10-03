@@ -34,7 +34,7 @@ class Kardex extends Model
 							$subquery->whereBetween(DB::raw('CONVERT(kardex.fecha,date)'),[$fechainicio,$fechafin]);
 		            	}
                     })
-                    ->where('movimiento.estado',1)
+                    // ->where('movimiento.estado',1)
         			->orderBy('movimiento.fecha', 'DESC');//->orderBy('kardex.id', 'DESC');
     }
 
