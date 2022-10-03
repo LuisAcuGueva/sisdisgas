@@ -1,6 +1,7 @@
 <?php
 	Use App\Tipodocumento;
 	Use App\Tipomovimiento;
+	Use App\Movimiento;
 ?>
 @if(count($lista) == 0)
 <h3 class="text-warning">No se encontraron resultados.</h3>
@@ -40,21 +41,39 @@
 				@endif
 			@endif
 			<?php
-			$tipomovimiento_id = $value->tipomovimiento_id;
-			$tipomovimiento = Tipomovimiento::find($tipomovimiento_id);
+			$tipomovimiento = Tipomovimiento::find($value->tipomovimiento_id);
+			$mov_anul_id = '';
+			$tipomov_anul = '';
+			if($value->tipomovimiento_id == 7){
+				$mov_anul = Movimiento::find($value->venta_id ? $value->venta_id : $value->compra_id);
+				$tipomov_anul = Tipomovimiento::find($mov_anul->tipomovimiento_id);
+				$tipomov_anul = $tipomov_anul->descripcion;
+			}
+			$tipomovimiento = $tipomov_anul ? $tipomovimiento->descripcion . ' '. $tipomov_anul : $tipomovimiento->descripcion;
 			?>
-			<td align="center">{{ $tipomovimiento->descripcion }}</td>
+			<td align="center">{{ $tipomovimiento }}</td>
 			<?php
-			$tipodocumento_id = $value->tipodocumento_id;
-			$tipodocumento = Tipodocumento::find($tipodocumento_id);
+			$tipodocumento = Tipodocumento::find($value->tipodocumento_id);
+			if($value->tipomovimiento_id == 7){
+				$tipodoc_anul = Tipodocumento::find($mov_anul->tipodocumento_id);
+				$value->venta_id
+					? $tipodoc_anul = $tipodoc_anul->abreviatura.'-'.$mov_anul->num_venta
+					: $tipodoc_anul = $tipodoc_anul->abreviatura.'-'.$mov_anul->num_compra;
+			}
 			?>
 			@if( $value->tipo == "I")
-				<td align="center"> {{ $tipodocumento->abreviatura }}-{{ $value->num_compra }}</td>
+				@if($value->tipomovimiento_id == 7)
+					<td align="center"> {{ $tipodoc_anul }} </td> 
+				@else 
+					<td align="center"> {{ $tipodocumento->abreviatura }}-{{ $value->num_compra }}</td>
+				@endif
 			@else
 				@if($value->tipomovimiento_id == 4)
 					<td align="center"> {{ $tipodocumento->abreviatura }}-{{ $value->num_compra }}</td> 
-				@else
+				@elseif($value->tipomovimiento_id == 2)
 					<td align="center"> {{ $tipodocumento->abreviatura }}-{{ $value->num_venta }}</td> 
+				@else 
+					<td align="center"> - </td> 
 				@endif
 			@endif
 			<td>{{ $value->descripcion }}</td>
@@ -62,9 +81,9 @@
 			@if($value->cantidad != 0)
 				<td align="center">{{ $value->cantidad }}</td>
 				@if( $value->tipo == "I")
-					<td align="center">{{ $value->precio_compra }}</td>
+					<td align="center">{{ $value->tipomovimiento_id == 7 ? $value->precio_venta : $value->precio_compra }}</td>
 				@else
-					<td align="center">{{ $value->precio_venta }}</td>
+					<td align="center">{{ $value->tipomovimiento_id == 7 ? $value->precio_compra : $value->precio_venta }}</td>
 				@endif
 			@else
 				<td align="center"> - </td>
@@ -74,9 +93,9 @@
 			@if($value->cantidad_envase != 0)
 				<td align="center">{{ $value->cantidad_envase }}</td>
 				@if( $value->tipo == "I")
-					<td align="center">{{ $value->precio_compra_envase }}</td>
+					<td align="center">{{ $value->tipomovimiento_id == 7 ? $value->precio_venta_envase : $value->precio_compra_envase }}</td>
 				@else
-					<td align="center">{{ $value->precio_venta_envase }}</td>
+					<td align="center">{{ $value->tipomovimiento_id == 7 ? $value->precio_compra_envase : $value->precio_venta_envase }}</td>
 				@endif
 			@else
 				<td align="center"> - </td>
