@@ -235,10 +235,12 @@ $('#agregarProducto').on('click', function(){
 	agregarCarrito(); 
 });
 
-$('.escogerFila').on('click', function(){
-	$('.escogerFila').css('background-color', 'white');
-	$(this).css('background-color', 'yellow');
-});
+function escogerFila(){
+	$('.escogerFila').on('click', function(){
+		$('.escogerFila').css('background-color', 'white');
+		$(this).css('background-color', 'yellow');
+	});
+}
 
 $('.quitarFila').on('click', function(){
 	event.preventDefault();
@@ -287,6 +289,7 @@ function buscarProducto(valor){
 	            	a +="<tr><td colspan='6'>Productos no encontrados.</td></tr>";
 	            }
 	            $("#tablaProducto").html(a);
+				escogerFila();
     	    }
         });
     } else {
