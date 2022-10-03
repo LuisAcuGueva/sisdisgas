@@ -15,6 +15,8 @@ use App\Detallemovalmacen;
 use App\Detalleprestamo;
 use App\Detallepagos;
 use App\Stock;
+use App\Kardex;
+use App\Producto;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -110,6 +112,7 @@ class PedidosActualController extends Controller
         $cabecera         = array();
         $cabecera[]       = array('valor' => 'VER', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRESTAR', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'ANULAR', 'numero' => '1');
         $cabecera[]       = array('valor' => 'FECHA Y HORA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NRO DOC', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CLIENTE', 'numero' => '1');
@@ -173,7 +176,7 @@ class PedidosActualController extends Controller
         }
         $total_productos = Detallemovalmacen::where('movimiento_id',$pedido->id)->sum('subtotal');
         $entidad  = 'Pedidos';
-        $formData = array('turno.store', $id);
+        $formData = array('pedidos_actual.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
         $detallespago = Detallepagos::where('pedido_id', '=', $id)->where('credito',0)->get();  
@@ -242,5 +245,120 @@ class PedidosActualController extends Controller
             $movimiento->save();
         });
         return is_null($error) ? "OK" : $error;
+    }
+    
+
+    public function destroy(Request $request, $id)
+    {
+        $existe = Libreria::verificarExistencia($id, 'movimiento');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $reglas     = array('motivo' => 'required|max:300');
+        $mensajes   = array();
+        $validacion = Validator::make($request->all(), $reglas, $mensajes);
+        if ($validacion->fails()) {
+            return $validacion->messages()->toJson();
+        }
+        $movimiento = Movimiento::find($id);
+        $error = DB::transaction(function() use($request, $movimiento){
+            $movimiento->estado = 0;
+            $movimiento->comentario_anulado  = strtoupper($request->input('motivo'));  
+            $movimiento->save();
+
+            if($movimiento->pedido_sucursal == 1){
+                //Todo: Borrar movimiento de caja
+                $mov_cajas = Movimiento::where('tipomovimiento_id', '=', 1)
+                                        ->where('venta_id', '=', $movimiento->id)
+                                        ->get();
+                foreach ($mov_cajas as $key => $mov_caja) {
+                    $mov_caja->estado = 0;
+                    $mov_caja->comentario_anulado  = strtoupper($request->input('motivo'));  
+                    $mov_caja->save();
+                }
+            }
+
+            //* Si es venta en sucursal -- venta repartidor
+
+            //ToDo: Crear movimiento devolucion
+
+            $devolucion = new Movimiento();
+            $devolucion->tipomovimiento_id = 7; //* Devolucion
+            $devolucion->estado = 1;
+            $devolucion->venta_id = $movimiento->id;
+            $devolucion->sucursal_id = $movimiento->sucursal_id;
+            $devolucion->usuario_id = $movimiento->usuario_id;
+            $devolucion->save();
+
+            //ToDo: Crear detalle mov almacen
+
+            $det_almacen = Detallemovalmacen::where('movimiento_id', $movimiento->id)->get();
+
+            foreach ($det_almacen as $key => $det_alm_anul) {
+                $det_alm_devol = new Detallemovalmacen();
+                $det_alm_devol->movimiento_id = $devolucion->id; //* id devolucion
+                $det_alm_devol->producto_id = $det_alm_anul->producto_id;
+                $det_alm_devol->cantidad = $det_alm_anul->cantidad;
+                $det_alm_devol->precio = $det_alm_anul->precio;
+                $det_alm_devol->subtotal = $det_alm_anul->subtotal;
+                $det_alm_devol->cantidad_envase = $det_alm_anul->cantidad_envase;
+                $det_alm_devol->precio_envase = $det_alm_anul->precio_envase;
+                $det_alm_devol->save();
+
+                $stock = Stock::where('producto_id', $det_alm_devol->producto_id)->where('sucursal_id', $movimiento->sucursal_id)->first();
+                
+                $cantidad_envase = ($det_alm_devol->cantidad_envase == 0 || $det_alm_devol->cantidad_envase == null) ? 0 : $det_alm_devol->cantidad_envase;
+
+                //* Aumentar stock
+                $stock->cantidad += ($det_alm_devol->cantidad + $cantidad_envase);
+
+                //* Actualizar cantidad de balones en stock
+                $producto = Producto::find($det_alm_devol->producto_id);
+                if($producto->recargable == 1){
+                    $stock->envases_total += $cantidad_envase;
+                    $stock->envases_llenos += ($det_alm_devol->cantidad + $cantidad_envase);
+                    $stock->envases_vacios -= $det_alm_devol->cantidad;
+                }
+                $stock->save();
+
+                $kardex_anul = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                                    ->where('detalle_mov_almacen.producto_id', '=', $det_alm_devol->producto_id)
+                                    ->where('kardex.sucursal_id','=', $movimiento->sucursal_id)
+                                    ->orderBy('kardex.id', 'desc')
+                                    ->first();
+
+                $kardex_devol = new Kardex();
+                $kardex_devol->detalle_mov_almacen_id = $det_alm_devol->id;
+                $kardex_devol->tipo = 'I';
+                $kardex_devol->sucursal_id = $kardex_anul->sucursal_id;
+                $kardex_devol->stock_anterior = $kardex_anul->stock_actual;
+                $kardex_devol->stock_actual = $kardex_anul->stock_actual + ($det_alm_devol->cantidad + $cantidad_envase);
+                $kardex_devol->cantidad = $kardex_anul->cantidad;
+                $kardex_devol->precio_venta = $kardex_anul->precio_venta;
+                $kardex_devol->cantidad_envase = $kardex_anul->cantidad_envase;
+                $kardex_devol->precio_venta_envase = $kardex_anul->precio_venta_envase;
+                $kardex_devol->save();   
+            }
+
+        });
+        return is_null($error) ? "OK" : $error;
+    }
+
+    public function eliminar($id, $listarLuego)
+    {
+        $existe = Libreria::verificarExistencia($id, 'movimiento');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $listar = "NO";
+        if (!is_null(Libreria::obtenerParametro($listarLuego))) {
+            $listar = $listarLuego;
+        }
+        $modelo   = Movimiento::find($id);
+        $entidad  = 'Pedidos';
+        $formData = array('route' => array('pedidos_actual.destroy', $id), 'method' => 'DELETE', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton    = 'Anular';
+        $mensaje  = '<blockquote><p class="text-danger">¿Está seguro de anular el pedido?</p></blockquote>';
+        return view('app.caja.confirmarAnular')->with(compact( 'mensaje' ,'modelo', 'formData', 'entidad', 'boton', 'listar'));
     }
 }
