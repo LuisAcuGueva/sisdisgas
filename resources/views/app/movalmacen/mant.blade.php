@@ -381,7 +381,18 @@ function agregarCarrito(){
 				$('#cantidad').val('');
 				$('#cantidad').focus();
 			}else{
-				$.post('{{ URL::route("movalmacen.agregarcarritocompra")}}', {cantidad: cantidad, cantidad_envase: cantidad_envase, precio_compra: precio_compra, precio_compra_envase: precio_compra_envase, producto_id: product_id, precio_venta: precio_venta, precio_venta_envase: precio_venta_envase, detalle: $('#detalle').val(),_token: _token} , function(data){
+				$.post('{{ URL::route("movalmacen.agregarcarritocompra")}}', {
+					tipo: tipo, 
+					cantidad: cantidad, 
+					cantidad_envase: cantidad_envase, 
+					precio_compra: precio_compra,
+					precio_compra_envase: precio_compra_envase, 
+					producto_id: product_id, 
+					precio_venta: precio_venta, 
+					precio_venta_envase: precio_venta_envase, 
+					detalle: $('#detalle').val(),
+					_token: _token
+				} , function(data){
 					$('#detalle').val(true);
 					if(data === '0-0') {
 						swal({
@@ -430,6 +441,7 @@ function agregarCarrito(){
 			$.post(
 				'{{ URL::route("movalmacen.agregarcarritocompra")}}', 
 				{
+					tipo: tipo, 
 					cantidad: cantidad, 
 					cantidad_envase: cantidad_envase, 
 					precio_compra: precio_compra, 
