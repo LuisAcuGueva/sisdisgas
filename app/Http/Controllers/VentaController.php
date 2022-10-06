@@ -225,14 +225,6 @@ class VentaController extends Controller
         return is_null($error) ? "OK" : $error;
     }
 
-    public function guardardetalle(Request $request){
-        $txt = "";
-        foreach (json_decode($request->input('det_productos')) as $detalle) {
-            $txt += $detalle->cantidad;
-        }
-        return $txt;
-    }
-
     public function serieventa(Request $request){
         $user = Auth::user();
         $sucursal_id  = $request->input('sucursal_id');   
