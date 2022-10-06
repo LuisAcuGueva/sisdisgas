@@ -49,8 +49,6 @@ class SucursalController extends Controller
         $cabecera[]       = array('valor' => 'NOMBRE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'DIRECCIÓN', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TELÉFONO', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'CANT. BAL. NORMAL', 'numero' => '1');
-        $cabecera[]       = array('valor' => 'CANT. BAL. PREMIUM', 'numero' => '1');
         
         $titulo_modificar = $this->tituloModificar;
         $titulo_eliminar  = $this->tituloEliminar;
@@ -104,9 +102,7 @@ class SucursalController extends Controller
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
         $reglas     = array('nombre' => 'required|max:50',
                             'direccion' => 'required|max:100',
-                            'telefono' => 'required|max:15',
-                            'cant_balon_normal' => 'required|numeric',
-                            'cant_balon_premium' => 'required|numeric');
+                            'telefono' => 'required|max:15');
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
         if ($validacion->fails()) {
@@ -118,25 +114,7 @@ class SucursalController extends Controller
             $sucursal->nombre = strtoupper($request->input('nombre'));
             $sucursal->direccion = strtoupper($request->input('direccion'));
             $sucursal->telefono = $request->input('telefono');
-            $sucursal->cant_balon_normal = $request->input('cant_balon_normal');
-            $sucursal->cant_balon_premium = $request->input('cant_balon_premium');
             $sucursal->save(); 
-
-        /*   $productos = Producto::all();
-            $almacenes = Almacen::all();
-
-            foreach ($almacenes as $key => $almacen) {
-                foreach ($productos as $key => $producto) {
-
-                    $stock = new Stock();
-                    $stock->cantidad = 0;
-                    $stock->almacen_id = $almacen->id;
-                    $stock->producto_id = $producto->id;
-                    $stock->save();
-
-                }
-            }*/
-
         });
         return is_null($error) ? "OK" : $error;
     }
@@ -188,9 +166,7 @@ class SucursalController extends Controller
         }
         $reglas     = array('nombre' => 'required|max:50',
                             'direccion' => 'required|max:100',
-                            'telefono' => 'required|max:15',
-                            'cant_balon_normal' => 'required|numeric',
-                            'cant_balon_premium' => 'required|numeric');
+                            'telefono' => 'required|max:15');
         $mensajes   = array();
         $validacion = Validator::make($request->all(), $reglas, $mensajes);
         if ($validacion->fails()) {
@@ -201,8 +177,6 @@ class SucursalController extends Controller
             $sucursal->nombre = strtoupper($request->input('nombre'));
             $sucursal->direccion = strtoupper($request->input('direccion'));
             $sucursal->telefono = $request->input('telefono');
-            $sucursal->cant_balon_normal = $request->input('cant_balon_normal');
-            $sucursal->cant_balon_premium = $request->input('cant_balon_premium');
             $sucursal->save();
         });
         return is_null($error) ? "OK" : $error;
