@@ -57,7 +57,7 @@
 				<input class="form-control input-sm" id="fecha" placeholder="Ingrese Fecha" name="fecha" type="date" value="{{ $hoy }}" readOnly="readOnly">
 			</div>
 		</div>
-		<div class="form-group" style="height: 12px; margin: 25px 0px; display:none;">
+		<div class="form-group movalm-inputs" style="display:none;">
 			{!! Form::label('total', 'Total:', array('class' => 'col-lg-4 col-md-4 col-sm-4 control-label')) !!}
 			<div class="col-lg-4 col-md-4 col-sm-4">
 				{!! Form::text('total', number_format(0, 2, '.', ''), array('style' => 'background-color: #FFEEC5;', 'readOnly' ,'class' => 'form-control input-sm', 'id' => 'total' )) !!}
@@ -165,59 +165,23 @@
 		    </div>
 		</div>
 		<div class="col-lg-12 col-md-12 col-sm-12 text-right" style="margin-top: 10px;">
-			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarCompra(\''.$entidad.'\', this)')) !!}
+			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardarMovAlmacen(\''.$entidad.'\', this)')) !!}
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 		</div>
 	 </div>	
 {!! Form::close() !!}
 
 <script>
-	$(document).ready(function() {
-		$('#detallesCompra').html('');
-		$('#cantproductos').val('0');
-		configurarAnchoModal('875');
-		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+$(document).ready(function() {
+	$('#detallesCompra').html('');
+	$('#cantproductos').val('0');
+	configurarAnchoModal('875');
+	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
-		$("#serie").inputmask({"mask": "9999"});
-		$("#numerodocumento").inputmask({"mask": "9999999"});
-		$('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-		
-		$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_compra"]').keydown( function(e) {
-			var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-			if(key == 13) {
-				e.preventDefault();
-				var inputs = $(this).closest('form').find(':input:visible:not([disabled]):not([readonly])');
-				inputs.eq( inputs.index(this)+ 1 ).focus();
-			}
-		});
-		
-		$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="precio_venta"]').keydown( function(e) {
-			var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-			if(key == 13) {
-				e.preventDefault();
-				var inputs = $(this).closest('form').find(':input:visible:not([disabled]):not([readonly])');
-				inputs.eq( inputs.index(this)+ 1 ).focus();
-			}
-		});
-
-		//agregar producto sin lote
-		$(IDFORMMANTENIMIENTO+'{!! $entidad !!}' + ' :input[id="cantidad"]').keydown( function(e) {
-			var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-			if(key == 13) {
-				if($(this).val() == '') {
-					return false;
-					$(this).focus();
-				}
-				var product_id = $('#producto_id').val();
-				console.log(product_id);
-				/*e.preventDefault();
-				var inputs = $(this).closest('form').find(':input:visible:not([disabled]):not([readonly])');
-				inputs.eq( inputs.index(this)+ 1 ).focus();*/
-				agregarCarrito();
-			}
-		});
-		
-	}); 
+	$("#serie").inputmask({"mask": "9999"});
+	$("#numerodocumento").inputmask({"mask": "9999999"});
+	$('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+}); 
 
 $('#tipo').on('change', function(){
 	$("#detallesCompra").html("");
@@ -242,11 +206,13 @@ function escogerFila(){
 	});
 }
 
-$('.quitarFila').on('click', function(){
-	event.preventDefault();
-	$(this).parent('span').parent('td').parent('tr').remove();
-	calculatetotal();
-});
+function quitarFila(){
+	$('.quitarFila').on('click', function(){
+		event.preventDefault();
+		$(this).parent('span').parent('td').parent('tr').remove();
+		calculatetotal();
+	});
+}
 
 function is_numeric(value) {
 	return !isNaN(parseFloat(value)) && isFinite(value);
@@ -277,7 +243,7 @@ function buscarProducto(valor){
         $.ajax({
             type: "POST",
             url: "movalmacen/buscandoproducto",
-            data: "nombre="+$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[id="nombreproducto"]').val() + "&sucursal="+$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[name="sucursal"]').val() + "&_token="+$(IDFORMMANTENIMIENTO + '{!! $entidad !!} :input[name="_token"]').val(),
+            data: "nombre="+$("#nombreproducto").val() + "&sucursal="+$("#sucursal").val() + "&_token="+$('input[name=_token]').val(),
             success: function(a) {
                 datos=JSON.parse(a);
                 var a = '';
@@ -319,7 +285,6 @@ function seleccionarProducto(idproducto){
 			$(".divEnvase").css('display','');
 			$("#precio_compra_envase").val(datos[5]);
 			$("#precio_venta_envase").val(datos[6]);
-			$("#envases_sucursal").val(datos[8]);
 			$("#total_envases").val(datos[9]);
 		}else{
 			$(".divEnvase").css('display','none');
@@ -331,7 +296,6 @@ function seleccionarProducto(idproducto){
 function agregarCarrito(){
 	var cantidad = $('#cantidad').val();
 	var cantidad_envase = $('#cantidad_envase').val();
-	var envases_sucursal = $('#envases_sucursal').val();
 	var total_envases = $('#total_envases').val();
 	var precio_compra = $('#precio_compra').val();
 	var precio_compra_envase = $('#precio_compra_envase').val();
@@ -435,13 +399,13 @@ function agregarCarrito(){
 						}		
 						$("#Product" + producto_id).css('display', 'none').fadeIn(1000);	
 						calculatetotal();
+						quitarFila();
 						$("#nombreproducto").val('');
 						$("#cantidad").val('');
 						$("#precio_compra").val('');
 						$("#precio_venta").val('');
 						$("#precio_compra_envase").val('');
 						$("#precio_venta_envase").val('');
-						$("#envases_sucursal").val('');
 						$("#total_envases").val('');
 						$("#cantidad_envase").val('');
 						$("#nombreproducto").focus();
@@ -458,6 +422,8 @@ function agregarCarrito(){
 					type: 'error',
 					title: 'NO HAY SUFICIENTES ENVASES VACÍOS',
 					});
+					$('#cantidad').val('');
+					$('#cantidad').focus();
 					return false;
 				}
 			}
@@ -492,13 +458,13 @@ function agregarCarrito(){
 					}		
 					$("#Product" + producto_id).css('display', 'none').fadeIn(1000);	
 					calculatetotal();
+					quitarFila();
 					$("#nombreproducto").val('');
 					$("#cantidad").val('');
 					$("#precio_compra").val('');
 					$("#precio_venta").val('');
 					$("#precio_compra_envase").val('');
 					$("#precio_venta_envase").val('');
-					$("#envases_sucursal").val('');
 					$("#total_envases").val('');
 					$("#cantidad_envase").val('');
 					$("#nombreproducto").focus();
@@ -540,27 +506,19 @@ function calculatetotal() {
 	$('#total').val(total.toFixed(2));
 }
 
-function guardarCompra(entidad, idboton) {
-	if($(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="proveedor_id"]').val()==""){
-		swal({
-			title: 'DEBE INGRESAR UN PROVEEDOR',
-			type: 'error',
-			});
-		$(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="ccruc"]').focus();
-		return false;
-	}else if($(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="serie"]').val()=="" || $(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="numerodocumento"]').val()==""){
+function guardarMovAlmacen(entidad, idboton) {
+	if($("#serie").val()=="" || $("#numerodocumento").val()==""){
 		swal({
 			title: 'DEBE INGRESAR SERIE Y NÚMERO',
 			type: 'error',
 			});
-		$(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="ccruc"]').focus();
+		$("#serie").focus();
 		return false;
-	}else if($(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="total"]').val()== 0){
+	}else if($("#total").val()== 0){
 		swal({
 			title: 'EL TOTAL DEBE SER MAYOR QUE 0 SOLES , INGRESE PRODUCTOS AL DETALLE DE LA COMPRA',
 			type: 'error',
 			});
-		$(IDFORMMANTENIMIENTO + '{{ $entidad }} :input[id="ccruc"]').focus();
 		return false;
 	}else{
 		var sucursal = document.getElementById("sucursal");
