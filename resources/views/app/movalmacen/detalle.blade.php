@@ -1,10 +1,34 @@
+<style>
+	.section-title{
+		border: solid 1px; 
+		border-radius: 5px; 
+		height: 35px; 
+		margin-bottom: 10px; 
+		text-align: center; 
+		color: #ffffff; 
+		border-color: #2a3f54; 
+		background-color: #2a3f54;
+	}
+	.text-title{
+		margin-top: 8px; 
+		font-weight: 600;
+	}
+	#detalle_prod td, #detalle_pago td{
+		vertical-align: middle;
+		text-align: center; 
+	}
+	#cabecera th{
+		font-size: 13px !important; 
+		text-align: center;
+	}
+</style>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($compra, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
 	<div class="col-lg-12 col-md-12 col-sm-12">
 		<div class="col-lg-4 col-md-4 col-sm-4">
-			<div class="col-lg-12 col-md-12 col-sm-12" style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
-				<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DATOS DEL DOCUMENTO</h4>
+			<div class="section-title">
+				<h4 class="text-title">DATOS DEL DOCUMENTO</h4>
 			</div>
 			<div class="col-lg-12 col-md-12 col-sm-12 m-b-15">
 				{!! Form::label('sucursal', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
@@ -29,41 +53,46 @@
 		</div>
 
 		<div class="col-lg-8 col-md-8 col-sm-8">
-		
-			<div class="col-lg-12 col-md-12 col-sm-12">
-				<div style=" border: solid 1px; border-radius: 5px; height: 40px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
-					<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DETALLE DE MOV ALMACÉN</h4>
-					<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
-					<thead id="cabecera"><tr><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Cant</th><th style="font-size: 13px !important;">Precio Unit</th><th style="font-size: 13px !important;">Cant. Envases</th><th style="font-size: 13px !important;">Precio Envase</th><th style="font-size: 13px !important;">Precio Acum</th></tr></thead>
-						<tbody id="detalle">
-							@foreach($detalles  as $key => $value)
-								<tr>
-									<td>{{ $value->producto->descripcion }} </td>
-									<td align="center">{{ $value->cantidad }} </td>
-									<td align="center">{{ $value->precio }} </td>
-									@if( $value->cantidad_envase == null )
-										<td align="center"> - </td>
-									@else
-										<td align="center">{{ $value->cantidad_envase }} </td>
-									@endif
-									@if( $value->cantidad_envase == null )
-										<td align="center"> - </td>
-									@else
-										<td align="center">{{ $value->precio_envase }} </td>
-									@endif
-
-									@if( $value->cantidad_envase == null )
-										<td align="center">{{ number_format($value->cantidad * $value->precio, 2)}} </td>
-									@else
-										<td align="center">{{ number_format($value->cantidad * $value->precio, 2)}} + {{ number_format($value->cantidad_envase * $value->precio_envase, 2)}} = {{  number_format(($value->cantidad * $value->precio) + ($value->cantidad_envase * $value->precio_envase) ,2) }} </td>
-									@endif
-								</tr>
-							@endforeach
-						</tbody>
-					</table>
-				</div>
+			<div class="section-title">
+				<h4 class="text-title">DATOS DEL DOCUMENTO</h4>
 			</div>
-			
+			<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
+				<thead id="cabecera">
+					<tr>
+						<th>Descripción</th>
+						<th>Cantidad</th>
+						<th>Precio</th>
+						<th>Cantidad Envases</th>
+						<th>Precio Envase</th>
+						<th>Total</th>
+					</tr>
+				</thead>
+				<tbody id="detalle_prod">
+					@foreach($detalles  as $key => $value)
+						<tr>
+							<td>{{ $value->producto->descripcion }} </td>
+							<td align="center">{{ $value->cantidad }} </td>
+							<td align="center">{{ $value->precio }} </td>
+							@if( $value->cantidad_envase == null )
+								<td align="center"> - </td>
+							@else
+								<td align="center">{{ $value->cantidad_envase }} </td>
+							@endif
+							@if( $value->cantidad_envase == null )
+								<td align="center"> - </td>
+							@else
+								<td align="center">{{ $value->precio_envase }} </td>
+							@endif
+
+							@if( $value->cantidad_envase == null )
+								<td align="center">{{ number_format($value->cantidad * $value->precio, 2)}} </td>
+							@else
+								<td align="center">{{ number_format($value->cantidad * $value->precio, 2)}} + {{ number_format($value->cantidad_envase * $value->precio_envase, 2)}} = {{  number_format(($value->cantidad * $value->precio) + ($value->cantidad_envase * $value->precio_envase) ,2) }} </td>
+							@endif
+						</tr>
+					@endforeach
+				</tbody>
+			</table>			
 		</div>
 	</div>
 	<div class="form-group">
@@ -74,7 +103,7 @@
 {!! Form::close() !!}
 <script type="text/javascript">
 $(document).ready(function() {
-	configurarAnchoModal('1300');
+	configurarAnchoModal('875');
 	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
 
 	$('input').iCheck({
