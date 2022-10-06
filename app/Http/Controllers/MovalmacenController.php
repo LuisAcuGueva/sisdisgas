@@ -61,8 +61,6 @@ class MovalmacenController extends Controller
         $cabecera[]       = array('valor' => 'FECHA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'CONCEPTO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'NRO DOC', 'numero' => '1');
-        //$cabecera[]       = array('valor' => 'TIPO DOC', 'numero' => '1');
-        //$cabecera[]       = array('valor' => 'RESPONSABLE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'COMENTARIO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'TOTAL', 'numero' => '1');
         
@@ -483,11 +481,7 @@ class MovalmacenController extends Controller
         $formData = array('compras.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        $detallespago = Detallepagos::where('pedido_id', '=', $id)
-                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
-                    ->where('estado',1)
-                    ->get();  
-        return view($this->folderview.'.detalle')->with(compact('compra', 'detallespago','detalles','formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.detalle')->with(compact('compra','detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     /*
