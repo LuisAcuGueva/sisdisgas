@@ -214,7 +214,7 @@ class MovalmacenController extends Controller
                                         ->first();
 
                 if($tipo == "I"){
-                    // ingresamos nuevo kardex
+                    //* Ingresamos nuevo kardex
                     if ($ultimokardex === NULL) {
                         $stockactual = $cantidad + $cantidadenvase;
                     }else{
@@ -233,7 +233,7 @@ class MovalmacenController extends Controller
                     $kardex->detalle_mov_almacen_id = $detalleMovalmacen->id;
                     $kardex->save();
 
-                    //Aumentar Stock
+                    //* Aumentar Stock
                     $stock = Stock::where('producto_id', $request->input('producto_id'.$i))->where('sucursal_id', $sucursal_id)->first();
                     if (count($stock) == 0) {
                         $stock = new Stock();
@@ -252,7 +252,7 @@ class MovalmacenController extends Controller
                     $stock->save();
 
                 }else{
-                     // ingresamos nuevo kardex
+                    //* Ingresamos nuevo kardex
                      if ($ultimokardex ) {
                         $stockanterior = $ultimokardex->stock_actual;
                         $stockactual = $ultimokardex->stock_actual - $cantidad - $cantidadenvase;
@@ -269,7 +269,7 @@ class MovalmacenController extends Controller
                         $kardex->save();    
                     }
 
-                    //Reducir Stock
+                    //* Reducir Stock
                     $stock = Stock::where('producto_id', $request->input('producto_id'.$i))->where('sucursal_id', $sucursal_id)->first();
                     if (count($stock) == 0) {
                         $stock = new Stock();
