@@ -202,7 +202,7 @@
 					<tr>
 						<th>Descripción</th>
 						<th>Cantidad</th>
-						<th>Precio S/.</th>
+						<th>Precio</th>
 						<th>Cantidad Envases</th>
 						<th>Precio Envase</th>
 						<th>Total</th>
