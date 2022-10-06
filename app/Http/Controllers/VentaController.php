@@ -216,11 +216,10 @@ class VentaController extends Controller
                     $stock->envases_llenos = $stock->cantidad;
                     $stock->envases_total -= $detalleMovAlmacen->cantidad_envase;
                     $stock->envases_vacios += $detalleMovAlmacen->cantidad;
-                    $stock->save();
                 }else{
                     $stock->cantidad -= $detalleMovAlmacen->cantidad;
-                    $stock->save();
                 }
+                $stock->save();
             } 
         });
         return is_null($error) ? "OK" : $error;
