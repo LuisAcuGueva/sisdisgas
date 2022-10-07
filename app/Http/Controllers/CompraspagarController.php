@@ -103,14 +103,12 @@ class CompraspagarController extends Controller
         $compra = Movimiento::find($id);
         $detalles = Detallemovalmacen::where('movimiento_id',$compra->id)->get();
         $entidad  = 'Movimiento';
-        $formData = array('compraspagar.store', $id);
+        $formData = array('compras.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        $detallespago = Detallepagos::where('pedido_id', '=', $id)
-                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
-                    ->where('estado',1)
-                    ->get();  
-        return view($this->folderview.'.detalle')->with(compact('compra', 'detallespago','detalles','formData', 'entidad', 'boton', 'listar'));
+        $detallespago = Detallepagos::where('pedido_id', '=', $id)->where('credito',0)->get();  
+        $detallespago_credito = Detallepagos::where('pedido_id', '=', $id)->where('credito',1)->get();  
+        return view($this->folderview.'.detalle')->with(compact('compra', 'detallespago', 'detallespago_credito','detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function pagos(Request $request, $id)
