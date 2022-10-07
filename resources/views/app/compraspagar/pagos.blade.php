@@ -1,29 +1,29 @@
+<style>
+	#cabecera th{
+		font-size: 18px;
+	}
+</style>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($pedido, $formData) !!}	
 	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
-	<?php
-	$cont = 1;
-	?>
+	<?php $cont = 1; ?>
 	<div class="col-lg-12 col-md-12 col-sm-12">
 		<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
-			<thead id="cabecera"><tr><th style="font-size: 13px !important;">#</th><th style="font-size: 13px !important;">Fecha</th><th style="font-size: 13px !important;">Monto</th></tr></thead>
+			<thead id="cabecera">
+				<tr>
+					<th>#</th>
+					<th>Fecha</th>
+					<th>Monto</th>
+				</tr>
+			</thead>
 			<tbody id="detalle">
 				@foreach($detalles  as $key => $value)
 					<tr>
-					<td>{{ $cont }} </td>
-					<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->pago->fecha )) }}</td>
-					@if($value->tipo == "R")
-					<td>PAGO CON REPARTIDOR</td>
-					<td>Repartidor: {{  $value->pago->trabajador->apellido_pat.' '.$value->pago->trabajador->apellido_mat.' '.$value->pago->trabajador->nombres  }}</td>
-					@elseif($value->tipo == "S")
-					<td>PAGO EN SUCURSAL</td>
-					<td>Sucursal: {{ $value->pago->sucursal->nombre }} </td>
-					@endif
-					<td>{{ $value->monto }} </td>
+						<td>{{ $cont }} </td>
+						<td>{{ date("d/m/Y h:i:s a",strtotime($value->pedido->fecha )) }}</td>
+						<td>{{ $value->monto }} </td>
 					</tr>
-					<?php
-					$cont++;
-					?>
+					<?php $cont++; ?>
 				@endforeach
 			</tbody>
 		</table>

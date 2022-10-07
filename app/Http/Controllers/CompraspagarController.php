@@ -120,7 +120,7 @@ class CompraspagarController extends Controller
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $pedido = Movimiento::find($id);
         $detalles = Detallepagos::where('pedido_id', '=', $id)
-                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                    ->join('movimiento', 'detalle_pagos.pedido_id', '=', 'movimiento.id')
                     ->where('estado',1)
                     ->get();    
         $entidad  = 'Movimiento';
@@ -140,7 +140,7 @@ class CompraspagarController extends Controller
         $pedido = Movimiento::find($id);
         $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
         $total_pagos = Detallepagos::where('pedido_id', '=', $id)
-                                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                                    ->join('movimiento', 'detalle_pagos.pedido_id', '=', 'movimiento.id')
                                     ->where('estado',1)
                                     ->sum('monto');
         round($total_pagos,2);
@@ -150,7 +150,7 @@ class CompraspagarController extends Controller
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
         $formData = array('compraspagar.pagardeuda', $id);
         $formData = array('route' => $formData, 'method' => 'POST', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
-        $boton    = 'Pagar';
+        $boton    = 'Guardar';
         return view($this->folderview.'.pagar')->with(compact( 'turnos_iniciados', 'saldo','pedido', 'cboSucursal', 'detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
