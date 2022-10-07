@@ -170,11 +170,8 @@ class CompraspagarController extends Controller
         }
         $compra = Movimiento::find($request->input('pedido_id'));
         $error = DB::transaction(function() use($request, $compra){
-
             $sucursal_id = $request->input('sucursal');
-
             $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
-
             $movimientocaja = new Movimiento();
             $movimientocaja->sucursal_id        = $sucursal_id; 
             $movimientocaja->compra_id          = $compra->id;
@@ -192,9 +189,10 @@ class CompraspagarController extends Controller
 
             $detalle_pagos = new Detallepagos();
             $detalle_pagos->pedido_id = $compra->id;
-            $detalle_pagos->pago_id = $movimientocaja->id;
-            $detalle_pagos->monto   = $request->input('monto');
-            $detalle_pagos->tipo   =  'C';
+            $detalle_pagos->metodo_pago_id = 1;
+            $detalle_pagos->monto = $request->input('monto');
+            $detalle_pagos->tipo = 'C';
+            $detalle_pagos->credito =  1;
             $detalle_pagos->save();
             
         });
