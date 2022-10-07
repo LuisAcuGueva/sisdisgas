@@ -181,13 +181,15 @@ class ComprasController extends Controller
             }
             $compra->save();
 
-            $detalle_pagos = new Detallepagos();
-            $detalle_pagos->pedido_id = $compra->id;
-            $detalle_pagos->metodo_pago_id = 1;
-            $detalle_pagos->monto = $a_cuenta ? $request->input('pago') : $request->input('totalcompra');
-            $detalle_pagos->tipo =  'C';
-            $detalle_pagos->credito = 0;
-            $detalle_pagos->save();
+            if( $request->input('pago') != 0 || ($request->input('totalcompra') != 0 && !$a_cuenta)){
+                $detalle_pagos = new Detallepagos();
+                $detalle_pagos->pedido_id = $compra->id;
+                $detalle_pagos->metodo_pago_id = 1;
+                $detalle_pagos->monto = $a_cuenta ? $request->input('pago') : $request->input('totalcompra');
+                $detalle_pagos->tipo =  'C';
+                $detalle_pagos->credito = 0;
+                $detalle_pagos->save();
+            }
 
             $lista = (int) $request->input('cantproductos');
             for ($i=1; $i <= $lista; $i++) {
