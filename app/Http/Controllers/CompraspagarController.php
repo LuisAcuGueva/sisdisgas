@@ -23,7 +23,7 @@ class CompraspagarController extends Controller
     protected $tituloAdmin     = 'Compras por pagar';
     protected $tituloDetalle  = 'Detalle de compra';
     protected $tituloPagos  = 'Detalle de pagos';
-    protected $tituloPagar  = 'Pagar deuda';
+    protected $tituloPagar  = 'Pagar deuda a proveedor';
     protected $rutas           = array(
             'search'   => 'compraspagar.buscar',
             'index'    => 'compraspagar.index',
