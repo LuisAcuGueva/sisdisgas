@@ -41,23 +41,15 @@ use App\Detallepagos;
 					<td align="center" style="color:black; font-weight: bold;">{{ number_format($value->total,2) }}</td>
 					<td align="center" style="color:red; font-weight: bold;">{{ number_format($saldo,2) }}</td>
 					<td align="center" style="color:green; font-weight: bold;">{{ number_format($total_pagos,2) }}</td>
-					@if($total_pagos == 0)
+					@if($total_pagos == 0 || $value->estado == 0)
 						<td align="center">{!! Form::button('<i class="glyphicon glyphicon-th-list"></i> Detalle de pagos', array('onclick' => 'modal (\''.URL::route($ruta["pagos"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagos.'\', this);', 'class' => 'btn btn-sm btn-secondary ', 'disabled')) !!}</td>
 					@else
-						@if($value->estado == 1)
-							<td align="center">{!! Form::button('<i class="glyphicon glyphicon-th-list"></i> Detalle de pagos', array('onclick' => 'modal (\''.URL::route($ruta["pagos"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagos.'\', this);', 'class' => 'btn btn-sm btn-warning ')) !!}</td>
-						@elseif($value->estado == 0)
-							<td align="center">{!! Form::button('<i class="glyphicon glyphicon-th-list"></i> Detalle de pagos', array('onclick' => 'modal (\''.URL::route($ruta["pagos"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagos.'\', this);', 'class' => 'btn btn-sm btn-secondary ', 'disabled')) !!}</td>
-						@endif
+						<td align="center">{!! Form::button('<i class="glyphicon glyphicon-th-list"></i> Detalle de pagos', array('onclick' => 'modal (\''.URL::route($ruta["pagos"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagos.'\', this);', 'class' => 'btn btn-sm btn-warning ')) !!}</td>
 					@endif
-					@if($saldo == 0)
+					@if($saldo == 0 || $value->estado == 0)
 						<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Cobrar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-secondary' , 'disabled')) !!}</td>
 					@else
-						@if($value->estado == 1)
-							<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Cobrar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-success')) !!}</td>
-						@elseif($value->estado == 0)
-							<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Cobrar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-secondary' , 'disabled')) !!}</td>
-						@endif
+						<td align="center">{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Cobrar', array('onclick' => 'modal (\''.URL::route($ruta["pagar"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloPagar.'\', this);', 'class' => 'btn btn-sm btn-success')) !!}</td>
 					@endif
 				</tr>
 			@endforeach
