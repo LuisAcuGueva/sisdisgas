@@ -402,7 +402,7 @@ class ComprasController extends Controller
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $compra = Movimiento::find($id);
         $detalles = Detallemovalmacen::where('movimiento_id',$compra->id)->get();
-        $entidad  = 'Turnorepartidor';
+        $entidad  = 'Movimiento';
         $formData = array('compras.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
