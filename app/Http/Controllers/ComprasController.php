@@ -100,11 +100,6 @@ class ComprasController extends Controller
         return view($this->folderview.'.admin')->with(compact('entidad', 'cboSucursal', 'title', 'titulo_registrar', 'ruta'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create(Request $request)
     {
         $listar       = Libreria::getParam($request->input('listar'), 'NO');
@@ -121,13 +116,7 @@ class ComprasController extends Controller
         $boton        = 'Guardar'; 
         return view($this->folderview.'.mant')->with(compact('compra', 'cboSucursal','cboDocumento', 'formData', 'entidad', 'boton', 'listar'));
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(Request $request)
     {
         $listar     = Libreria::getParam($request->input('listar'), 'NO');
@@ -140,38 +129,27 @@ class ComprasController extends Controller
         $dat=array();
         $sucursal_id = $request->input('sucursal');
         $error = DB::transaction(function() use($request,$sucursal_id,&$dat){
-
             $total = str_replace(',', '', $request->input('total'));
-            
-            $compra                 = new Movimiento();
-            $compra->sucursal_id    = $sucursal_id; 
+            $compra = new Movimiento();
+            $compra->sucursal_id = $sucursal_id; 
             $compra->tipodocumento_id = $request->input('tipodocumento_id');
             $compra->tipomovimiento_id = 3;
-            $compra->persona_id =  $request->input('proveedor_id');
+            $compra->persona_id = $request->input('proveedor_id');
             $compra->concepto_id = 4;
             $compra->num_compra = str_replace("_","", $request->input('serie')) . '-' . str_replace("_","", $request->input('numerodocumento'));
-            //$compra->fecha  = $request->input('fecha');
             $compra->estado = 1;
             $compra->total = $total;
-            //$compra->igv = $igv;
-            //$compra->subtotal = $total - $igv;
-            //$compra->estadopago = 'P';
-
             $compra->comentario =  strtoupper ($request->input('comentario') );
             $user = Auth::user();
             $compra->usuario_id = $user->id;
             $compra->trabajador_id = $user->person_id;
             $compra->save();
 
-            $compra_id = $compra->id;
-
-            //registrar movimiento caja
-
             $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
 
             $movimientocaja = new Movimiento();
             $movimientocaja->sucursal_id        = $sucursal_id; 
-            $movimientocaja->compra_id          = $compra_id;
+            $movimientocaja->compra_id          = $compra->id;
             $movimientocaja->tipomovimiento_id  = 1;
             $movimientocaja->concepto_id        = 4;
             $movimientocaja->num_caja           = $num_caja;
@@ -185,35 +163,33 @@ class ComprasController extends Controller
             $movimientocaja->save();
 
             $a_cuenta                = $request->input('a_cuenta');
-            if($a_cuenta == true){
-                $pago   = $request->input('pago');
+            //* Registrar si es compra a credito
+            if($a_cuenta){
+                $pago = $request->input('pago');
                 $compra->balon_a_cuenta    = 1;
-                $compra->save();
                 if($pago == 0 || $pago == "" ){
-                    $movimientocaja->total              = 0;
-                    $movimientocaja->subtotal           = 0;
+                    //* Si todo es crédito borra movimiento de caja
                     $movimientocaja->delete();
                 }else{
-                    $movimientocaja->total              = $request->input('pago');
-                    $movimientocaja->subtotal           = $request->input('pago');
+                    //* Actualiza total de movimiento caja con lo que se pago
+                    $movimientocaja->total = $request->input('pago');
+                    $movimientocaja->subtotal = $request->input('pago');
                     $movimientocaja->save();
-
-                    $detalle_pagos = new Detallepagos();
-                    $detalle_pagos->pedido_id = $compra_id;
-                    $detalle_pagos->pago_id = $movimientocaja->id;
-                    $detalle_pagos->monto   = $request->input('pago');
-                    $detalle_pagos->tipo   =  'C';
-                    $detalle_pagos->save();
                 }
             }else{
-                $compra->balon_a_cuenta    = 0;
-                $compra->save();
+                $compra->balon_a_cuenta = 0;
             }
+            $compra->save();
 
-            //registrar si es compra a credito
-            
+            $detalle_pagos = new Detallepagos();
+            $detalle_pagos->pedido_id = $compra->id;
+            $detalle_pagos->metodo_pago_id = 1;
+            $detalle_pagos->monto = $a_cuenta ? $request->input('pago') : $request->input('totalcompra');
+            $detalle_pagos->tipo =  'C';
+            $detalle_pagos->credito = 0;
+            $detalle_pagos->save();
+
             $lista = (int) $request->input('cantproductos');
-
             for ($i=1; $i <= $lista; $i++) {
                 $cantidad  = $request->input('cantidad'.$i);
                 $cantidadenvase  = $request->input('cantidadenvase'.$i);
@@ -233,10 +209,11 @@ class ComprasController extends Controller
                 $detalleCompra->precio = $precio;
                 $detalleCompra->precio_envase = $precioenvase;
                 $detalleCompra->subtotal = $subtotal;
-                $detalleCompra->movimiento_id = $compra_id;
+                $detalleCompra->movimiento_id = $compra->id;
                 $detalleCompra->producto_id = $request->input('producto_id'.$i);
                 $detalleCompra->save();
-                //Editamos valores del producto
+
+                //* Editamos valores del producto
                 $producto = Producto::find($request->input('producto_id'.$i));
                 $producto->precio_compra = $request->input('preciocompra'.$i);
                 $producto->precio_venta = $request->input('precioventa'.$i);
@@ -246,7 +223,6 @@ class ComprasController extends Controller
                 
                 $stockanterior = 0;
                 $stockactual = 0;
-
                 $ultimokardex = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
                                         //->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
                                         ->where('detalle_mov_almacen.producto_id', '=',$request->input('producto_id'.$i))
@@ -254,87 +230,47 @@ class ComprasController extends Controller
                                         ->orderBy('kardex.id', 'DESC')
                                         ->first();
 
-                //$ultimokardex = Kardex::join('detallemovimiento', 'kardex.detallemovimiento_id', '=', 'detallemovimiento.id')->where('promarlab_id', '=', $lista[$i]['promarlab_id'])->where('kardex.almacen_id', '=',1)->orderBy('kardex.id', 'DESC')->first();
-
-                // ingresamos nuevo kardex
+                //* Ingresamos nuevo kardex
                 if ($ultimokardex === NULL) {
                     $stockactual = $cantidad + $cantidadenvase;
-                    $kardex = new Kardex();
-                    $kardex->tipo = 'I';
-                    $kardex->stock_anterior = $stockanterior;
-                    $kardex->stock_actual = $stockactual;
-                    $kardex->cantidad = $cantidad;
-                    $kardex->cantidad_envase = $cantidadenvase;
-                    $kardex->precio_compra = $precio;
-                    $kardex->precio_compra_envase = $precioenvase;
-                    $kardex->sucursal_id = $sucursal_id;
-                    $kardex->detalle_mov_almacen_id = $detalleCompra->id;
-                    $kardex->save();
-                    
                 }else{
                     $stockanterior = $ultimokardex->stock_actual;
                     $stockactual = $ultimokardex->stock_actual + $cantidad + $cantidadenvase;
-                    $kardex = new Kardex();
-                    $kardex->tipo = 'I';
-                    $kardex->stock_anterior = $stockanterior;
-                    $kardex->stock_actual = $stockactual;
-                    $kardex->cantidad = $cantidad;
-                    $kardex->cantidad_envase = $cantidadenvase;
-                    $kardex->precio_compra = $precio;
-                    $kardex->precio_compra_envase = $precioenvase;
-                    $kardex->sucursal_id = $sucursal_id;
-                    $kardex->detalle_mov_almacen_id = $detalleCompra->id;
-                    $kardex->save();    
-
                 }
+                $kardex = new Kardex();
+                $kardex->tipo = 'I';
+                $kardex->stock_anterior = $stockanterior;
+                $kardex->stock_actual = $stockactual;
+                $kardex->cantidad = $cantidad;
+                $kardex->cantidad_envase = $cantidadenvase;
+                $kardex->precio_compra = $precio;
+                $kardex->precio_compra_envase = $precioenvase;
+                $kardex->sucursal_id = $sucursal_id;
+                $kardex->detalle_mov_almacen_id = $detalleCompra->id;
+                $kardex->save();    
 
-                //Reducir Stock
-
+                //* Aumentar Stock
                 $stock = Stock::where('producto_id', $request->input('producto_id'.$i))->where('sucursal_id', $sucursal_id)->first();
                 if (count($stock) == 0) {
                     $stock = new Stock();
                     $stock->producto_id = $request->input('producto_id'.$i);
                     $stock->sucursal_id = $sucursal_id;
                 }
-
                 $producto = Producto::find( $request->input('producto_id'.$i) );
-
                 if($producto->recargable == 1){
-                    $stock->cantidad += $cantidad;
-                    $stock->cantidad += $cantidadenvase;
+                    $stock->cantidad += ($cantidad + $cantidadenvase);
                     $stock->envases_total += $cantidadenvase;
-                    $stock->envases_llenos += $cantidad;
-                    $stock->envases_llenos += $cantidadenvase;
+                    $stock->envases_llenos += ($cantidad + $cantidadenvase);
                     $stock->envases_vacios -= $cantidad;
-                    $stock->save();
                 }else{
                     $stock->cantidad += $cantidad;
-                    $stock->save();
                 }
-
+                $stock->save();
             }
         });
         return is_null($error) ? "OK" : $error;
-
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Request $request, $id)
     {
         $existe = Libreria::verificarExistencia($id, 'movimiento');
@@ -440,12 +376,6 @@ class ComprasController extends Controller
         return is_null($error) ? "OK" : $error;
     }
 
-    /**
-     * Función para confirmar la eliminación de un registrlo
-     * @param  integer $id          id del registro a intentar eliminar
-     * @param  string $listarLuego consultar si luego de eliminar se listará
-     * @return html              se retorna html, con la ventana de confirmar eliminar
-     */
     public function eliminar($id, $listarLuego)
     {
         $existe = Libreria::verificarExistencia($id, 'movimiento');
@@ -476,11 +406,9 @@ class ComprasController extends Controller
         $formData = array('compras.store', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        $detallespago = Detallepagos::where('pedido_id', '=', $id)
-                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
-                    ->where('estado',1)
-                    ->get();  
-        return view($this->folderview.'.detalle')->with(compact('compra', 'detallespago','detalles','formData', 'entidad', 'boton', 'listar'));
+        $detallespago = Detallepagos::where('pedido_id', '=', $id)->where('credito',0)->get();  
+        $detallespago_credito = Detallepagos::where('pedido_id', '=', $id)->where('credito',1)->get();  
+        return view($this->folderview.'.detalle')->with(compact('compra', 'detallespago', 'detallespago_credito','detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     /*
