@@ -133,12 +133,13 @@ $container = "'container'";
 							<?php
 							$detalle_turno = Detalleturnopedido::where('pedido_id',$value->id)->first();
 							$turno = Turnorepartidor::find($detalle_turno->turno_id);
+							$ultimo_detalle_turno = Detalleturnopedido::where('turno_id',$turno->id)->orderBy('id', 'DESC')->first();
 							$detalles_turno = Detalleturnopedido::where('turno_id',$turno->id)
 											->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
 											->where('estado',1)
 											->get();
 							?>
-							@if($turno->estado == "I" && count($detalles_turno) <= 1) 
+							@if($turno->estado == "I" && (count($detalles_turno) <= 1 || $ultimo_detalle_turno->pedido_id == $value->id )) 
 								<td align="center">{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar')) !!}</td>
 							@else
 								<td align="center">-</td>
