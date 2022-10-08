@@ -122,6 +122,7 @@ class TurnoController extends Controller
                                                         ->sum('detalle_pagos.monto');
             }
 
+            //* Restar vueltos a Ingresos efectivo
             if ($ingresos_metodos[1] > 0) {
                 $ingresos_metodos[1] -= $vueltos_pedidos_repartidor;
             }
@@ -450,19 +451,56 @@ class TurnoController extends Controller
         $turno_repartidor_max_id = Turnorepartidor::where('trabajador_id', $persona_id)->max("id");
         $turno_repartidor = Turnorepartidor::find($turno_repartidor_max_id);
         if($turno_repartidor != null){
-            $resultado        = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id);
-            $lista            = $resultado->get();
 
-            $ingresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
+            //* VUELTOS DE LOS PEDIDOS
+            $vueltos_pedidos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
                                                         ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
                                                         ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                                         ->where('estado',1)
                                                         ->where(function($subquery)
                                                             {
-                                                                $subquery->where('concepto.id','=', 3)->orwhere('concepto.id','=', 12)->orwhere('concepto.id','=', 15)->orwhere('concepto.id','=', 16);
+                                                                $subquery->where('concepto.id','=', 3);
+                                                            })
+                                                        ->sum('vuelto');
+
+            $ingresos_efectivo = Detallepagos::join('movimiento', 'detalle_pagos.pedido_id', '=', 'movimiento.id')
+                                            ->join('detalle_turno_pedido', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                            ->where('detalle_turno_pedido.turno_id', '=', $turno_repartidor->id)
+                                            ->where('movimiento.estado',1)
+                                            ->where('detalle_pagos.credito',0) //* Pagados al repartidor
+                                            ->where('detalle_pagos.metodo_pago_id', 1) //* Efectivo
+                                            ->where(function($subquery)
+                                                {
+                                                    $subquery->where('movimiento.concepto_id','=', 3);
+                                                })
+                                            ->sum('detalle_pagos.monto');
+
+            $ingresos_efectivo -= $vueltos_pedidos_repartidor;
+
+
+            //* VUELTOS PARA REPARTIDOR
+            $vueltos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where('estado',1)
+                                                        ->where(function($subquery)
+                                                            {
+                                                                $subquery->where('concepto.id','=', 12)->orwhere('concepto.id','=', 15);
                                                             })
                                                         ->sum('total');
 
+            //* INGRESOS DE PEDIDOS A CRÉDITO - PEDIDO PASADO                             
+            $ingresos_credito = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
+                                                        ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+                                                        ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
+                                                        ->where('estado',1)
+                                                        ->where(function($subquery)
+                                                            {
+                                                                $subquery->where('concepto.id','=', 16);
+                                                            })
+                                                        ->sum('total');
+
+            //* EGRESOS A CAJA
             $egresos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
                                                         ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
                                                         ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
@@ -473,14 +511,14 @@ class TurnoController extends Controller
                                                             })
                                                         ->sum('total');
 
+            //* GASTOS DE REPARTIDOR
             $gastos_repartidor = Detalleturnopedido::where('turno_id', '=', $turno_repartidor->id)
                                                         ->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
                                                         ->where('estado',1)
                                                         ->where('tipomovimiento_id',6)
                                                         ->sum('total');
 
-            $saldo_repartidor = $ingresos_repartidor - $egresos_repartidor - $gastos_repartidor;
-
+            $saldo_repartidor = ($ingresos_efectivo + $vueltos_repartidor + $ingresos_credito) - ($egresos_repartidor + $gastos_repartidor);
         }
         return $saldo_repartidor;
     }
