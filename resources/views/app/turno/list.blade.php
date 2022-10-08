@@ -106,7 +106,7 @@
             <?php $metodos_pago = Metodopago::all(); ?>
 			@foreach($metodos_pago as $key => $metodo_pago)
 			<tr>
-				<th>INGRESOS {{$metodo_pago->nombre}} :</th>
+				<th>INGRESOS {{$metodo_pago->nombre}}:</th>
 				<th class="text-right"><div id ="ingresopedidos"> {{ number_format( $ingresos_metodos[$metodo_pago->id] ,2) }} </div></th>
 			</tr>
 			@endforeach
