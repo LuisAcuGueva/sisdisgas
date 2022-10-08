@@ -1,3 +1,4 @@
+<?php use App\Metodopago; ?> 
 @if(count($lista) == 0)
 <h3 class="text-warning">Seleccione repartidor en turno.</h3>
 @else
@@ -77,7 +78,7 @@
 				<td> {{ $value->pedido->sucursal->nombre }} </td>
 			
 				@if(($value->pedido->tipomovimiento_id == 1 && ($value->pedido->concepto_id == 12 || $value->pedido->concepto_id == 15) ) || $value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5 )
-					<td align="center" style="color:green;font-weight: bold;"> {{ $value->pedido->total_pagado ? $value->pedido->total_pagado : $value->pedido->total }} </td>
+					<td align="center" style="color:green;font-weight: bold;"> {{ $value->pedido->balon_a_cuenta == 1 ? $value->pedido->total_pagado : $value->pedido->total }} </td>
 				@else
 					<td align="center" style="color:red;font-weight: bold;"> {{ $value->pedido->total }} </td>
 				@endif
@@ -101,12 +102,21 @@
 				<th>INGRESOS DE PEDIDOS :</th>
 				<th class="text-right"><div id ="ingresopedidos"> {{ number_format( $ingresos_repartidor ,2) }} </div></th>
 			</tr>
+			  
+            <?php $metodos_pago = Metodopago::all(); ?>
+			@foreach($metodos_pago as $key => $metodo_pago)
+			<tr>
+				<th>INGRESOS {{$metodo_pago->nombre}} :</th>
+				<th class="text-right"><div id ="ingresopedidos"> {{ number_format( $ingresos_metodos[$metodo_pago->id] ,2) }} </div></th>
+			</tr>
+			@endforeach
+			
 			<tr>
 				<th>INGRESOS DE PEDIDOS A CRÉDITO:</th>
 				<th class="text-right"><div id ="ingresocredito"> {{ number_format( $ingresos_credito,2) }} </div></th>
 			</tr>
 			<tr>
-				<th>TOTAL INGRESOS:</th>
+				<th>TOTAL INGRESOS + MONTO VUELTO:</th>
 				<th class="text-right"><div id ="total_ingresos"> {{ number_format( $total_ingresos,2) }} </div></th>
 			</tr>
 			<tr>
