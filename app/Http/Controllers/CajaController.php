@@ -1479,13 +1479,13 @@ class CajaController extends Controller
             $movimiento->estado = 0;
             $movimiento->comentario_anulado  = strtoupper($request->input('motivo'));  
 
-            if($movimiento->concepto_id == 15){ // monto vuelto al iniciar turno
+            if($movimiento->concepto_id == 15){ //* Monto vuelto al iniciar turno
                 $detalle_turno = Detalleturnopedido::where('pedido_id',$movimiento->id)->first();
                 $turno = Turnorepartidor::find($detalle_turno->turno_id);
                 $turno->delete();
             }
 
-            if($movimiento->concepto_id == 17){ // ingreso de caja de otra sucursal
+            if($movimiento->concepto_id == 17){ //* Ingreso de caja de otra sucursal
                 $caja_cerrada = Movimiento::where('ingreso_cierre_id',$id)->first();
                 $caja_cerrada->ingreso_caja_principal = null;
                 $caja_cerrada->ingreso_cierre_id = null;
