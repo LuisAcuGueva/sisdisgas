@@ -157,23 +157,13 @@ $container = "'container'";
 				<td align="center">{{ $value->num_caja}}</td>
 				<td align="center">{{ date("d/m/Y h:i:s a",strtotime($value->fecha)) }}</td>	
 				<td>{{ $concepto->concepto}}</td>
-				<?php
-					$cliente = null;
-					if($value->persona_id){
-						$cliente = Person::find($value->persona_id);
-					}
-				?>
+				<?php $cliente = $value->persona_id ? Person::find($value->persona_id) : null; ?>
 				@if($value->persona_id)
 					<td>{{ $cliente->razon_social ? $cliente->razon_social : $cliente->nombres . ' ' .$cliente->apellido_pat. ' ' .$cliente->apellido_mat }}</td>
 				@else
 					<td align="center"> - </td>
 				@endif
-				<?php
-					$trabajador = null;
-					if($value->trabajador_id){
-						$trabajador = Person::find($value->trabajador_id);
-					}
-				?>
+				<?php $trabajador = $value->trabajador_id ? Person::find($value->trabajador_id) : null; ?>
 				@if($value->trabajador_id)
 					<td>{{ $trabajador->nombres . ' ' .$trabajador->apellido_pat. ' ' .$trabajador->apellido_mat }}</td>
 				@else
