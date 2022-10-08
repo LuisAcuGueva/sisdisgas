@@ -86,75 +86,97 @@
 			@endforeach
 		</tbody>
 	</table>
-
-	<table class="table-bordered table-striped table-condensed" align="center">
+	<div class="row" style="padding: 0px !important; margin: 0px !important;">
+		<div class="col-lg-6 col-md-6 col-sm-6">
+			<table class="table-bordered table-striped table-condensed" align="center">
+				<thead>
+					<tr>
+						<th class="text-center" colspan="2">RESUMEN DE TURNO DEL REPARTIDOR</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<th>MONTO VUELTOS :</th>
+						<th class="text-right">{{ number_format( $vueltos_repartidor ,2) }}</th>
+					</tr>
+					<tr>
+						<th>INGRESOS DE PEDIDOS :</th>
+						<th class="text-right">{{ number_format( $ingresos_repartidor ,2) }}</th>
+					</tr>
+					<tr>
+						<th>INGRESOS DE PEDIDOS A CRÉDITO:</th>
+						<th class="text-right">{{ number_format( $ingresos_credito,2) }}</th>
+					</tr>
+					<tr>
+						<th>TOTAL INGRESOS + MONTO VUELTO:</th>
+						<th class="text-right">{{ number_format( $total_ingresos,2) }}</th>
+					</tr>
+					<tr>
+						<th>GASTOS DEL REPARTIDOR:</th>
+						<th class="text-right">{{ number_format( $gastos_repartidor,2) }}</th>
+					</tr>
+					<tr>
+						<th>EGRESOS A CAJA:</th>
+						<th class="text-right">{{ number_format( $egresos_repartidor,2) }}</th>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6">
+			<table class="table-bordered table-striped table-condensed" align="center">
+				<thead>
+					<tr>
+						<th class="text-center" colspan="2">DETALLE INGRESOS DE PEDIDOS</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php $metodos_pago = Metodopago::all(); ?>
+					@foreach($metodos_pago as $key => $metodo_pago)
+					<tr>
+						<th>INGRESOS {{$metodo_pago->nombre}}:</th>
+						<th class="text-right">{{ number_format( $ingresos_metodos[$metodo_pago->id] ,2) }}</th>
+					</tr>
+					@endforeach
+					<tr>
+						<th>TOTAL INGRESOS:</th>
+						<th class="text-right">{{ number_format(array_sum($ingresos_metodos),2) }}</th>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<table class="table-bordered table-striped table-condensed" align="center" style="margin-top: 15px;">
 		<thead>
 			<tr>
-				<th class="text-center" colspan="2">RESUMEN DE TURNO DEL REPARTIDOR</th>
+				<th class="text-center" colspan="2">SALDO DE REPARTIDOR</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
-				<th>MONTO VUELTOS :</th>
-				<th class="text-right"><div id ="montovuelto"> {{ $vueltos_repartidor }}</div></th>
+			<tr style ="background-color: #acffaab0;">
+				<th>MONTO VUELTOS:</th>
+				<th class="text-right">{{ number_format( $vueltos_repartidor ,2) }}</th>
 			</tr>
-			<tr>
-				<th>INGRESOS DE PEDIDOS :</th>
-				<th class="text-right"><div id ="ingresopedidos"> {{ number_format( $ingresos_repartidor ,2) }} </div></th>
+			<tr style ="background-color: #acffaab0;">
+				<th>INGRESOS EFECTIVO:</th>
+				<th class="text-right">{{ number_format( $ingresos_metodos[1] ,2) }}</th>
 			</tr>
-			  
-            <?php $metodos_pago = Metodopago::all(); ?>
-			@foreach($metodos_pago as $key => $metodo_pago)
-			<tr>
-				<th>INGRESOS {{$metodo_pago->nombre}}:</th>
-				<th class="text-right"><div id ="ingresopedidos"> {{ number_format( $ingresos_metodos[$metodo_pago->id] ,2) }} </div></th>
-			</tr>
-			@endforeach
-			
-			<tr>
+			<tr style ="background-color: #acffaab0;">
 				<th>INGRESOS DE PEDIDOS A CRÉDITO:</th>
-				<th class="text-right"><div id ="ingresocredito"> {{ number_format( $ingresos_credito,2) }} </div></th>
+				<th class="text-right">{{ number_format( $ingresos_credito ,2) }}</th>
 			</tr>
-			<tr>
-				<th>TOTAL INGRESOS + MONTO VUELTO:</th>
-				<th class="text-right"><div id ="total_ingresos"> {{ number_format( $total_ingresos,2) }} </div></th>
-			</tr>
-			<tr>
+			<tr style ="background-color: #ffc8cb;">
 				<th>GASTOS DEL REPARTIDOR:</th>
-				<th class="text-right"><div id ="gastos"> {{ number_format( $gastos_repartidor,2) }} </div></th>
+				<th class="text-right">{{ number_format( $gastos_repartidor,2) }}</th>
 			</tr>
-			<tr>
+			<tr style ="background-color: #ffc8cb;">
 				<th>EGRESOS A CAJA:</th>
-				<th class="text-right"><div id ="egresos"> {{ number_format( $egresos_repartidor,2) }} </div></th>
+				<th class="text-right">{{ number_format( $egresos_repartidor,2) }}</th>
 			</tr>
 			<tr>
-				<th>SALDO :</th>
-				<th class="text-right"><div id ="saldo"> {{ number_format( $saldo_repartidor,2) }} </div></th>
+				<th>SALDO:</th>
+				<th class="text-right">{{ number_format( $saldo_repartidor,2) }}</th>
 			</tr>
 		</tbody>
 	</table>
 </div>
-
-<script>
-	var vueltos_repartidor = {{$vueltos_repartidor}};
-	var ingresos_repartidor = {{$ingresos_repartidor}};
-	var ingresos_credito = {{$ingresos_credito}};
-	var total_ingresos = {{$total_ingresos}};
-	var egresos_repartidor = {{$egresos_repartidor}};
-	var gastos_repartidor = {{$gastos_repartidor}};
-	var saldo_repartidor = {{$saldo_repartidor}};
-	
-	$(document).ready(function () {
-		if($(".btnEliminar").attr('activo')=== 'no'){
-			$('.btnEliminar').attr("disabled", true);
-		}
-		$('#montovuelto').html(vueltos_repartidor.toFixed(2));
-		$('#ingresopedidos').html(ingresos_repartidor.toFixed(2));
-		$('#ingresos_credito').html(ingresos_credito.toFixed(2));
-		$('#egresos').html(egresos_repartidor.toFixed(2));
-		$('#gastos').html(gastos_repartidor.toFixed(2));
-		$('#saldo').html(saldo_repartidor.toFixed(2));
-		$('#total_ingresos').html(total_ingresos.toFixed(2));
-	});
-</script>
 @endif
