@@ -15,19 +15,13 @@
 		<tbody>
 			@foreach ($lista as $key => $value)
 				<tr style ="background-color: {{ $value->pedido->estado == 1 ? '#ffffff' : '#ffc8cb' }} !important">
-				@if($value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5)
+				@if(in_array($value->pedido->tipomovimiento_id, array(2, 5)))
 					<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
-				@elseif($value->pedido->tipomovimiento_id == 1 || $value->pedido->tipomovimiento_id == 6) 
+				@elseif(in_array($value->pedido->tipomovimiento_id, array(1, 6))) 
 					<td align="center"> - </td>
 				@endif	
 
-				@if($value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5)
-					@if($value->pedido->estado == 1)
-						<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloAnulacion.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
-					@elseif($value->pedido->estado == 0)
-						<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloAnulacion.'\', this);', 'disabled', 'class' => 'btn btn-sm btn-secondary glyphicon glyphicon-remove')) !!}</td>	
-					@endif
-				@elseif(($value->pedido->tipomovimiento_id == 1 || $value->pedido->tipomovimiento_id == 6) && ( $value->pedido->concepto_id == 12 || $value->pedido->concepto_id == 13 || $value->pedido->concepto_id == 5 || $value->pedido->concepto_id == 7 || $value->pedido->concepto_id == 8 || $value->pedido->concepto_id == 9  ) ) 
+				@if(in_array($value->pedido->tipomovimiento_id, array(2, 5)) || ( in_array($value->pedido->tipomovimiento_id, array(1, 6)) && in_array($value->pedido->concepto_id, array(5, 7, 8, 9, 12, 13)) ) )
 					@if($value->pedido->estado == 1)
 						<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->pedido->id, 'listar'=>'SI')).'\', \''.$tituloAnulacion.'\', this);', 'class' => 'btn btn-sm btn-danger glyphicon glyphicon-remove')) !!}</td>
 					@elseif($value->pedido->estado == 0)
@@ -42,17 +36,9 @@
 				<td> {{ $value->pedido->concepto->concepto }} </td>
 				
 				@if($value->pedido->tipomovimiento_id == 2)
-					@if($value->pedido->tipodocumento->abreviatura && $value->pedido->num_venta)
-						<td> {{  $value->pedido->tipodocumento->abreviatura . '' . $value->pedido->num_venta }} </td>
-					@else
-						<td align="center"> - </td>
-					@endif
+					<td> {{ $value->pedido->tipodocumento->abreviatura . '' . $value->pedido->num_venta }} </td>
 				@elseif($value->pedido->tipomovimiento_id == 5)
-					@if($value->pedido->venta->tipodocumento->abreviatura && $value->pedido->venta->num_venta)
-						<td> {{  $value->pedido->venta->tipodocumento->abreviatura . '' . $value->pedido->venta->num_venta }} </td>
-					@else
-						<td align="center"> - </td>
-					@endif
+					<td> {{ $value->pedido->venta->tipodocumento->abreviatura . '' . $value->pedido->venta->num_venta }} </td>
 				@else
 					<td align="center"> - </td>
 				@endif
@@ -77,7 +63,7 @@
 
 				<td> {{ $value->pedido->sucursal->nombre }} </td>
 			
-				@if(($value->pedido->tipomovimiento_id == 1 && ($value->pedido->concepto_id == 12 || $value->pedido->concepto_id == 15) ) || $value->pedido->tipomovimiento_id == 2 || $value->pedido->tipomovimiento_id == 5 )
+				@if(in_array($value->pedido->tipomovimiento_id, array(2, 5)) || ($value->pedido->tipomovimiento_id == 1 && in_array($value->pedido->concepto_id, array(12, 15)) ) )
 					<td align="center" style="color:green;font-weight: bold;"> {{ $value->pedido->balon_a_cuenta == 1 ? $value->pedido->total_pagado : $value->pedido->total }} </td>
 				@else
 					<td align="center" style="color:red;font-weight: bold;"> {{ $value->pedido->total }} </td>
