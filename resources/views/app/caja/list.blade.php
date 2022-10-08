@@ -124,39 +124,34 @@ $container = "'container'";
 		@foreach ($lista as $key => $value)
 			<tr style ="background-color: {{ $value->estado == 1 ? '#ffffff' : '#ffc8cb'}} !important">
 				<?php $concepto = Concepto::find($value->concepto_id); ?>
-				<td align="center">
-					@if($aperturaycierre == 1)	
-						@if($value->estado == 1)
-							@if($concepto->id == 1 || $concepto->id == 2 ) 
-								-
-							@elseif ($concepto->id == 12 || $concepto->id == 13 || $concepto->id == 14 || $concepto->id == 15) {{-- acciones repartidores --}}
-								<?php
-								$detalle_turno = Detalleturnopedido::where('pedido_id',$value->id)->first();
-								$turno = Turnorepartidor::find($detalle_turno->turno_id);
-								$detalles_turno = Detalleturnopedido::where('turno_id',$turno->id)
-												->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
-												->where('estado',1)
-												->get();
-								?>
-								@if($turno->estado == "C")
-									-
-								@else
-									@if(count($detalles_turno) != 1) 
-										-
-									@else
-										{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar')) !!}
-									@endif
-								@endif
+				
+				@if($aperturaycierre == 1)	
+					@if($value->estado == 1)
+						@if( in_array($concepto->id, array(1, 2)) ) 
+							<td align="center">-</td>
+						@elseif( in_array($concepto->id, array(12, 13, 14, 15)) ) {{-- acciones repartidores --}}
+							<?php
+							$detalle_turno = Detalleturnopedido::where('pedido_id',$value->id)->first();
+							$turno = Turnorepartidor::find($detalle_turno->turno_id);
+							$detalles_turno = Detalleturnopedido::where('turno_id',$turno->id)
+											->join('movimiento', 'detalle_turno_pedido.pedido_id', '=', 'movimiento.id')
+											->where('estado',1)
+											->get();
+							?>
+							@if($turno->estado == "I" && count($detalles_turno) <= 1) 
+								<td align="center">{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar')) !!}</td>
 							@else
-								{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar')) !!}
+								<td align="center">-</td>
 							@endif
-						@elseif($value->estado == 0)
-							{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-secondary btnEliminar' ,'disabled')) !!}
+						@else
+							<td align="center">{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-danger btnEliminar')) !!}</td>
 						@endif
-					@elseif($aperturaycierre == 0)	
-						-
+					@elseif($value->estado == 0)
+						<td align="center">{!! Form::button('<div class="glyphicon glyphicon-remove"></div>', array('onclick' => 'modal (\''.URL::route($ruta["delete"], array($value->id, 'SI')).'\', \''.$titulo_eliminar.'\', this);', 'class' => 'btn btn-sm btn-secondary btnEliminar' ,'disabled')) !!}</td>
 					@endif
-				</td>
+				@elseif($aperturaycierre == 0)	
+					<td align="center">-</td>
+				@endif
 
 				<td align="center">{{ $value->num_caja}}</td>
 				<td align="center">{{ date("d/m/Y h:i:s a",strtotime($value->fecha)) }}</td>	
@@ -187,7 +182,7 @@ $container = "'container'";
 				@if($value->estado == 1)
 					<td> {{ $value->comentario ? $value->comentario : '-' }} </td>
 				@elseif($value->estado == 0)
-					<td> {{ $value->comentario }} | ANULADO POR: {{ $value->comentario_anulado }} </td>
+					<td> {{ $value->comentario ? $value->comentario.' | ' : ''  }} ANULADO POR: {{ $value->comentario_anulado }} </td>
 				@endif
 
 				@if($concepto->tipo == 0)
