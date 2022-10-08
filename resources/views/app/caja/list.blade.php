@@ -1,111 +1,54 @@
 <?php
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use App\Person;
-use App\User;
 use App\Concepto;
 use App\Movimiento;
 use App\Detalleturnopedido;
 use App\Turnorepartidor;
-
-$user = Auth::user();
-
-$venta = "'venta'";
-$container = "'container'";
 ?>
 
 <div>
-
 @if($aperturaycierre == 0)
-		
 	@if($sucursal_id != 1 && $caja_principal == 0) 
-
-	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
-
-	@elseif($sucursal_id != 1 && $caja_principal == 1)
-
-		@if(!is_null($ultimo_cierre))
-
-			@if($ultimo_cierre->ingreso_caja_principal == 1 )
-
-			{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
-
-			@else
-
-			{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
-
-			@endif
-
-		@else
-
 		{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
-
+	@elseif($sucursal_id != 1 && $caja_principal == 1)
+		@if(!is_null($ultimo_cierre))
+			@if($ultimo_cierre->ingreso_caja_principal == 1 )
+				{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
+			@else
+				{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
+			@endif
+		@else
+			{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
 		@endif
-
 	@else
-
-	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
-
-
+		{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
 	@endif
 
 	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Iniciar Turno de Repartidor', array('class' => 'btn btn-primary waves-effect waves-light m-l-10 btn-sm btnTurno', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["turnoRepartidor"], array('listar'=>'SI')).'\', \''.$tituloTurnoRepartidor.'\', this);')) !!}
-
 	{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-sm btnNuevo', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
-
 	{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Registrar Pedido', array('class' => 'btn btn-dark waves-effect waves-light m-l-10 btn-sm btnPedido', 'disabled', 'onclick' => 'cargarRutaMenu("venta", "container", 16)')) !!}
-
 	{!! Form::button('<i class="glyphicon glyphicon-remove-circle"></i> Cierre', array('class' => 'btn btn-danger waves-effect waves-light m-l-10 btn-sm btnCierre', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["cierre"], array('listar'=>'SI')).'\', \''.$titulo_cierre.'\', this);')) !!}
 
 	@if($sucursal_id == 1)
-
-	{!! Form::button('<i class="glyphicon glyphicon-download-alt"></i> Ingresar cierres de caja de otras sucursales', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnIngresarCierres', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["ingresarcierres"], array('listar'=>'SI')).'\', \''.$tituloIngresarCierres.'\', this);')) !!}
-
+		{!! Form::button('<i class="glyphicon glyphicon-download-alt"></i> Ingresar cierres de caja de otras sucursales', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnIngresarCierres', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["ingresarcierres"], array('listar'=>'SI')).'\', \''.$tituloIngresarCierres.'\', this);')) !!}
 	@endif
-
 	@if($maxapertura == null)
-
-	{!! Form::button('<i class="glyphicon glyphicon-print"></i> Reporte Caja Actual', array('class' => 'btn btn-warning waves-effect waves-light m-l-10 btn-sm btnReporte', 'disabled', 'onclick' => 'imprimirDetalle();')) !!}
-
+		{!! Form::button('<i class="glyphicon glyphicon-print"></i> Reporte Caja Actual', array('class' => 'btn btn-warning waves-effect waves-light m-l-10 btn-sm btnReporte', 'disabled', 'onclick' => 'imprimirDetalle();')) !!}
 	@else
-
-	{!! Form::button('<i class="glyphicon glyphicon-print"></i> Reporte Caja Actual', array('class' => 'btn btn-warning waves-effect waves-light m-l-10 btn-sm btnReporte', 'onclick' => 'imprimirDetalle();')) !!}
-
+		{!! Form::button('<i class="glyphicon glyphicon-print"></i> Reporte Caja Actual', array('class' => 'btn btn-warning waves-effect waves-light m-l-10 btn-sm btnReporte', 'onclick' => 'imprimirDetalle();')) !!}
 	@endif
 @else
-
 	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
-
 	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Iniciar Turno de Repartidor', array('class' => 'btn btn-primary waves-effect waves-light m-l-10 btn-sm btnTurno' , 'onclick' => 'modalCaja (\''.URL::route($ruta["turnoRepartidor"], array('listar'=>'SI')).'\', \''.$tituloTurnoRepartidor.'\', this);')) !!}
-
 	{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Nuevo', array('class' => 'btn btn-info waves-effect waves-light m-l-10 btn-sm btnNuevo', 'activo' => 'si' , 'onclick' => 'modalCaja (\''.URL::route($ruta["create"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
-
 	{!! Form::button('<i class="glyphicon glyphicon-usd"></i> Registrar Pedido', array('class' => 'btn btn-dark waves-effect waves-light m-l-10 btn-sm btnPedido', 'onclick' => 'cargarRutaMenu("venta", "container", 16)')) !!}
-
 	{!! Form::button('<i class="glyphicon glyphicon-remove-circle"></i> Cierre', array('class' => 'btn btn-danger waves-effect waves-light m-l-10 btn-sm btnCierre' , 'onclick' => 'modalCaja (\''.URL::route($ruta["cierre"], array('listar'=>'SI')).'\', \''.$titulo_cierre.'\', this);')) !!}
-
 	@if($sucursal_id == 1)
-
-	{!! Form::button('<i class="glyphicon glyphicon-download-alt"></i> Ingresar cajas de otras sucursales', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnIngresarCierres' , 'onclick' => 'modalCaja (\''.URL::route($ruta["ingresarcierres"], array('listar'=>'SI')).'\', \''.$tituloIngresarCierres.'\', this);')) !!}
-
+		{!! Form::button('<i class="glyphicon glyphicon-download-alt"></i> Ingresar cajas de otras sucursales', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnIngresarCierres' , 'onclick' => 'modalCaja (\''.URL::route($ruta["ingresarcierres"], array('listar'=>'SI')).'\', \''.$tituloIngresarCierres.'\', this);')) !!}
 	@endif
-	
 	{!! Form::button('<i class="glyphicon glyphicon-print"></i> Reporte Caja Actual', array('class' => 'btn btn-warning waves-effect waves-light m-l-10 btn-sm btnReporte', 'onclick' => 'imprimirDetalle();')) !!}
-
 @endif
-<input id="monto_apertura" name="monto_apertura" type="hidden" value="{{$montoapertura}}">
-<input id="monto_vuelto" name="monto_vuelto" type="hidden" value="{{$monto_vuelto}}">
-<input id="ingresos_efectivo" name="ingresos_efectivo" type="hidden" value="{{$ingresos_efectivo}}">
-<input id="ingresos_visa" name="ingresos_visa" type="hidden" value="{{$ingresos_visa}}">
-<input id="ingresos_master" name="ingresos_master" type="hidden" value="{{$ingresos_master}}">
-<input id="ingresos_total" name="ingresos_total" type="hidden" value="{{$ingresos_total}}">
-<input id="egresos" name="egresos" type="hidden" value="{{$egresos}}">
-<input id="saldo" name="saldo" type="hidden" value="{{$saldo}}">
-<input id="caja_efectivo" name="caja_efectivo" type="hidden" value="{{$monto_caja}}">
-
 </div>
-
 
 @if(count($lista) == 0)
 <h3 class="text-warning">No se encontraron resultados.</h3>
