@@ -78,7 +78,7 @@
 							{!! Form::hidden('empleado_nombre',null,array('id'=>'empleado_nombre')) !!}
 						</div>
 					@else
-						<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> NO HAY REPARTIDORES EN TURNO</h4>
+						<h4 class="page-venta" style ="margin: 10px 0px;  font-weight: 600; text-align: center; color: red;"> TODOS LOS REPARTIDORES EN TURNO</h4>
 					@endif
 				</div>
 				<div class="form-group" style="display:none;">
