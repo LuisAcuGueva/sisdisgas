@@ -281,7 +281,6 @@ class PedidosActualController extends Controller
             //* Si es venta en sucursal -- venta repartidor
 
             //ToDo: Crear movimiento devolucion
-
             $devolucion = new Movimiento();
             $devolucion->tipomovimiento_id = 7; //* Devolucion
             $devolucion->estado = 1;
