@@ -118,9 +118,16 @@ use App\Turnorepartidor;
 				@elseif($value->estado == 0)
 					<td> {{ $value->comentario ? $value->comentario.' | ' : ''  }} ANULADO POR: {{ $value->comentario_anulado }} </td>
 				@endif
-
+				
+				<?php
+					if($value->venta && $value->concepto_id == 3){
+						$total_ingreso = $value->venta->balon_a_cuenta == 1 ? $value->venta->total_pagado : $value->total;
+					}else{
+						$total_ingreso = $value->total;
+					}
+				?>
 				@if($concepto->tipo == 0)
-					<td align="center" style="color:green;font-weight: bold;">{{ $value->total }}</td>
+					<td align="center" style="color:green;font-weight: bold;">{{ $total_ingreso }}</td>
 					<td align="center">0.00</td>
 				@elseif($concepto->tipo == 1)
 					<td align="center">0.00</td>
