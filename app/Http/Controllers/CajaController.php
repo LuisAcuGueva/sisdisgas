@@ -1497,7 +1497,7 @@ class CajaController extends Controller
                 $caja_cerrada->save();
             }
 
-            if($movimiento->venta_id && $movimiento->concepto_id == 3){ // mov de caja con pedido
+            if($movimiento->venta_id && $movimiento->tipomovimiento_id == 2){ // mov de caja con pedido
                
                 $pagos = Detallepagos::where('pedido_id', $movimiento->venta_id)
                                         ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')                       
@@ -1645,7 +1645,7 @@ class CajaController extends Controller
 
             }
 
-            if($movimiento->compra_id && $movimiento->concepto_id == 3){ // mov de caja con compra
+            if($movimiento->compra_id && $movimiento->tipomovimiento_id == 3){ // mov de caja con compra
                
                 $pagos = Detallepagos::where('pedido_id', $movimiento->compra_id)
                                         ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')                       

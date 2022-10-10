@@ -554,7 +554,7 @@ class TurnoController extends Controller
             //ToDo: Anular pago de deuda de pedido a credito
 
             //* Si es venta en sucursal -- venta repartidor
-            if($movimiento->concepto_id == 3){ //* Si es Pedido, hacer devolucion almacen
+            if($movimiento->tipomovimiento_id == 2){ //* Si es Pedido, hacer devolucion almacen
                 //ToDo: Crear movimiento devolucion
                 $devolucion = new Movimiento();
                 $devolucion->tipomovimiento_id = 7; //* Devolucion
