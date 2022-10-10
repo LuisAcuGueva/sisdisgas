@@ -67,18 +67,13 @@ use App\Movimiento;
 			@endphp
 
 			<td align="center">{{ $cantidad + $cantidad_envase }}</td>
-
-			<td align="center">{{ $cantidad }}</td>
-
-
 			@if($value->recargable == 1)
+				<td align="center">{{ $cantidad }}</td>
 				<td align="center">{{ $cantidad_envase }}</td>
 			@else
-			<td align="center">-</td>
+				<td align="center">-</td>
+				<td align="center">-</td>
 			@endif
-
-
-			
 		</tr>
 		<?php
 		$contador = $contador + 1;
