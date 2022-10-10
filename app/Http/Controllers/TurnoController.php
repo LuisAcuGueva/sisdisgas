@@ -550,10 +550,7 @@ class TurnoController extends Controller
                 $pago_credito = Detallepagos::where('pago_credito_id',$movimiento->id)->first();
                 $pago_credito->delete();
             }
-            
-            //ToDo: Anular pago de deuda de pedido a credito
 
-            //* Si es venta en sucursal -- venta repartidor
             if($movimiento->tipomovimiento_id == 2){ //* Si es Pedido, hacer devolucion almacen
                 //ToDo: Crear movimiento devolucion
                 $devolucion = new Movimiento();
@@ -616,7 +613,6 @@ class TurnoController extends Controller
             }
 
             $movimiento->save();
-
         });
         return is_null($error) ? "OK" : $error;
     }
