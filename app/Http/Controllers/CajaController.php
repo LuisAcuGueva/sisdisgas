@@ -1485,6 +1485,11 @@ class CajaController extends Controller
                 $turno->delete();
             }
 
+            if($movimiento->concepto_id == 16){ //* Pago de deuda de pédido a crédito
+                $pago_credito = Detallepagos::where('pago_credito_id',$movimiento->id)->first();
+                $pago_credito->delete();
+            }
+
             if($movimiento->concepto_id == 17){ //* Ingreso de caja de otra sucursal
                 $caja_cerrada = Movimiento::where('ingreso_cierre_id',$id)->first();
                 $caja_cerrada->ingreso_caja_principal = null;
@@ -1492,7 +1497,7 @@ class CajaController extends Controller
                 $caja_cerrada->save();
             }
 
-            if($movimiento->venta_id != null){ // mov de caja con pedido
+            if($movimiento->venta_id && $movimiento->concepto_id == 3){ // mov de caja con pedido
                
                 $pagos = Detallepagos::where('pedido_id', $movimiento->venta_id)
                                         ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')                       
@@ -1640,7 +1645,7 @@ class CajaController extends Controller
 
             }
 
-            if($movimiento->compra_id != null){ // mov de caja con compra
+            if($movimiento->compra_id && $movimiento->concepto_id == 3){ // mov de caja con compra
                
                 $pagos = Detallepagos::where('pedido_id', $movimiento->compra_id)
                                         ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')                       

@@ -545,6 +545,11 @@ class TurnoController extends Controller
                 $turno = Turnorepartidor::find($detalle_turno->turno_id);
                 $turno->delete();
             }
+
+            if($movimiento->concepto_id == 16){ //* Pago de deuda de pédido a crédito
+                $pago_credito = Detallepagos::where('pago_credito_id',$movimiento->id)->first();
+                $pago_credito->delete();
+            }
             
             //ToDo: Anular pago de deuda de pedido a credito
 
