@@ -117,17 +117,6 @@ class VentaController extends Controller
             $mov_pedido->balon_a_cuenta = $request->input('pedido_credito') == 'on' ? 1 : 0 ;
             $mov_pedido->save();
 
-            //* PAGOS 
-            foreach (json_decode($request->input('det_pagos')) as $pago) {
-                $detalle_pagos = new Detallepagos();
-                $detalle_pagos->monto = $pago->monto;
-                $detalle_pagos->credito = 0; //* Montos pagados  -> 1 si es pago a credito   -> 0 si se pago al hacer el pedido 
-                $detalle_pagos->tipo = $request->input('venta_sucursal') != 'on' ? 'R' : 'S';
-                $detalle_pagos->pedido_id = $mov_pedido->id;
-                $detalle_pagos->metodo_pago_id = $pago->metodopago_id;
-                $detalle_pagos->save();
-            }
-
             if($request->input('venta_sucursal') != 'on'){ //* Venta con repartidor 
                 $trabajador = $request->input('empleado_id');
                 $max_turno = Turnorepartidor::where('trabajador_id', $trabajador)->max('id');
@@ -167,10 +156,22 @@ class VentaController extends Controller
                 $movimientocaja->save();
             }
 
-            //* Guardar detalle de productos y eliminar stock
+            //* PAGOS 
+            foreach (json_decode($request->input('det_pagos')) as $pago) {
+                $detalle_pagos = new Detallepagos();
+                $detalle_pagos->monto = $pago->monto;
+                $detalle_pagos->credito = 0; //* Montos pagados  -> 1 si es pago a credito   -> 0 si se pago al hacer el pedido 
+                $detalle_pagos->tipo = $request->input('venta_sucursal') != 'on' ? 'R' : 'S';
+                $detalle_pagos->pedido_id = $mov_pedido->id;
+                $detalle_pagos->metodo_pago_id = $pago->metodopago_id;
+                if($request->input('pedido_credito') == 'on'){
+                    $detalle_pagos->pago_credito_id = $request->input('venta_sucursal') != 'on' ? $mov_pedido->id : $movimientocaja->id;
+                }
+                $detalle_pagos->save();
+            }
 
+            //* Guardar detalle de productos y eliminar stock
             $detalles = json_decode($request->input('det_productos'));
-            
             foreach ($detalles as $detalle) {
                 $detalleMovAlmacen = new Detallemovalmacen();
                 $detalleMovAlmacen->movimiento_id = $mov_pedido->id;
@@ -205,11 +206,9 @@ class VentaController extends Controller
                 $kardex->precio_venta_envase = $detalleMovAlmacen->precio_envase;
                 $kardex->save();    
 
-                //Reducir Stock
-
+                //* Reducir Stock
                 $stock = Stock::where('producto_id', $detalleMovAlmacen->producto_id)->where('sucursal_id', $mov_pedido->sucursal_id)->first();
                 $producto = Producto::find($detalleMovAlmacen->producto_id);
-
                 if($producto->recargable == 1){
                     $stock->cantidad -= $detalleMovAlmacen->cantidad;
                     $stock->cantidad -= $detalleMovAlmacen->cantidad_envase;
@@ -231,7 +230,7 @@ class VentaController extends Controller
         $tipodocumento_id  = $request->input('tipodocumento_id');  
 
         $ultimaventa_id = Movimiento::where('sucursal_id', $sucursal_id)
-                                ->where('estado', "=", 1)
+                                // ->where('estado', "=", 1)
                                 ->where('tipomovimiento_id', 2)
                                 ->where('tipodocumento_id', $tipodocumento_id)
                                     ->max('id');
