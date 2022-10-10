@@ -540,146 +540,74 @@ class TurnoController extends Controller
             $movimiento->estado = 0;
             $movimiento->comentario_anulado  = strtoupper($request->input('motivo'));  
 
-            $kardexs = Kardex::rightjoin('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
-                            ->where('detalle_mov_almacen.movimiento_id', $id)
-                            ->get();
-
-            foreach ($kardexs as $key => $value) {
-                $stock = Stock::where('producto_id', $value->producto_id )->where('sucursal_id', $movimiento->sucursal_id)->first();
-                
-                if( $value->cantidad_envase == 0 || $value->cantidad_envase == null ){
-                    $cantidad_envase = 0;
-                }else{
-                    $cantidad_envase = $value->cantidad_envase;
-                }
-
-                //actualizar stock
-                if( $value->tipo == "I"){
-                    $stock->cantidad -= ($value->cantidad + $cantidad_envase);
-                }else{
-                    $stock->cantidad += ($value->cantidad + $cantidad_envase);
-                }
-
-                //actualizar cantidad de balones
-                $producto = Producto::find($value->producto_id);
-                if($producto->recargable == 1){
-                    if( $value->tipo == "I"){
-                        $stock->envases_total -= $cantidad_envase;
-                        $stock->envases_llenos -= ($value->cantidad + $cantidad_envase);
-                        $stock->envases_vacios += $value->cantidad;
-                    }else{
-                        $stock->envases_total += $cantidad_envase;
-                        $stock->envases_llenos += ($value->cantidad + $cantidad_envase);
-                        $stock->envases_vacios -=  $value->cantidad;
-                    }
-                }
-
-                $stock->save();
-
-                $kardexs_producto = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
-                                            ->where('detalle_mov_almacen.producto_id', '=', $value->producto_id)
-                                            ->where('detalle_mov_almacen.id','>', $value->id)
-                                            ->get();
-                                
-                foreach ($kardexs_producto as $key => $value2) {
-
-                    $kardex_edit = Kardex::where('detalle_mov_almacen_id', $value2->id )->first();
-
-                    //actualizar stocks en kardex
-                    if( $value->tipo == "I"){
-                        $kardex_edit->stock_anterior -= ($value->cantidad + $cantidad_envase);
-                        $kardex_edit->stock_actual -= ($value->cantidad + $cantidad_envase);
-                    }else{
-                        $kardex_edit->stock_anterior += ($value->cantidad + $cantidad_envase);
-                        $kardex_edit->stock_actual += ($value->cantidad + $cantidad_envase);
-                    }
-
-                    $kardex_edit->save();
-
-                }
-
-            }
-
-            if($movimiento->concepto_id == 15){ // monto vuelto al iniciar turno
+            if($movimiento->concepto_id == 15){ //* Monto vuelto al iniciar turno
                 $detalle_turno = Detalleturnopedido::where('pedido_id',$movimiento->id)->first();
                 $turno = Turnorepartidor::find($detalle_turno->turno_id);
                 $turno->delete();
             }
+            
+            //ToDo: Anular pago de deuda de pedido a credito
 
-            if($movimiento->venta_id != null){ // pedido
+            //* Si es venta en sucursal -- venta repartidor
 
-                $pagos = Detallepagos::where('pedido_id', $movimiento->venta_id)
-                                        ->leftjoin('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')                       
-                                        ->where('movimiento.estado', 1)
-                                        ->get();
+            //ToDo: Crear movimiento devolucion
 
-                if( count($pagos) == 1 ) { //pedido a crédito con un pago
+            $devolucion = new Movimiento();
+            $devolucion->tipomovimiento_id = 7; //* Devolucion
+            $devolucion->estado = 1;
+            $devolucion->venta_id = $movimiento->id;
+            $devolucion->sucursal_id = $movimiento->sucursal_id;
+            $devolucion->usuario_id = $movimiento->usuario_id;
+            $devolucion->save();
 
-                    $movimientoventa = Movimiento::find($movimiento->venta_id);
-                    $movimientoventa->estado = 0;
-                    $movimientoventa->comentario_anulado  = strtoupper($request->input('motivo'));  
-                    $movimientoventa->save();
+            //ToDo: Crear detalle mov almacen
 
-                    $kardexs = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
-                            ->where('detalle_mov_almacen.movimiento_id', $movimientoventa->id)
-                            ->get();
+            $det_almacen = Detallemovalmacen::where('movimiento_id', $movimiento->id)->get();
 
-                    foreach ($kardexs as $key => $value) {
-                        $stock = Stock::where('producto_id', $value->producto_id )->where('sucursal_id', $movimientoventa->sucursal_id)->first();
-                        
-                        if( $value->cantidad_envase == 0 || $value->cantidad_envase == null ){
-                            $cantidad_envase = 0;
-                        }else{
-                            $cantidad_envase = $value->cantidad_envase;
-                        }
-        
-                        //actualizar stock
-                        if( $value->tipo == "I"){
-                            $stock->cantidad -= ($value->cantidad + $cantidad_envase);
-                        }else{
-                            $stock->cantidad += ($value->cantidad + $cantidad_envase);
-                        }
-        
-                        //actualizar cantidad de balones
-                        $producto = Producto::find($value->producto_id);
-                        if($producto->recargable == 1){
-                            if( $value->tipo == "I"){
-                                $stock->envases_total -= $cantidad_envase;
-                                $stock->envases_llenos -= ($value->cantidad + $cantidad_envase);
-                                $stock->envases_vacios += $value->cantidad;
-                            }else{
-                                $stock->envases_total += $cantidad_envase;
-                                $stock->envases_llenos += ($value->cantidad + $cantidad_envase);
-                                $stock->envases_vacios -=  $value->cantidad;
-                            }
-                        }
+            foreach ($det_almacen as $key => $det_alm_anul) {
+                $det_alm_devol = new Detallemovalmacen();
+                $det_alm_devol->movimiento_id = $devolucion->id; //* id devolucion
+                $det_alm_devol->producto_id = $det_alm_anul->producto_id;
+                $det_alm_devol->cantidad = $det_alm_anul->cantidad;
+                $det_alm_devol->precio = $det_alm_anul->precio;
+                $det_alm_devol->subtotal = $det_alm_anul->subtotal;
+                $det_alm_devol->cantidad_envase = $det_alm_anul->cantidad_envase;
+                $det_alm_devol->precio_envase = $det_alm_anul->precio_envase;
+                $det_alm_devol->save();
 
-                        $stock->save();
-
-                        $kardexs_producto = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
-                                            ->where('detalle_mov_almacen.producto_id', '=', $value->producto_id)
-                                            ->where('detalle_mov_almacen.id','>', $value->id)
-                                            ->get();
+                $stock = Stock::where('producto_id', $det_alm_devol->producto_id)->where('sucursal_id', $movimiento->sucursal_id)->first();
                 
-                        foreach ($kardexs_producto as $key => $value2) {
+                $cantidad_envase = ($det_alm_devol->cantidad_envase == 0 || $det_alm_devol->cantidad_envase == null) ? 0 : $det_alm_devol->cantidad_envase;
 
-                            $kardex_edit = Kardex::where('detalle_mov_almacen_id', $value2->id )->first();
-        
-                            //actualizar stocks en kardex
-                            if( $value->tipo == "I"){
-                                $kardex_edit->stock_anterior -= ($value->cantidad + $cantidad_envase);
-                                $kardex_edit->stock_actual -= ($value->cantidad + $cantidad_envase);
-                            }else{
-                                $kardex_edit->stock_anterior += ($value->cantidad + $cantidad_envase);
-                                $kardex_edit->stock_actual += ($value->cantidad + $cantidad_envase);
-                            }
-        
-                            $kardex_edit->save();
-        
-                        }
-                    }
+                //* Aumentar stock
+                $stock->cantidad += ($det_alm_devol->cantidad + $cantidad_envase);
 
+                //* Actualizar cantidad de balones en stock
+                $producto = Producto::find($det_alm_devol->producto_id);
+                if($producto->recargable == 1){
+                    $stock->envases_total += $cantidad_envase;
+                    $stock->envases_llenos += ($det_alm_devol->cantidad + $cantidad_envase);
+                    $stock->envases_vacios -= $det_alm_devol->cantidad;
                 }
+                $stock->save();
+
+                $kardex_anul = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
+                                    ->where('detalle_mov_almacen.producto_id', '=', $det_alm_devol->producto_id)
+                                    ->where('kardex.sucursal_id','=', $movimiento->sucursal_id)
+                                    ->orderBy('kardex.id', 'desc')
+                                    ->first();
+
+                $kardex_devol = new Kardex();
+                $kardex_devol->detalle_mov_almacen_id = $det_alm_devol->id;
+                $kardex_devol->tipo = 'I';
+                $kardex_devol->sucursal_id = $kardex_anul->sucursal_id;
+                $kardex_devol->stock_anterior = $kardex_anul->stock_actual;
+                $kardex_devol->stock_actual = $kardex_anul->stock_actual + ($det_alm_devol->cantidad + $cantidad_envase);
+                $kardex_devol->cantidad = $kardex_anul->cantidad;
+                $kardex_devol->precio_venta = $kardex_anul->precio_venta;
+                $kardex_devol->cantidad_envase = $kardex_anul->cantidad_envase;
+                $kardex_devol->precio_venta_envase = $kardex_anul->precio_venta_envase;
+                $kardex_devol->save();   
             }
 
             $movimiento->save();
