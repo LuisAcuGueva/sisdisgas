@@ -266,6 +266,7 @@ class PedidosActualController extends Controller
             $movimiento->comentario_anulado  = strtoupper($request->input('motivo'));  
             $movimiento->save();
 
+            //* Si es pedido sucursal anular movimiento de caja
             if($movimiento->pedido_sucursal == 1){
                 //Todo: Borrar movimiento de caja
                 $mov_cajas = Movimiento::where('tipomovimiento_id', '=', 1)
@@ -278,8 +279,6 @@ class PedidosActualController extends Controller
                 }
             }
 
-            //* Si es venta en sucursal -- venta repartidor
-
             //ToDo: Crear movimiento devolucion
             $devolucion = new Movimiento();
             $devolucion->tipomovimiento_id = 7; //* Devolucion
@@ -290,9 +289,7 @@ class PedidosActualController extends Controller
             $devolucion->save();
 
             //ToDo: Crear detalle mov almacen
-
             $det_almacen = Detallemovalmacen::where('movimiento_id', $movimiento->id)->get();
-
             foreach ($det_almacen as $key => $det_alm_anul) {
                 $det_alm_devol = new Detallemovalmacen();
                 $det_alm_devol->movimiento_id = $devolucion->id; //* id devolucion
@@ -338,7 +335,6 @@ class PedidosActualController extends Controller
                 $kardex_devol->precio_venta_envase = $kardex_anul->precio_venta_envase;
                 $kardex_devol->save();   
             }
-
         });
         return is_null($error) ? "OK" : $error;
     }
