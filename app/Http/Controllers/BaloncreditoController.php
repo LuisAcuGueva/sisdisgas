@@ -228,6 +228,7 @@ class BaloncreditoController extends Controller
             }else if($request->input('pago_sucursal') == "on"){   
                 $detalle_pagos->tipo = 'S';
             }
+            $detalle_pagos->pago_credito_id = $movimiento->id;
             $detalle_pagos->save();
 
             if($request->input('pago_repartidor') == "on"){
