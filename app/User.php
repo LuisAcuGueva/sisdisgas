@@ -44,7 +44,7 @@ class User extends Authenticatable
                     ->where(function($subquery) use($personal)
 		            {
 		            	if (!is_null($personal)) {
-                            $subquery->where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.$personal.'%');
+                            $subquery->where(DB::raw('CONCAT(nombres," ",apellido_pat," ",apellido_mat)'), 'LIKE', '%'.$personal.'%');
 		            	}
                     })
                     ->orderBy('login', 'ASC')

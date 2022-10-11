@@ -18,7 +18,7 @@ class Person extends Model
         return $query->where(function($subquery) use($nombre)
 		            {
 		            	if (!is_null($nombre)) {
-                            $subquery->where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.$nombre.'%');
+                            $subquery->where(DB::raw('CONCAT(nombres," ",apellido_pat," ",apellido_mat)'), 'LIKE', '%'.$nombre.'%');
 		            	}
                     })
                     ->orWhere(function($subquery) use($dni)

@@ -302,7 +302,7 @@ class ClienteController extends Controller
         {
             if (!is_null($searching)) {
                
-                $subquery->where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')->orwhere('razon_social', 'LIKE', '%'.strtoupper($searching).'%');
+                $subquery->where(DB::raw('CONCAT(nombres," ",apellido_pat," ",apellido_mat)'), 'LIKE', '%'.strtoupper($searching).'%')->orwhere('razon_social', 'LIKE', '%'.strtoupper($searching).'%');
                
             }		            		
         })

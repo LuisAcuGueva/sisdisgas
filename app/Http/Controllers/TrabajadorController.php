@@ -277,8 +277,8 @@ class TrabajadorController extends Controller
     public function trabajadorautocompleting($searching)
     {
         $entidad    = 'Trabajador';
-        $resultado = Person::where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
-        ->where('tipo_persona','A')
+        $resultado = Person::where(DB::raw('CONCAT(nombres," ",apellido_pat," ",apellido_mat)'), 'LIKE', '%'.strtoupper($searching).'%')
+        ->where('tipo_persona','T')
         ->whereNull('person.deleted_at')
         ->orderBy('apellido_pat', 'ASC')
         ->orderBy('apellido_mat', 'ASC')

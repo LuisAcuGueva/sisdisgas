@@ -74,7 +74,7 @@ class Movimiento extends Model
 							$subquery->whereBetween(DB::raw('CONVERT(fecha,date)'),[$fechainicio,$fechafin]);
 						}
 						if (!is_null($cliente)) {
-							$subquery->where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.$cliente.'%');
+							$subquery->where(DB::raw('CONCAT(nombres," ",apellido_pat," ",apellido_mat)'), 'LIKE', '%'.$cliente.'%');
 						}
 						if (!is_null($tipo)) {
 							if($tipo == "R"){
@@ -117,7 +117,7 @@ class Movimiento extends Model
 							$subquery->whereBetween(DB::raw('CONVERT(fecha,date)'),[$fechainicio,$fechafin]);
 						}
 						if (!is_null($cliente)) {
-							$subquery->where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.$cliente.'%');
+							$subquery->where(DB::raw('CONCAT(nombres," ",apellido_pat," ",apellido_mat)'), 'LIKE', '%'.$cliente.'%');
 						}
 						if (!is_null($tipo)) {
 							if($tipo == "R"){

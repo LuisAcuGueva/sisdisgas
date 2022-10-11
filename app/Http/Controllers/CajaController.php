@@ -1708,7 +1708,7 @@ class CajaController extends Controller
     public function empleadoautocompletar($searching)
     {
         $entidad    = 'Cliente';
-        $resultado = Person::where(DB::raw('CONCAT(apellido_pat," ",apellido_mat," ",nombres)'), 'LIKE', '%'.strtoupper($searching).'%')
+        $resultado = Person::where(DB::raw('CONCAT(nombres," ",apellido_pat," ",apellido_mat)'), 'LIKE', '%'.strtoupper($searching).'%')
         ->where('tipo_persona','T')
         ->whereNull('person.deleted_at')
         ->orderBy('apellido_pat', 'ASC')
