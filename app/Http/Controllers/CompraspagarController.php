@@ -176,7 +176,7 @@ class CompraspagarController extends Controller
             $movimientocaja->sucursal_id        = $sucursal_id; 
             $movimientocaja->compra_id          = $compra->id;
             $movimientocaja->tipomovimiento_id  = 1;
-            $movimientocaja->concepto_id        = 4;
+            $movimientocaja->concepto_id        = 19; //* PAGO DE DEUDA POR COMPRA AL PROVEEDOR
             $movimientocaja->num_caja           = $num_caja;
             $movimientocaja->total              = $request->input('monto');
             $movimientocaja->subtotal           = $request->input('monto');
@@ -193,8 +193,8 @@ class CompraspagarController extends Controller
             $detalle_pagos->monto = $request->input('monto');
             $detalle_pagos->tipo = 'C';
             $detalle_pagos->credito =  1;
+            $detalle_pagos->pago_credito_id = $movimientocaja->id;
             $detalle_pagos->save();
-            
         });
         return is_null($error) ? "OK" : $error;
     }
