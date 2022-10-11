@@ -210,8 +210,7 @@ class VentaController extends Controller
                 $stock = Stock::where('producto_id', $detalleMovAlmacen->producto_id)->where('sucursal_id', $mov_pedido->sucursal_id)->first();
                 $producto = Producto::find($detalleMovAlmacen->producto_id);
                 if($producto->recargable == 1){
-                    $stock->cantidad -= $detalleMovAlmacen->cantidad;
-                    $stock->cantidad -= $detalleMovAlmacen->cantidad_envase;
+                    $stock->cantidad -= ($detalleMovAlmacen->cantidad + $detalleMovAlmacen->cantidad_envase);
                     $stock->envases_llenos = $stock->cantidad;
                     $stock->envases_total -= $detalleMovAlmacen->cantidad_envase;
                     $stock->envases_vacios += $detalleMovAlmacen->cantidad;
