@@ -20,15 +20,13 @@
 		</div>
 		<div class="col-lg-2 col-md-2 col-sm-2 form-group">
 			{!! Form::label('filas', 'Filas a mostrar:')!!}
-			{!! Form::selectRange('filas', 1, 30, 10, array('class' => 'form-control input-sm', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
+			{!! Form::selectRange('filas', 1, 30, 15, array('class' => 'form-control input-sm', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 		</div>
 	</div>
-
 	<div id="listado{{ $entidad }}">
-
 	</div>
 	<div class="form-group">
-		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
+		<div class="col-lg-12 col-md-12 col-sm-12 text-right" style="margin-top: 10px;">
 			{!! Form::button('<i class="glyphicon glyphicon-print"></i> Reporte Turno Repartidor', array('class' => 'btn btn-warning btn-sm', 'id' => 'btnReporte'.$entidad, 'onclick' => 'imprimirDetalle();')) !!}
 			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
 		</div>
