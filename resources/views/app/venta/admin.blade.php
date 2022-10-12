@@ -1247,30 +1247,4 @@ function guardarVenta() {
 		}
 	});
 }
-
-function mostrarultimo(){
-	var ajax = $.ajax({
-		"method": "POST",
-		"url": "{{ url('/cliente/ultimocliente') }}",
-		"data": {
-			"_token": "{{ csrf_token() }}",
-			}
-	}).done(function(cliente){
-		if( $("#ultimo_cliente").val() == "" ){
-			$("#ultimo_cliente").val(cliente.id);
-		}else{
-			if( $("#ultimo_cliente").val() != cliente.id){
-				if(cliente.razon_social != ""){
-					$('#cliente').val(cliente.razon_social);
-				}else{
-					$('#cliente').val(cliente.nombres + " " + cliente.apellido_pat + " " + cliente.apellido_mat );
-				}
-				$('#cliente_id').val(cliente.id);
-				$('#cliente_direccion').val(cliente.direccion);
-				$('#ultimo_cliente').val('');
-				$("#cliente").prop('disabled',true);
-			}
-		}
-	});
-}
 </script>

@@ -119,21 +119,16 @@ if(!is_null($cliente)){
 		}
 
 		$('#btnGuardarCliente').on('click', function(){
-
 			guardarcliente();
-
 			setTimeout(function(){
-				var cliente = mostrarultimo();
+				mostrarultimo();
 			},1000);
-
 		});
-
 }); 
-
 
 function mostrarultimo(){
 	var cliente = null;
-	var ajax = $.ajax({
+	$.ajax({
 		"method": "POST",
 		"url": "{{ url('/cliente/ultimocliente') }}",
 		"data": {
@@ -141,7 +136,6 @@ function mostrarultimo(){
 			}
 	}).done(function(info){
 		cliente = info;
-	}).always(function(){
 		if( $("#ultimo_cliente").val() == "" ){
 			$("#ultimo_cliente").val(cliente.id);
 		}else{
