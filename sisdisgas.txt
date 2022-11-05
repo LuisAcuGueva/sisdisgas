@@ -1,0 +1,27 @@
+Resolución de pantalla => 1024 x 768
+
+1 - Stock en decimales para producto como manguera
+17 - Revisar balones prestados
+18 - Balones por transición 
+
+
+LISTOS
+2 - Añadir campo comentario en confirmación de venta
+3 - Añadir métodos de pagos a pedidos
+4 - Utilizar parámetro de precio descuento fise en registrar pedido
+5 - Datos Adicionales del pedido -- buscar donde colocar estos datos
+6 - Agregar anulación de pedido en Pedidos de Caja Actual
+7 - Que se oculten los sub menus de la barra lateral
+8 - Escoger edición de sucursales por repartidor en dashboard
+9 - Quitar pedidos a crédito y inventario en dashboard
+10 - quitar cantidad max de balones y en compras al igual que en mov de almacen
+11 - No se lista kardex de compra y venta
+12 - Revisar funcion cobrar deuda cliente
+13 - En tabla RESUMEN DE TURNO DEL REPARTIDOR agregar los métodos de pagos  =>  EFECTIVO + MONTO VUELTO + PAGOS PEDIDOS CREDITO = SALDO 
+14 - Empezar a revisar compras
+15 - Anular turno de pedidos y caja
+16 - Anulacion de compra y mov almacen
+
+
+MOD BD
+Agregar total_pagado en moviemiento
