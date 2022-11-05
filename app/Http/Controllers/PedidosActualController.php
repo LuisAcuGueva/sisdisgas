@@ -203,11 +203,7 @@ class PedidosActualController extends Controller
         $formData = array('pedidos_actual.prestarbalon', $id);
         $formData = array('route' => $formData, 'method' => 'POST', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Guardar';
-        $detallespago = Detallepagos::where('pedido_id', '=', $id)
-                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
-                    ->where('estado',1)
-                    ->get(); 
-        return view($this->folderview.'.prestar')->with(compact('pedido', 'detalles_prestamos','detallespago','detalles','formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.prestar')->with(compact('pedido', 'detalles_prestamos','detalles','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function prestarbalon(Request $request){
