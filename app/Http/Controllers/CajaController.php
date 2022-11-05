@@ -58,25 +58,22 @@ class CajaController extends Controller
     {
         $sucursal_id      = Libreria::getParam($request->input('sucursal_id'));
         $sucursal = Sucursal::find($sucursal_id);
-        //$empresa_id = $sucursal->empresa_id;
 
-        //cantidad de aperturas
+        //* Cantidad de aperturas
         $aperturas = Movimiento::where('concepto_id', 1)
                                 ->where('sucursal_id', "=", $sucursal_id)
                                 ->where('estado', "=", 1)
                                 ->count();
-        //cantidad de cierres
+        //* Cantidad de cierres
         $cierres = Movimiento::where('concepto_id', 2)
                             ->where('sucursal_id', "=", $sucursal_id)
                             ->where('estado', "=", 1)
                             ->count();
 
-        $aperturaycierre = null;
-
-        if($aperturas == $cierres){ // habilitar apertura de caja
-            $aperturaycierre = 0;
-        }else if($aperturas != $cierres){ //habilitar cierre de caja
-            $aperturaycierre = 1;
+        if($aperturas == $cierres){ 
+            $aperturaycierre = 0; //* Habilitar apertura de caja
+        }else{ 
+            $aperturaycierre = 1; //* Habilitar cierre de caja
         }
 
         //cantidad de aperturas
@@ -837,63 +834,46 @@ class CajaController extends Controller
         $error = DB::transaction(function() use($request){
             $movimiento       = new Movimiento();
             $movimiento->tipomovimiento_id = 1;
-            $movimiento->concepto_id    = $request->input('concepto_id');
-            $movimiento->num_caja   = $request->input('num_caja');
+            $movimiento->concepto_id = $request->input('concepto_id');
+            $movimiento->num_caja = $request->input('num_caja');
+            $movimiento->estado = 1;
+            $user = Auth::user();
+            $movimiento->usuario_id = $user->id;
 
-            if($request->input('concepto_id') != 17){
-
-                if($request->input('concepto_id') == 1){
-                    $movimiento->total          = $request->input('monto');
-                    $movimiento->subtotal          = $request->input('monto');
-                }else{
-                    $movimiento->total             = $request->input('total');
-                    $movimiento->subtotal          = $request->input('total');
-                    $movimiento->montoefectivo    = $request->input('total');
-                }
-
-                $movimiento->estado         = 1;
-
-                $trabajador = Person::find($request->input('persona_id'));
-                if($request->input('concepto_id') == 1 || $request->input('concepto_id') == 2 || $request->input('concepto_id') == 12 || $request->input('concepto_id') == 14 || $request->input('concepto_id') == 13 || $request->input('concepto_id') == 15){
-                    if($trabajador->tipo_persona == "T"){
-                        $movimiento->trabajador_id     = $request->input('persona_id');
-                    }
-                }else{
-                    $movimiento->persona_id     = $request->input('persona_id');
-                }
-
-                $user           = Auth::user();
-                $movimiento->usuario_id     = $user->id;
-                $movimiento->sucursal_id   = $request->input('sucursal');
-                $movimiento->comentario     = strtoupper($request->input('comentario'));
-                $movimiento->save();
-
-            }else{
-
+            //* Si es ingreso de caja de otra sucursal
+            if($request->input('concepto_id') == 17){
                 $caja_cerrada = Movimiento::find($request->input("caja_cerrada_sin_ingresar"));
-
                 $movimiento->total  = $caja_cerrada->total;
-
-                $movimiento->estado         = 1;
-
                 $movimiento->trabajador_id     = $caja_cerrada->trabajador_id;
-
-                $user           = Auth::user();
-
-                $movimiento->usuario_id     = $user->id;
                 $movimiento->sucursal_id   = $request->input('sucursal');
                 $movimiento->comentario     = "INGRESO DE CAJA DE " . $caja_cerrada->sucursal->nombre ." - ".strtoupper($request->input('comentario'));
                 $movimiento->save();
-
                 $caja_cerrada->ingreso_caja_principal = 1;
                 $caja_cerrada->ingreso_cierre_id = $movimiento->id;
-
                 $caja_cerrada->save();
-
-
+            }else{
+                if($request->input('concepto_id') == 1){
+                    $movimiento->total = $request->input('monto');
+                    $movimiento->subtotal = $request->input('monto');
+                }else{
+                    $movimiento->total = $request->input('total');
+                    $movimiento->subtotal = $request->input('total');
+                }
+                $trabajador = Person::find($request->input('persona_id'));
+                if(in_array($request->input('concepto_id'), array(1, 2, 12, 13, 14, 15))){
+                    if($trabajador->tipo_persona == "T"){
+                        $movimiento->trabajador_id = $request->input('persona_id');
+                    }
+                }else{
+                    $movimiento->persona_id = $request->input('persona_id');
+                }
+                $movimiento->sucursal_id = $request->input('sucursal');
+                $movimiento->comentario = strtoupper($request->input('comentario'));
+                $movimiento->save();
             }
 
-            if($request->input('concepto_id') == 12  || $request->input('concepto_id') == 14 || $request->input('concepto_id') == 13 || $request->input('concepto_id') == 15){
+            //* Crear detalle turno repartidor
+            if(in_array($request->input('concepto_id'), array(12, 13, 14, 15))){ 
                 $sucursal_id = $request->input('sucursal');
                 $maxapertura = Movimiento::where('concepto_id', 1)
                 ->where('sucursal_id', "=", $sucursal_id)
@@ -903,13 +883,13 @@ class CajaController extends Controller
                         ->where('sucursal_id', "=", $sucursal_id)
                         ->where('estado', "=", 1)
                         ->where('num_caja',$maxapertura)->first();
+
                 $turno_repartidor = Turnorepartidor::where('estado','I')->where('trabajador_id', $request->input('persona_id'))->first();
-                if(is_null($turno_repartidor)){
+                if(is_null($turno_repartidor) && $request->input('concepto_id') == 15){
                     $turno_repartidor = new Turnorepartidor();
                     $turno_repartidor->estado    = "I";
                     $turno_repartidor->inicio = date('Y-m-d H:i:s');
                     $turno_repartidor->apertura_id = $apertura->id;
-                    //$turno_repartidor->vuelto_id = $movimiento->id;
                     $turno_repartidor->trabajador_id = $request->input('persona_id');
                     $turno_repartidor->save();
                 }

@@ -27,7 +27,7 @@ class Movimiento extends Model
 		return $query->where(function($subquery) use($fechainicio, $fechafin, $num_caja, $aperturaycierre, $maxapertura, $maxcierre)
 		            {
 						if (!is_null($maxapertura) && !is_null($maxcierre)) {
-							if($aperturaycierre == 0){ //apertura y cierre iguales ---- no mostrar nada
+							if($aperturaycierre == 0){ //apertura y cierre iguales ---- mostrar nada de ultima apertura a ultimo cierre
 								$subquery->Where('num_caja','>=', $maxapertura)->Where('num_caja','<=', $maxcierre);
 							}else if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura
 								$subquery->Where('num_caja','>=', $maxapertura);
