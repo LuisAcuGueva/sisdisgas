@@ -1,8 +1,17 @@
 Resolución de pantalla => 1024 x 768
 
-1 - Stock en decimales para producto como manguera
-17 - Revisar balones prestados
+1 - Stock en decimales para producto como manguera (OK)
+    Vistas afectadas:
+    * ALAMACEN
+        - Movimiento de almacen
+        - Kardex (lista)
+    * PEDIDOS
+        - Registrar pedido
+    * COMPRAS
+17 - Revisar balones prestados (validar resta de prestados con devueltos para que el campo de numero no tome el total y solo los que faltan)
 18 - Balones por transición 
+19.- Corrección orden ascendente PEDIDOS A CREDITO (OK)
+20.- CRUD unida de medida, y enlazar a productos con activo de decimales (hacer validaciones)
 
 
 LISTOS
