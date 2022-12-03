@@ -366,8 +366,9 @@ class VentaController extends Controller
         $sucursal_id  = $request->input('sucursal_id');
 
         $productos = Stock::join('producto', 'stock.producto_id', '=', 'producto.id')
+                                ->leftJoin('unidad_medida', 'producto.unidadmedida_id', '=', 'unidad_medida.id')
                                 ->where('frecuente',1)
-                                ->where('stock.sucursal_id', $sucursal_id)
+                                ->where('stock.sucursal_id', $sucursal_id)->select('stock.*','producto.*','unidad_medida.medida','unidad_medida.decimal')
                                 ->orderBy('descripcion', 'ASC')->get();
 
         return $productos;

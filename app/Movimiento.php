@@ -194,7 +194,7 @@ class Movimiento extends Model
 					->where('sucursal_id', "=", $sucursal_id)
 					->where('balon_a_cuenta', "=", 1)
 					->where('tipomovimiento_id', "=", 2)
-        			->orderBy('num_caja','DESC')->orderBy('fecha', 'ASC');
+        			->orderBy('num_caja','DESC')->orderBy('fecha', 'DESC');
 	}
 
 	public function scopecomprascredito($query, $fechainicio, $fechafin, $sucursal_id , $proveedor_id)

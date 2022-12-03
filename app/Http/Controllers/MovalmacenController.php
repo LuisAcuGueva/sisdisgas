@@ -12,6 +12,7 @@ use App\Movimiento;
 use App\Kardex;
 use App\Almacen;
 use App\Stock;
+use App\Unidadmedida;
 use App\Lote;
 use App\Tipodocumento;
 use App\Detallemovalmacen;
@@ -494,6 +495,13 @@ class MovalmacenController extends Controller
         $producto_id = $request->input('idproducto');
 
         $producto = Producto::find($request->input("idproducto"));
+        /* GERSON (26-11-22) */
+        $decimal = 0;
+        if($producto->unidadmedida_id!=null){
+            $unidad_medida = Unidadmedida::find($producto->unidadmedida_id);
+            $decimal = $unidad_medida->decimal;
+        }
+        /*  */
 
         $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
                                 ->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
@@ -541,7 +549,7 @@ class MovalmacenController extends Controller
             $stock = $stock->cantidad;
         }
 
-        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->recargable.'@'.$producto->precio_compra_envase.'@'.$producto->precio_venta_envase.'@'.$envases_vacios.'@'.$envases_sucursal.'@'.$total_envases;
+        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->recargable.'@'.$producto->precio_compra_envase.'@'.$producto->precio_venta_envase.'@'.$envases_vacios.'@'.$envases_sucursal.'@'.$total_envases.'@'.$decimal;
     }
 
     public function agregarcarritocompra(Request $request)

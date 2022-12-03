@@ -26,6 +26,16 @@
 			{!! Form::text('precio_venta', null, array('class' => 'form-control input-xs', 'id' => 'precio_venta', 'placeholder' => 'Precio de venta')) !!}
 		</div>
 	</div>
+	<!-- GERSON (10-11-22) -->
+	<div class="form-group">
+		<div class="control-label col-lg-4 col-md-4 col-sm-4" style ="padding-top: 15px">
+			{!! Form::label('unidadmedida_id', 'Unidad de medida:') !!}<div class="" style="display: inline-block;color: red;">*</div>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6">
+			{!! Form::select('unidadmedida_id', $cboUnidadmedida, null, array('class' => 'form-control input-xs', 'id' => 'unidadmedida_id')) !!}
+		</div>
+	</div>
+	<!--  -->
 	
 	@if($producto == null)
 		<div class="form-group recarga" style="display:none;">

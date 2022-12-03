@@ -157,7 +157,7 @@ class PrestamoController extends Controller
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
         $detallespago = Detallepagos::where('pedido_id', '=', $id)
-                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                    ->join('movimiento', 'detalle_pagos.metodo_pago_id', '=', 'movimiento.id')
                     ->where('estado',1)
                     ->get();  
 
@@ -176,21 +176,38 @@ class PrestamoController extends Controller
         $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
         $detalles_prestamos = array();
         $detalles_devuelto = array();
+        $balones_devueltos= array();
+        $guardar = array();
+        
         foreach ($detalles as $key => $value) {
             $detalleprestamo = Detalleprestamo::where('detalle_mov_almacen_id',$value->id)->where('tipo','P')->first();
             if($detalleprestamo != null) $detalles_prestamos[$value->id] = $detalleprestamo->cantidad;
-            $detalledevuelto = Detalleprestamo::where('detalle_mov_almacen_id',$value->id)->where('tipo','D')->first();
-            if($detalledevuelto != null) $detalles_devuelto[$value->id] = $detalledevuelto->cantidad;
+            
+            /* GERSON (09-11-22) */
+            $sum_devuelto = Detalleprestamo::where('detalle_mov_almacen_id',$value->id)->where('tipo','D')->select(DB::raw('SUM(cantidad) as devueltos'))->first();
+            if($sum_devuelto != null) $detalles_devuelto[$value->id] = $sum_devuelto->devueltos;
+            $balones_devueltos[$value->id] = Detalleprestamo::select('detalle_prestamo.cantidad', 'detalle_prestamo.created_at', 'producto.descripcion')
+                                ->where('detalle_mov_almacen_id',$value->id)
+                                ->join('detalle_mov_almacen','detalle_prestamo.detalle_mov_almacen_id','detalle_mov_almacen.id')
+                                ->join('producto','detalle_mov_almacen.producto_id','producto.id')
+                                ->where('tipo','D')->orderBy('detalle_prestamo.id','ASC')->get();
+            if($detalles_prestamos[$value->id]==$detalles_devuelto[$value->id]){
+                $guardar[$value->id] = false;
+            }else{
+                $guardar[$value->id] = true;
+            }
+            /*  */
         }
+        
         $entidad  = 'Pedidos';
         $formData = array('prestamoenvase.prestarbalon', $id);
         $formData = array('route' => $formData, 'method' => 'POST', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Guardar';
         $detallespago = Detallepagos::where('pedido_id', '=', $id)
-                    ->join('movimiento', 'detalle_pagos.pago_id', '=', 'movimiento.id')
+                    ->join('movimiento', 'detalle_pagos.metodo_pago_id', '=', 'movimiento.id')
                     ->where('estado',1)
                     ->get(); 
-        return view($this->folderview.'.prestar')->with(compact('pedido', 'detalles_prestamos', 'detalles_devuelto','detallespago','detalles','formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.prestar')->with(compact('pedido', 'detalles_prestamos', 'detalles_devuelto','detallespago','detalles','guardar','sum_prestamo','sum_devuelto','balones_devueltos','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function prestarbalon(Request $request){
@@ -213,17 +230,18 @@ class PrestamoController extends Controller
             //var_dump($detalles); die;
             $mov = true;
             foreach ($detalles as $detalle) {
-                $detalle_prestamo = new Detalleprestamo();
-                $detalle_prestamo->cantidad = $detalle->{"cantidad"};
-                $detalle_prestamo->detalle_mov_almacen_id = $detalle->{"id"};
-                $detalle_prestamo->tipo = "D";
-                $detalle_prestamo->save();
-                
-                $detalle_mov = Detallemovalmacen::find($detalle->{"id"});
-                $stock = Stock::where('producto_id', $detalle_mov->producto_id )->where('sucursal_id', $detalle_mov->movimiento->sucursal_id)->first();
-                $stock->envases_prestados -= $detalle->{"cantidad"};
-                $stock->save(); 
-
+                if($detalle->{"cantidad"}>0){
+                    $detalle_prestamo = new Detalleprestamo();
+                    $detalle_prestamo->cantidad = $detalle->{"cantidad"};
+                    $detalle_prestamo->detalle_mov_almacen_id = $detalle->{"id"};
+                    $detalle_prestamo->tipo = "D";
+                    $detalle_prestamo->save();
+                    
+                    $detalle_mov = Detallemovalmacen::find($detalle->{"id"});
+                    $stock = Stock::where('producto_id', $detalle_mov->producto_id )->where('sucursal_id', $detalle_mov->movimiento->sucursal_id)->first();
+                    $stock->envases_prestados -= $detalle->{"cantidad"};
+                    $stock->save(); 
+                }
             }
             /*$movimiento = Movimiento::find($detalle_mov->movimiento_id);
             $movimiento->balon_prestado=;

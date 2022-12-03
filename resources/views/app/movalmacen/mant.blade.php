@@ -83,6 +83,9 @@
 			{!! Form::hidden('stock', null, array('id' => 'stock')) !!}
 			{!! Form::hidden('envases_vacios', null, array('id' => 'envases_vacios')) !!}
 			{!! Form::hidden('recargable', null, array('id' => 'recargable')) !!}
+			<!-- GERSON (26-11-22) -->
+			{!! Form::hidden('decimal', null, array('id' => 'decimal')) !!}
+			<!--  -->
 		</div>
 
 		<div class="form-group col-lg-12 col-md-12 col-sm-12" id="divProductos" style="margin-top: 20px; overflow:auto; height:180px;">
@@ -281,6 +284,7 @@ function seleccionarProducto(idproducto){
 		$("#stock").val(datos[3]); 
 		$("#recargable").val(datos[4]);
 		$("#envases_vacios").val(datos[7]);
+		$("#decimal").val(datos[10]);
 		if(datos[4] == 1){
 			$(".divEnvase").css('display','');
 			$("#precio_compra_envase").val(datos[5]);
@@ -292,6 +296,33 @@ function seleccionarProducto(idproducto){
 	});
 	$("#cantidad").focus();
 }
+
+/* GERSON (26/11/22) */
+// Deteccion si se usará enteros o decimales
+$("#cantidad").keypress(function(evt){
+	var product_id = $('#producto_id').val();
+	if(product_id != null){
+		var decimal = $('#decimal').val();
+		if(decimal=='null' || decimal=='0'){
+
+			var charCode = (evt.which) ? evt.which : event.keyCode;
+			if(charCode > 31 && (charCode < 48 || charCode > 57)){
+				return false;
+			}
+			return true;
+			
+		}else{
+			
+			var charCode = (evt.which) ? evt.which : event.keyCode;
+			if((charCode > 31 && (charCode < 46 || charCode > 57))||charCode==47){
+				return false;
+			}
+			return true;
+
+		}
+	}
+});
+/*  */
 
 function agregarCarrito(){
 	var cantidad = $('#cantidad').val();
@@ -306,6 +337,15 @@ function agregarCarrito(){
 	var stock = $('#stock').val();
 	var recargable = parseInt($('#recargable').val());
 	var envases_vacios = $('#envases_vacios').val();
+	/* GERSON (26/11/22) */
+	var decimal = $('#decimal').val();
+	if(decimal=='null' || decimal=='0'){
+		var cantidad = parseInt(cantidad);
+		
+	}else{
+		var cantidad = parseFloat(cantidad);
+	}
+	/*  */
 
 	if( cantidad ==""){
 		cantidad = 0;
@@ -371,7 +411,10 @@ function agregarCarrito(){
 			});
 	}else{
 		stock = parseInt( $('#stock').val() );
-		cantidad = parseInt( $('#cantidad').val() );
+		//cantidad = parseInt( $('#cantidad').val() );
+		/* GERSON (05/11/22) */
+		cantidad = parseFloat( $('#cantidad').val() );
+		/*  */
 		if(tipo == "E"){
 			if(stock < cantidad || stock < cantidad_envase){
 				swal({

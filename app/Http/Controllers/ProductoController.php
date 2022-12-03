@@ -6,6 +6,7 @@ use Validator;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Producto;
+use App\Unidadmedida;
 use App\Librerias\Libreria;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +48,7 @@ class ProductoController extends Controller
         $cabecera[]       = array('valor' => 'PRECIO VENTA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRECIO COMPRA + ENVASE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRECIO VENTA + ENVASE', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'UNIDAD MEDIDA', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ACTIVO', 'numero' => '1');
         $cabecera[]       = array('valor' => 'PRECIO EDITABLE', 'numero' => '1');
         $cabecera[]       = array('valor' => 'RECARGABLE', 'numero' => '1');
@@ -91,11 +93,12 @@ class ProductoController extends Controller
     {
         $listar       = Libreria::getParam($request->input('listar'), 'NO');
         $entidad      = 'Producto';
-        $producto  = null;
+        $producto     = null;
+        $cboUnidadmedida = array('' => 'SELECCIONE') + Unidadmedida::pluck('medida', 'id')->all();
         $formData     = array('producto.store');
         $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton        = 'Guardar'; 
-        return view($this->folderview.'.mant')->with(compact('producto', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact('producto', 'cboUnidadmedida', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -111,6 +114,7 @@ class ProductoController extends Controller
             $reglas     = array('descripcion' => 'required|max:100',
                             'precio_venta' => 'required|numeric',
                             'precio_compra' => 'required|numeric',
+                            'unidadmedida_id' => 'required|numeric',
                             );
         }else if($request->input('recargable') ==  1){
             $reglas     = array('descripcion' => 'required|max:100',
@@ -118,6 +122,7 @@ class ProductoController extends Controller
                             'precio_compra' => 'required|numeric',
                             'precio_venta_envase' => 'required|numeric',
                             'precio_compra_envase' => 'required|numeric',
+                            'unidadmedida_id' => 'required|numeric',
                             );
         }
         $mensajes   = array();
@@ -135,6 +140,7 @@ class ProductoController extends Controller
             $producto->frecuente = $request->input('frecuente');
             $producto->editable = $request->input('editable');
             $producto->recargable = $request->input('recargable');
+            $producto->unidadmedida_id = $request->input('unidadmedida_id');
             $producto->save();
         });
         return is_null($error) ? "OK" : $error;
@@ -165,11 +171,12 @@ class ProductoController extends Controller
         }
         $listar   = Libreria::getParam($request->input('listar'), 'NO');
         $producto = Producto::find($id);
+        $cboUnidadmedida = array('' => 'SELECCIONE') + Unidadmedida::pluck('medida', 'id')->all();
         $entidad  = 'Producto';
         $formData = array('producto.update', $id);
         $formData = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
         $boton    = 'Modificar';
-        return view($this->folderview.'.mant')->with(compact('producto', 'formData', 'entidad', 'boton', 'listar'));
+        return view($this->folderview.'.mant')->with(compact('producto', 'cboUnidadmedida', 'formData', 'entidad', 'boton', 'listar'));
     }
 
     /**
@@ -189,6 +196,7 @@ class ProductoController extends Controller
             $reglas     = array('descripcion' => 'required|max:100',
                             'precio_venta' => 'required|numeric',
                             'precio_compra' => 'required|numeric',
+                            'unidadmedida_id' => 'required|numeric',
                             );
         }else if($request->input('recargable') ==  1){
             $reglas     = array('descripcion' => 'required|max:100',
@@ -196,6 +204,7 @@ class ProductoController extends Controller
                             'precio_compra' => 'required|numeric',
                             'precio_venta_envase' => 'required|numeric',
                             'precio_compra_envase' => 'required|numeric',
+                            'unidadmedida_id' => 'required|numeric',
                             );
         }
         $mensajes   = array();
@@ -213,6 +222,7 @@ class ProductoController extends Controller
             $producto->frecuente = $request->input('frecuente');
             $producto->editable = $request->input('editable');
             $producto->recargable = $request->input('recargable');
+            $producto->unidadmedida_id = $request->input('unidadmedida_id');
             $producto->save();
         });
         return is_null($error) ? "OK" : $error;

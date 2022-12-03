@@ -314,7 +314,10 @@ $(document).ready(function(){
 			if( is_numeric( $("#monto_vale_balon").val())){
 				var total = 0;
 				$("#detalle_prod tr").each(function(){
-					var cantidad = parseInt($(this).attr('cantidad'));
+					//var cantidad = parseInt($(this).attr('cantidad'));
+					/* GERSON (05/11/22) */
+					var cantidad = parseFloat($(this).attr('cantidad'));
+					/*  */
 					var precio = parseFloat($(this).attr('precio'));
 					total += precio*cantidad;
 				});
@@ -517,7 +520,7 @@ function generarProductos(){
 	}).done(function(productos){
 		// LLENAR CAJÓN DE PRODUCTOS
 		$.each(productos, function(i, item) {
-			tabla += '<div class="producto col-lg-3 col-md-3 col-sm-3" id="' + item.id  + '"  precio="' + item.precio_venta + '" precio_envase="' + item.precio_venta_envase + '" descripcion="' + item.descripcion + '" editable="' + item.editable + '" recargable="' + item.recargable + '" stock="' + item.cantidad + '"><label class="product-label">' + item.descripcion + '<br>STOCK: ' + item.cantidad + '</label></div>';
+			tabla += '<div class="producto col-lg-3 col-md-3 col-sm-3" id="' + item.id  + '"  precio="' + item.precio_venta + '" precio_envase="' + item.precio_venta_envase + '" descripcion="' + item.descripcion + '" editable="' + item.editable + '" recargable="' + item.recargable + '" stock="' + item.cantidad + '" decimal="' + item.decimal + '"><label class="product-label">' + item.descripcion + '<br>STOCK: ' + item.cantidad + '</label></div>';
 		});
 		$('#div_productos').html(tabla);
 		limpiarDetalleProductos();
@@ -695,9 +698,16 @@ function habilitarPrecioEditable(){
 		var tr = $(this).parent().parent();
 		var precio_actual = $(tr).attr('precio');
 		var recargable = $(tr).attr('recargable');
+		var decimal = $(tr).attr('decimal');
 		if(is_numeric(precio_nuevo)){
 			if(precio_nuevo > 0){
-				var cantidad_actual = parseInt($(tr).attr('cantidad'));
+				/* GERSON (05/11/22) */
+				if(decimal=='null' || decimal=='0'){
+					var cantidad_actual = parseInt($(tr).attr('cantidad'));
+				}else{
+					var cantidad_actual = parseFloat($(tr).attr('cantidad'));
+				}
+				/*  */
 				if(recargable == 0){
 					$(tr).attr('precio',(precio_nuevo).toFixed(2));
 					var acumulado = parseFloat(cantidad_actual * precio_nuevo);
@@ -739,16 +749,49 @@ function habilitarPrecioEditable(){
 		}
 	});
 }
+
 function habilitarCantidadEditable(){
 	$(".cantidad_editable").blur(function() {
-		var cantidad_nueva = parseInt($(this).val());
 		var tr = $(this).parent().parent();
 		var cantidad_actual = $(tr).attr('cantidad');
 		var recargable = $(tr).attr('recargable');
+		/* GERSON (26/11/22) */
+		var decimal = $(tr).attr('decimal');
+		if(decimal=='null' || decimal=='0'){
+			var cantidad_nueva = parseInt($(this).val());
+
+			$(this).keypress(function(evt){
+				var charCode = (evt.which) ? evt.which : event.keyCode;
+				if(charCode > 31 && (charCode < 48 || charCode > 57)){
+					return false;
+				}
+				return true;
+
+			});
+
+		}else{
+			var cantidad_nueva = parseFloat($(this).val());
+
+			$(this).keypress(function(evt){
+				var charCode = (evt.which) ? evt.which : event.keyCode;
+				if((charCode > 31 && (charCode < 46 || charCode > 57))||charCode==47){
+					return false;
+				}
+				return true;
+
+			});
+		}
+		/*  */
 		if(is_numeric(cantidad_nueva)){
 			if(cantidad_nueva >= 0){
 				var precio_actual = parseFloat($(tr).attr('precio'));
-				var stock = parseInt($(tr).attr('stock'));
+				/* GERSON (17/11/22) */
+				if(decimal=='null' || decimal=='0'){
+					var stock = parseInt($(tr).attr('stock'));
+				}else{
+					var stock = parseFloat($(tr).attr('stock'));
+				}
+				/*  */
 				var cantidad_envase = (recargable == 0) ? 0 : parseInt($(tr).attr('cantidad_envase'));
 				var precio_envase = (recargable == 0) ? 0 : parseFloat($(tr).attr('precio_envase'));
 				if(stock >= (cantidad_nueva + cantidad_envase)){
@@ -789,11 +832,19 @@ function habilitarCantidadEnvaseEditable(){
 		var tr = $(this).parent().parent();
 		var cantidad_envase = $(tr).attr('cantidad_envase');
 		var recargable = $(tr).attr('recargable');
+		var decimal = $(tr).attr('decimal');
 		if(is_numeric(cantidad_envase_nueva)){
 			if(cantidad_envase_nueva >= 0){
 				var precio_actual = parseFloat($(tr).attr('precio'));
-				var cantidad_actual = parseInt($(tr).attr('cantidad'));
-				var stock = parseInt($(tr).attr('stock'));
+				/* GERSON (05/11/22) */
+				if(decimal=='null' || decimal=='0'){
+					var cantidad_actual = parseInt($(tr).attr('cantidad'));
+					var stock = parseInt($(tr).attr('stock'));
+				}else{
+					var cantidad_actual = parseFloat($(tr).attr('cantidad'));
+					var stock = parseFloat($(tr).attr('stock'));
+				}
+				/*  */
 				var precio_envase = parseFloat($(tr).attr('precio_envase'));
 				if(stock >= (cantidad_actual + cantidad_envase_nueva)){
 					$(tr).attr('cantidad_envase',cantidad_envase_nueva);
@@ -830,10 +881,17 @@ function habilitarPrecioEnvaseEditable(){
 		var precio_nuevo = parseFloat($(this).val());
 		var tr = $(this).parent().parent();
 		var precio_envase = $(tr).attr('precio_envase');
+		var decimal = $(tr).attr('decimal');
 		if(is_numeric(precio_nuevo)){
 			if(precio_nuevo >= 0){
 				var precio_actual = parseFloat($(tr).attr('precio'));
-				var cantidad_actual = parseInt($(tr).attr('cantidad'));
+				/* GERSON (05/11/22) */
+				if(decimal=='null' || decimal=='0'){
+					var cantidad_actual = parseInt($(tr).attr('cantidad'));
+				}else{
+					var cantidad_actual = parseFloat($(tr).attr('cantidad'));
+				}
+				/*  */
 				var cantidad_envase = parseInt($(tr).attr('cantidad_envase'));
 				if(precio_nuevo >= precio_actual ){
 					$(tr).attr('precio_envase',(precio_nuevo).toFixed(2));
@@ -957,7 +1015,35 @@ function clickProducto(){
 		var editable = $(this).attr('editable');
 		var recargable = $(this).attr('recargable');
 		var stock = $(this).attr('stock');
+		/* GERSON (26/11/22) */
+		var decimal = $(this).attr('decimal');
+		if(decimal=='null' || decimal=='0'){
+			var detalle_cantidad = parseInt($(this).attr('cantidad'));
+			var detalle_stock = parseInt($(this).attr('stock'));
 
+			$(this).keypress(function(evt){
+				var charCode = (evt.which) ? evt.which : event.keyCode;
+				if(charCode > 31 && (charCode < 48 || charCode > 57)){
+					return false;
+				}
+				return true;
+
+			});
+
+		}else{
+			var detalle_cantidad = parseFloat($(this).attr('cantidad'));
+			var detalle_stock = parseFloat($(this).attr('stock'));
+
+			$(this).keypress(function(evt){
+				var charCode = (evt.which) ? evt.which : event.keyCode;
+				if((charCode > 31 && (charCode < 46 || charCode > 57))||charCode==47){
+					return false;
+				}
+				return true;
+
+			});
+		}
+		/*  */
 		//* Pintar producto por 0.3seg
 		$(this).css('background', 'rgb(179,188,237)');
 		setTimeout(function () {
@@ -970,8 +1056,6 @@ function clickProducto(){
 			$("#detalle_prod tr").each(function(){
 				if(idproducto == this.id){
 					existe_producto = true;
-					var detalle_cantidad = parseInt($(this).attr('cantidad'));
-					var detalle_stock = parseInt($(this).attr('stock'));
 					var detalle_precio = parseFloat($(this).attr('precio'));
 					var detalle_cantidad_envase = parseFloat($(this).attr('cantidad_envase'));
 					var detalle_precio_envase = parseFloat($(this).attr('precio_envase'));
@@ -1002,6 +1086,7 @@ function clickProducto(){
 						}
 						detalle_producto += '<td><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto=' + idproducto + ' precio=' + (acumulado).toFixed(2) + ' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td>';
 						$(this).attr('total',(acumulado).toFixed(2));
+						$(this).attr('decimal',decimal);
 						$(this).html(detalle_producto);
 					}else{
 						swal({
@@ -1018,8 +1103,8 @@ function clickProducto(){
 			cantidad_productos++;
 			$("#cantidad_productos").val(cantidad_productos);
 			recargable == 1
-				? nuevo_detalle_producto = '<tr id="' + idproducto + '" cantidad="' + 1 + '" total="' + (precio).toFixed(2) + '" precio="' + (precio).toFixed(2) + '" stock="' + stock + '" recargable="' + recargable + '" cantidad_envase="' + 0 + '" precio_envase="' + (precio_envase).toFixed(2) + '">'
-				: nuevo_detalle_producto = '<tr id="' + idproducto + '" cantidad="' + 1 + '" total="' + (precio).toFixed(2) + '" precio="' + (precio).toFixed(2) + '" stock="' + stock + '" recargable="' + recargable + '">';
+				? nuevo_detalle_producto = '<tr id="' + idproducto + '" cantidad="' + 1 + '" total="' + (precio).toFixed(2) + '" precio="' + (precio).toFixed(2) + '" stock="' + stock + '" recargable="' + recargable + '" cantidad_envase="' + 0 + '" precio_envase="' + (precio_envase).toFixed(2) + '" decimal="' + decimal + '">'
+				: nuevo_detalle_producto = '<tr id="' + idproducto + '" cantidad="' + 1 + '" total="' + (precio).toFixed(2) + '" precio="' + (precio).toFixed(2) + '" stock="' + stock + '" recargable="' + recargable + '" decimal="' + decimal + '">';
 			nuevo_detalle_producto += '<td>'+ descripcion + '</td><td><input type="number" class="form-control input-xs cantidad_editable inputDetProducto" value="' + 1 + '"></td>';
 			editable == 0
 				? nuevo_detalle_producto += '<td>' + (precio).toFixed(2) + '</td>'
@@ -1189,7 +1274,10 @@ function guardarVenta() {
 	$("#detalle_prod tr").each(function(){
 		var id = parseInt($(this).attr('id'));
 		var total = parseFloat($(this).attr('total'));
-		var cantidad = parseInt($(this).attr('cantidad'));
+		//var cantidad = parseInt($(this).attr('cantidad'));
+		/* GERSON (05/11/22) */
+		var cantidad = parseFloat($(this).attr('cantidad'));
+		/*  */
 		var precio = parseFloat($(this).attr('precio'));
 		if( $(this).attr('cantidad_envase') != undefined ){
 			var cantidad_envase = parseInt($(this).attr('cantidad_envase'));

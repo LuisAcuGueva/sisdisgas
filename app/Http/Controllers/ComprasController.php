@@ -10,6 +10,7 @@ use App\Person;
 use App\Sucursal;
 use App\Movimiento;
 use App\Kardex;
+use App\Unidadmedida;
 use App\Almacen;
 use App\Stock;
 use App\Lote;
@@ -402,7 +403,10 @@ class ComprasController extends Controller
     {
         $nombre = $request->input("nombre");
         $sucursal_id = $request->input('sucursal');
-        $productos  = Producto::where('descripcion', 'LIKE', '%'.strtoupper($nombre).'%')->orderBy('descripcion', 'ASC')->get();
+        $productos  = Producto::leftJoin('unidad_medida', 'producto.unidadmedida_id', '=', 'unidad_medida.id')
+                                ->where('descripcion', 'LIKE', '%'.strtoupper($nombre).'%')
+                                ->orderBy('descripcion', 'ASC')->select('producto.*','unidad_medida.medida','unidad_medida.decimal')
+                                ->get();
 
         if(count($productos)>0){
             $c=0;
@@ -436,6 +440,7 @@ class ComprasController extends Controller
                         'precio_venta' => number_format($value->precio_venta,2,'.',''),
                         'precio_compra' => number_format($value->precio_compra,2,'.',''),
                         'idproducto' => $value->id,
+                        'decimal' => $value->decimal,
                     );
                 }else{
                     if( $stock->envases_vacios == null){
@@ -451,9 +456,9 @@ class ComprasController extends Controller
                         'precio_venta' => number_format($value->precio_venta,2,'.',''),
                         'precio_compra' => number_format($value->precio_compra,2,'.',''),
                         'idproducto' => $value->id,
+                        'decimal' => $value->decimal,
                     );
                 }
-                
                 $c++;
             }            
         }else{
@@ -468,7 +473,14 @@ class ComprasController extends Controller
         $producto_id = $request->input('idproducto');
 
         $producto = Producto::find($request->input("idproducto"));
-        
+        /* GERSON (26-11-22) */
+        $decimal = 0;
+        if($producto->unidadmedida_id!=null){
+            $unidad_medida = Unidadmedida::find($producto->unidadmedida_id);
+            $decimal = $unidad_medida->decimal;
+        }
+        /*  */
+
         $currentstock = Kardex::join('detalle_mov_almacen', 'kardex.detalle_mov_almacen_id', '=', 'detalle_mov_almacen.id')
                                 ->join('movimiento', 'detalle_mov_almacen.movimiento_id', '=', 'movimiento.id')
                                 ->where('detalle_mov_almacen.producto_id', '=', $producto->id)
@@ -514,7 +526,7 @@ class ComprasController extends Controller
             $stock = $stock->cantidad;
         }
 
-        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->recargable.'@'.$producto->precio_compra_envase.'@'.$producto->precio_venta_envase.'@'.$envases_vacios.'@'.$envases_sucursal.'@'.$total_envases;
+        return $producto->id.'@'.$producto->precio_compra.'@'.$producto->precio_venta.'@'.$stock.'@'.$producto->recargable.'@'.$producto->precio_compra_envase.'@'.$producto->precio_venta_envase.'@'.$envases_vacios.'@'.$envases_sucursal.'@'.$total_envases.'@'.$decimal;
     }
 
     public function agregarcarritocompra(Request $request)
@@ -529,8 +541,11 @@ class ComprasController extends Controller
         $precio_venta           = Libreria::getParam(str_replace(",", "", $request->input('precio_venta')));
         $precio_venta_envase           = Libreria::getParam(str_replace(",", "", $request->input('precio_venta_envase')));
         //$distribuidora_id = Libreria::getParam($request->input('person_id'));
-        $producto         = Producto::find($producto_id);
-
+        //$producto         = Producto::find($producto_id);
+        /* GERSON (24-11-22) */
+        $producto         = Producto::leftJoin('unidad_medida', 'producto.unidadmedida_id', '=', 'unidad_medida.id')
+                                    ->where('producto.id', '=', $producto_id)->select('producto.*','unidad_medida.medida','unidad_medida.decimal')->first();
+        /*  */
         if( $producto->recargable == 1){
             $subtotal = round( ($cantidad * $precio_compra) + ( $cantidad_envase * $precio_compra_envase) , 2);
         }else{
@@ -559,12 +574,20 @@ class ComprasController extends Controller
                     </td>';
 
         if($cantidad != 0){
-        $cadena .= '<td class="text-center">
-                    <span style="display: block; font-size:.9em">'.$cantidad.' UNIDADES</span>                    
-                </td>';
-        $cadena .= '<td class="text-center">
-                    <span style="display: block; font-size:.9em">'.number_format($precio_compra, 2, '.','').'</span>                    
-                </td>';
+            /* GERSON (24-11-22) */
+            $medida = '';
+            if($producto->medida!=null || $producto->medida!=''){
+                $medida = $producto->medida;
+            }else{
+                $medida = 'UNIDADES';
+            }
+            /*  */
+            $cadena .= '<td class="text-center">
+                        <span style="display: block; font-size:.9em">'.$cantidad.' '.$medida.'</span>                    
+                    </td>';
+            $cadena .= '<td class="text-center">
+                        <span style="display: block; font-size:.9em">'.number_format($precio_compra, 2, '.','').'</span>                    
+                    </td>';
         }else{
             $cadena .= '<td class="text-center">
                 <span style="display: block; font-size:.9em"> - </span>                    

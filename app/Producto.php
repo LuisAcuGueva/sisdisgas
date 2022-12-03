@@ -44,4 +44,9 @@ class Producto extends Model
         			->orderBy('producto.descripcion', 'ASC');
     }
 
+    public function unidadmedida()
+    {
+        return $this->belongsTo('App\Unidadmedida', 'unidadmedida_id');
+    }
+
 }

@@ -204,6 +204,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('metodopago/eliminar/{id}/{listarluego}','MetodopagoController@eliminar')->name('metodopago.eliminar');
     Route::resource('metodopago', 'MetodopagoController', array('except' => array('show')));
 
+    /* GERSON (10-11-22) */
+    Route::post('unidadmedida/buscar','UnidadmedidaController@buscar')->name('unidadmedida.buscar');
+    Route::get('unidadmedida/eliminar/{id}/{listarluego}','UnidadmedidaController@eliminar')->name('unidadmedida.eliminar');
+    Route::resource('unidadmedida', 'UnidadmedidaController', array('except' => array('show')));
+    /*  */
+
     Route::post('configgeneral/buscar','ConfiggeneralController@buscar')->name('configgeneral.buscar');
     Route::get('configgeneral/eliminar/{id}/{listarluego}','ConfiggeneralController@eliminar')->name('configgeneral.eliminar');
     Route::resource('configgeneral', 'ConfiggeneralController', array('except' => array('show')));
