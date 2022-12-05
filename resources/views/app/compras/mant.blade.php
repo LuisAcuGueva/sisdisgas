@@ -389,7 +389,7 @@ function seleccionarProducto(idproducto){
 
 /* GERSON (24/11/22) */
 // Deteccion si se usará enteros o decimales
-$("#cantidad").keypress(function(evt){
+$("#cantidad, #cantidad_envase").keypress(function(evt){
 	var product_id = $('#producto_id').val();
 	if(product_id != null){
 		var decimal = $('#decimal').val();
