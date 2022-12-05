@@ -751,7 +751,7 @@ function habilitarPrecioEditable(){
 }
 
 function habilitarCantidadEditable(){
-	$(".cantidad_editable").blur(function() {
+	$(".cantidad_editable, .cantidad_editable_decimal").blur(function() {
 		var tr = $(this).parent().parent();
 		var cantidad_actual = $(tr).attr('cantidad');
 		var recargable = $(tr).attr('recargable');
@@ -759,27 +759,8 @@ function habilitarCantidadEditable(){
 		var decimal = $(tr).attr('decimal');
 		if(decimal=='null' || decimal=='0'){
 			var cantidad_nueva = parseInt($(this).val());
-
-			$(this).keypress(function(evt){
-				var charCode = (evt.which) ? evt.which : event.keyCode;
-				if(charCode > 31 && (charCode < 48 || charCode > 57)){
-					return false;
-				}
-				return true;
-
-			});
-
 		}else{
 			var cantidad_nueva = parseFloat($(this).val());
-
-			$(this).keypress(function(evt){
-				var charCode = (evt.which) ? evt.which : event.keyCode;
-				if((charCode > 31 && (charCode < 46 || charCode > 57))||charCode==47){
-					return false;
-				}
-				return true;
-
-			});
 		}
 		/*  */
 		if(is_numeric(cantidad_nueva)){
@@ -827,7 +808,7 @@ function habilitarCantidadEditable(){
 	});
 }
 function habilitarCantidadEnvaseEditable(){
-	$(".cantidad_envase_editable").blur(function() {
+	$(".cantidad_envase_editable, .cantidad_envase_editable_decimal").blur(function() {
 		var cantidad_envase_nueva = parseInt($(this).val());
 		var tr = $(this).parent().parent();
 		var cantidad_envase = $(tr).attr('cantidad_envase');
@@ -1018,30 +999,13 @@ function clickProducto(){
 		/* GERSON (26/11/22) */
 		var decimal = $(this).attr('decimal');
 		if(decimal=='null' || decimal=='0'){
+			var decimal = 0;
 			var detalle_cantidad = parseInt($(this).attr('cantidad'));
 			var detalle_stock = parseInt($(this).attr('stock'));
-
-			$(this).keypress(function(evt){
-				var charCode = (evt.which) ? evt.which : event.keyCode;
-				if(charCode > 31 && (charCode < 48 || charCode > 57)){
-					return false;
-				}
-				return true;
-
-			});
-
 		}else{
+			var decimal = 1;
 			var detalle_cantidad = parseFloat($(this).attr('cantidad'));
 			var detalle_stock = parseFloat($(this).attr('stock'));
-
-			$(this).keypress(function(evt){
-				var charCode = (evt.which) ? evt.which : event.keyCode;
-				if((charCode > 31 && (charCode < 46 || charCode > 57))||charCode==47){
-					return false;
-				}
-				return true;
-
-			});
 		}
 		/*  */
 		//* Pintar producto por 0.3seg
@@ -1071,12 +1035,16 @@ function clickProducto(){
 						detalle_cantidad++;
 						$(this).attr('cantidad',detalle_cantidad);
 						var detalle_producto = '<td>' + descripcion + '</td>';
-						detalle_producto += '<td><input type="number" class="form-control input-xs cantidad_editable inputDetProducto" value="' + detalle_cantidad + '"></td>';
+						decimal == 1
+							? detalle_producto += '<td><input type="number" class="form-control input-xs cantidad_editable_decimal inputDetProducto" value="' + detalle_cantidad + '"></td>'
+							: detalle_producto += '<td><input type="number" class="form-control input-xs cantidad_editable inputDetProducto" value="' + detalle_cantidad + '"></td>';
 						editable == 0 
 							? detalle_producto += '<td>'+ (precio).toFixed(2)+'</td>'
 							: detalle_producto += '<td><input type="number" class="form-control input-xs precio_editable inputDetProducto" value="'+ (detalle_precio).toFixed(2) +'"></td>';
 						if(recargable == 1){
-							detalle_producto += '<td>Cant: <input type="number" class="form-control input-xs cantidad_envase_editable inputDetProducto" value="'+ detalle_cantidad_envase +'"> Precio S/. <input type="number" class="form-control input-xs precio_envase_editable inputDetProducto" value="'+ (detalle_precio_envase).toFixed(2) +'"></td>';
+							decimal == 1
+								? detalle_producto += '<td>Cant: <input type="number" class="form-control input-xs cantidad_envase_editable_decimal inputDetProducto" value="'+ detalle_cantidad_envase +'"> Precio S/. <input type="number" class="form-control input-xs precio_envase_editable inputDetProducto" value="'+ (detalle_precio_envase).toFixed(2) +'"></td>'
+								: detalle_producto += '<td>Cant: <input type="number" class="form-control input-xs cantidad_envase_editable inputDetProducto" value="'+ detalle_cantidad_envase +'"> Precio S/. <input type="number" class="form-control input-xs precio_envase_editable inputDetProducto" value="'+ (detalle_precio_envase).toFixed(2) +'"></td>';
 							var acumulado = parseFloat( ( detalle_cantidad * detalle_precio ) + ( detalle_cantidad_envase * detalle_precio_envase) );
 							detalle_producto += '<td class="precioacumulado">'+ ((detalle_cantidad - detalle_cantidad_envase) * detalle_precio) + " + " + ( detalle_cantidad_envase * detalle_precio_envase) +  " = " +(acumulado).toFixed(2) +'</td>';
 						}else{
@@ -1105,13 +1073,17 @@ function clickProducto(){
 			recargable == 1
 				? nuevo_detalle_producto = '<tr id="' + idproducto + '" cantidad="' + 1 + '" total="' + (precio).toFixed(2) + '" precio="' + (precio).toFixed(2) + '" stock="' + stock + '" recargable="' + recargable + '" cantidad_envase="' + 0 + '" precio_envase="' + (precio_envase).toFixed(2) + '" decimal="' + decimal + '">'
 				: nuevo_detalle_producto = '<tr id="' + idproducto + '" cantidad="' + 1 + '" total="' + (precio).toFixed(2) + '" precio="' + (precio).toFixed(2) + '" stock="' + stock + '" recargable="' + recargable + '" decimal="' + decimal + '">';
-			nuevo_detalle_producto += '<td>'+ descripcion + '</td><td><input type="number" class="form-control input-xs cantidad_editable inputDetProducto" value="' + 1 + '"></td>';
+			decimal == 1
+				? nuevo_detalle_producto += '<td>'+ descripcion + '</td><td><input type="number" class="form-control input-xs cantidad_editable_decimal inputDetProducto" value="' + 1 + '"></td>'
+				: nuevo_detalle_producto += '<td>'+ descripcion + '</td><td><input type="number" class="form-control input-xs cantidad_editable inputDetProducto" value="' + 1 + '"></td>';
 			editable == 0
 				? nuevo_detalle_producto += '<td>' + (precio).toFixed(2) + '</td>'
 				: nuevo_detalle_producto += '<td><input type="number" class="form-control input-xs precio_editable inputDetProducto" value="' + (precio).toFixed(2) + '"></td>';
 			if(recargable == 1){
-				nuevo_detalle_producto += '<td>Cant: <input type="number" class="form-control input-xs cantidad_envase_editable inputDetProducto"> Precio S/. <input type="number" class="form-control input-xs precio_envase_editable inputDetProducto" value="' + (precio_envase).toFixed(2) + '"></td>' 
-				+ '<td class="precioacumulado">' + precio + " + 0 = " + (precio).toFixed(2) + '</td>';
+				decimal == 1
+					? nuevo_detalle_producto += '<td>Cant: <input type="number" class="form-control input-xs cantidad_envase_editable_decimal inputDetProducto"> Precio S/. <input type="number" class="form-control input-xs precio_envase_editable inputDetProducto" value="' + (precio_envase).toFixed(2) + '"></td>' 
+					: nuevo_detalle_producto += '<td>Cant: <input type="number" class="form-control input-xs cantidad_envase_editable inputDetProducto"> Precio S/. <input type="number" class="form-control input-xs precio_envase_editable inputDetProducto" value="' + (precio_envase).toFixed(2) + '"></td>' ;
+				nuevo_detalle_producto += '<td class="precioacumulado">' + precio + " + 0 = " + (precio).toFixed(2) + '</td>';
 			}else if(recargable == 0){
 				nuevo_detalle_producto += '<td>-</td>'
 				+ '<td class="precioacumulado">' + (precio).toFixed(2) + '</td>';
@@ -1119,6 +1091,21 @@ function clickProducto(){
 			nuevo_detalle_producto += '<td><a onclick="eliminarDetalle(this)" class="btn btn-xs btn-danger btnEliminar" idproducto=' + idproducto + ' precio=' + (precio).toFixed(2) + ' type="button"><div class="glyphicon glyphicon-remove"></div> Eliminar</a></td></tr>';
 			$("#detalle_prod").append(nuevo_detalle_producto);
 		}
+
+		$(".cantidad_editable").keypress(function(evt){
+			var charCode = (evt.which) ? evt.which : event.keyCode;
+			if(charCode > 31 && (charCode < 48 || charCode > 57)){
+				return false;
+			}
+			return true;
+		});
+		$(".cantidad_envase_editable").keypress(function(evt){
+			var charCode = (evt.which) ? evt.which : event.keyCode;
+			if(charCode > 31 && (charCode < 48 || charCode > 57)){
+				return false;
+			}
+			return true;
+		});
 
 		habilitarPrecioEditable();
 		habilitarCantidadEditable();
