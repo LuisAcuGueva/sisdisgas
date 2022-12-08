@@ -566,7 +566,15 @@ class MovalmacenController extends Controller
         $precio_venta_envase           = Libreria::getParam(str_replace(",", "", $request->input('precio_venta_envase')));
         //$distribuidora_id = Libreria::getParam($request->input('person_id'));
         $producto         = Producto::find($producto_id);
-
+        /* GERSON (08-12-22) */
+        $unidad_medida='';
+        if($producto->unidadmedida_id==null || $producto->unidadmedida_id==''){
+            $unidad_medida='UNIDADES';
+        }else{
+            $u_medida = Unidadmedida::find($producto->unidadmedida_id);
+            $unidad_medida = $u_medida->medida;
+        }
+        /*  */
         $precio = $tipo == 'I' ? $precio_compra : $precio_venta; 
         $precio_envase = $tipo == 'I' ? $precio_compra_envase : $precio_venta_envase; 
 
@@ -599,7 +607,7 @@ class MovalmacenController extends Controller
 
         if($cantidad != 0){
         $cadena .= '<td class="text-center">
-                    <span style="display: block; font-size:.9em">'.$cantidad.' UNIDADES</span>                    
+                    <span style="display: block; font-size:.9em">'.$cantidad.' '.$unidad_medida.'</span>                    
                 </td>';
         $cadena .= '<td class="text-center">
                     <span style="display: block; font-size:.9em">'.number_format($precio, 2, '.','').'</span>                    
@@ -622,7 +630,7 @@ class MovalmacenController extends Controller
             </td>';
             }else{
                 $cadena .= '<td class="text-center">
-                <span style="display: block; font-size:.9em">'.$cantidad_envase.' UNIDADES</span>                    
+                <span style="display: block; font-size:.9em">'.$cantidad_envase.' '.$unidad_medida.'</span>                    
             </td><td class="text-center">
                 <span style="display: block; font-size:.9em">'.number_format($precio_envase, 2, '.','').'</span>                    
             </td>';
