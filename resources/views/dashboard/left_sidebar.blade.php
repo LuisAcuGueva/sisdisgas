@@ -14,9 +14,9 @@ $menu                  = generarMenu($tipousuario_id);
 
 <div class="container body">
     <div class="main_container">
-        <div class="col-md-3 left_col">
+        <div class="col-md-3 left_col" style="width: 80px;">
             <div class="left_col scroll-view">
-                <div class="navbar nav_title" style="border: 0;">
+                <div class="navbar nav_title" style="border: 0; text-align: center;">
                     <a href="#" class="site_title" onclick='cargarRutaMenu("http://localhost/sisdisgas/inicio", "container", "34");'><i class="fa fa-home"></i> <span>SISDISGAS</span></a>
                 </div>
 
@@ -79,14 +79,14 @@ function generarMenu($idtipousuario)
             }           
         }
         if ($hijos != '' || $usar === true ) {
-            $cadenaMenu .= '<li><a>';
+            $cadenaMenu .= '<li><a style="font-size: 11.5px;">';
             $cadenaMenu .= '<i class="'.$catPrincipal->icon.'"></i> '.$catPrincipal->name.'<span class="fa fa-chevron-down"></span></a>';
-            $cadenaMenu .= '<ul class="nav child_menu">';
+            $cadenaMenu .= '<ul class="nav child_menu" style="left: 107%;">';
             for ($i=0; $i < count($aux); $i++) { 
                 if (strtoupper($aux[$i]['nombre']) === 'SEPARADOR') {
                     //$cadenaMenu .= '<li class="divider"></li>';
                 }else{
-                    $cadenaMenu .= '<li id="'.$aux[$i]['id'].'"><a href="#" onclick="cargarRutaMenu(\''.URL::to($aux[$i]['link']).'\', \'container\', \''.$aux[$i]['id'].'\');esconderSubMenu(this);"> '.$aux[$i]['nombre'].'</a></li>';
+                    $cadenaMenu .= '<li id="'.$aux[$i]['id'].'"><a href="#" style="font-size: 12px;" onclick="cargarRutaMenu(\''.URL::to($aux[$i]['link']).'\', \'container\', \''.$aux[$i]['id'].'\');esconderSubMenu(this);"> '.$aux[$i]['nombre'].'</a></li>';
                 }
             }
             if (count($aux) > 0 && $hijos != '' ) {

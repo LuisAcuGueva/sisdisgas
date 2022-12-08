@@ -1000,12 +1000,8 @@ function clickProducto(){
 		var decimal = $(this).attr('decimal');
 		if(decimal=='null' || decimal=='0'){
 			var decimal = 0;
-			var detalle_cantidad = parseInt($(this).attr('cantidad'));
-			var detalle_stock = parseInt($(this).attr('stock'));
 		}else{
 			var decimal = 1;
-			var detalle_cantidad = parseFloat($(this).attr('cantidad'));
-			var detalle_stock = parseFloat($(this).attr('stock'));
 		}
 		/*  */
 		//* Pintar producto por 0.3seg
@@ -1020,6 +1016,13 @@ function clickProducto(){
 			$("#detalle_prod tr").each(function(){
 				if(idproducto == this.id){
 					existe_producto = true;
+					if(decimal == 0){
+						var detalle_cantidad = parseInt($(this).attr('cantidad'));
+						var detalle_stock = parseInt($(this).attr('stock'));
+					}else{
+						var detalle_cantidad = parseFloat($(this).attr('cantidad'));
+						var detalle_stock = parseFloat($(this).attr('stock'));
+					}
 					var detalle_precio = parseFloat($(this).attr('precio'));
 					var detalle_cantidad_envase = parseFloat($(this).attr('cantidad_envase'));
 					var detalle_precio_envase = parseFloat($(this).attr('precio_envase'));

@@ -99,9 +99,7 @@ $container = "'container'";
 		if($(".btnEliminar").attr('activo')=== 'no'){
 			$('.btnEliminar').attr("disabled", true);
 		}
-
-		console.log("monto vuelto = " + monto_vuelto );
-
+        
 		$('#ingresostotal').html(ingresos_total.toFixed(2));
 		$('#ingresosefectivo').html(ingresos_efectivo.toFixed(2));
 		$('#ingresosvisa').html(ingresos_visa.toFixed(2));

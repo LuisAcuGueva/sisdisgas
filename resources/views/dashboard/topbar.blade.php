@@ -14,7 +14,7 @@ $tipousuario_id        = session('usertype_id');
 <div class="top_nav">
     <div class="nav_menu">
         <nav>
-            <div class="nav toggle">
+            <div class="nav toggle" style="margin-left: 10px;">
                 <a id="menu_toggle"><i class="fa fa-bars"></i></a>
             </div>
 
