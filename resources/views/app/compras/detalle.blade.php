@@ -139,7 +139,7 @@
 					@foreach($detalles  as $key => $value)
 						<tr>
 							<td>{{ $value->producto->descripcion }} </td>
-							<td align="center">{{ $value->cantidad }} </td>
+							<td align="center">{{ ($value->cantidad*100) % 100 != 0 ? $value->cantidad : round($value->cantidad) }} </td>
 							<td align="center">{{ $value->precio }} </td>
 							<td align="center">{{ $value->cantidad_envase ? $value->cantidad_envase : '-' }} </td>
 							<td align="center">{{ $value->cantidad_envase ? $value->precio_envase : '-' }} </td>

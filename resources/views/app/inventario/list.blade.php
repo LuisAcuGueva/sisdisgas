@@ -22,7 +22,7 @@
 			<td>{{ $value->descripcion }}</td>
 			<td align="center">{{ $value->precio_venta }}</td>
 			<td align="center">{{ $value->precio_compra }}</td>
-			<td align="center">{{ $value->cantidad }}</td>
+			<td align="center">{{ ($value->cantidad*100) % 100 != 0 ? $value->cantidad : round($value->cantidad) }}</td>
 			@if( $value->recargable == 1)
 			<td align="center">{{ $value->envases_total }}</td>
 			<td align="center">{{ $value->envases_llenos }}</td>

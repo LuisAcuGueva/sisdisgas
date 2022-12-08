@@ -426,6 +426,14 @@ function agregarCarrito(elemento){
 	var stock = $('#stock').val();
 	var recargable = parseInt($('#recargable').val());
 	var envases_vacios = parseInt($('#envases_vacios').val());
+	
+	if( cantidad ==""){
+		cantidad = 0;
+	}
+	if( cantidad_envase ==""){
+		cantidad_envase = 0;
+	}
+
 	/* GERSON (24/11/22) */
 	var decimal = $('#decimal').val();
 	if(decimal=='null' || decimal=='0'){
@@ -441,13 +449,6 @@ function agregarCarrito(elemento){
 			title: 'INGRESE CANTIDAD',
 			});
 		return false;
-	}
-
-	if( cantidad ==""){
-		cantidad = 0;
-	}
-	if( cantidad_envase ==""){
-		cantidad_envase = 0;
 	}
 
 	var _token = $('input[name=_token]').val();

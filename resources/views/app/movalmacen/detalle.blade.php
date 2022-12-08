@@ -71,7 +71,7 @@
 					@foreach($detalles  as $key => $value)
 						<tr>
 							<td>{{ $value->producto->descripcion }} </td>
-							<td align="center">{{ $value->cantidad }} </td>
+							<td align="center">{{ ($value->cantidad*100) % 100 != 0 ? $value->cantidad : round($value->cantidad) }} </td>
 							<td align="center">{{ $value->precio }} </td>
 							@if( $value->cantidad_envase == null )
 								<td align="center"> - </td>

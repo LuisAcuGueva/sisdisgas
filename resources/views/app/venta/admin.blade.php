@@ -520,7 +520,7 @@ function generarProductos(){
 	}).done(function(productos){
 		// LLENAR CAJÓN DE PRODUCTOS
 		$.each(productos, function(i, item) {
-			tabla += '<div class="producto col-lg-3 col-md-3 col-sm-3" id="' + item.id  + '"  precio="' + item.precio_venta + '" precio_envase="' + item.precio_venta_envase + '" descripcion="' + item.descripcion + '" editable="' + item.editable + '" recargable="' + item.recargable + '" stock="' + item.cantidad + '" decimal="' + item.decimal + '"><label class="product-label">' + item.descripcion + '<br>STOCK: ' + item.cantidad + '</label></div>';
+			tabla += '<div class="producto col-lg-3 col-md-3 col-sm-3" id="' + item.id  + '"  precio="' + item.precio_venta + '" precio_envase="' + item.precio_venta_envase + '" descripcion="' + item.descripcion + '" editable="' + item.editable + '" recargable="' + item.recargable + '" stock="' + item.cantidad + '" decimal="' + item.decimal + '"><label class="product-label">' + item.descripcion + '<br>STOCK: ' + ((item.cantidad*100 %100 != 0 ) ? item.cantidad : Math.round(item.cantidad)) + '</label></div>';
 		});
 		$('#div_productos').html(tabla);
 		limpiarDetalleProductos();

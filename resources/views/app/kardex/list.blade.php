@@ -79,7 +79,7 @@
 			<td>{{ $value->descripcion }}</td>
 
 			@if($value->cantidad != 0)
-				<td align="center">{{ $value->cantidad }}</td>
+				<td align="center">{{ ($value->cantidad*100) % 100 != 0 ? $value->cantidad : round($value->cantidad) }}</td>
 				@if( $value->tipo == "I")
 					<td align="center">{{ $value->tipomovimiento_id == 7 ? $value->precio_venta : $value->precio_compra }}</td>
 				@else
@@ -102,10 +102,8 @@
 				<td align="center"> - </td>
 			@endif
 
-			<td align="center">{{ $value->stock_anterior }}</td>
-
-			<td align="center">{{ $value->stock_actual }}</td>
-
+			<td align="center">{{ ($value->stock_anterior*100) % 100 != 0 ? $value->stock_anterior : round($value->stock_anterior) }}</td>
+			<td align="center">{{ ($value->stock_actual*100) % 100 != 0 ? $value->stock_actual : round($value->stock_actual) }}</td>
 		</tr>
 		@endforeach
 		</tbody>

@@ -21,7 +21,7 @@
 						$detalles = Detallemovalmacen::where('movimiento_id',$value->id)->get();
 						$balones = false;
 							foreach($detalles as $i => $det_mov){
-								if($det_mov->producto_id == 4 || $det_mov->producto_id == 5){
+								if(($det_mov->producto_id == 4 || $det_mov->producto_id == 5) && $det_mov->cantidad != 0){
 									$balones = true;
 								}
 							}
