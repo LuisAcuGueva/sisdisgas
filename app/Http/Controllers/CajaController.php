@@ -149,9 +149,6 @@ class CajaController extends Controller
 
         $montoapertura = 0.00;
         $monto_vuelto = 0.00;
-        $ingresos_efectivo = 0.00;
-        $ingresos_visa = 0.00;
-        $ingresos_master = 0.00;
         $ingresos_total = 0.00;
         $egresos = 0.00;
         $saldo = 0.00;
@@ -164,35 +161,7 @@ class CajaController extends Controller
                 ->where('num_caja',$maxapertura)->first();
             $montoapertura = $apertura->total;
             if($aperturaycierre == 0){ //apertura y cierre iguales ---- mostrar desde apertura a cierre
-                /*
-
-                SELECT SUM(montoefectivo)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                
-                //ingresos efectivo
-                $ingresos_efectivo = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('num_caja','<', $maxcierre)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->where('concepto_id', "!=", 12)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montoefectivo');
-
-                round($ingresos_efectivo,2);
-
-
-
-                    //montos vuelto
-                    $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
+                $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
                     ->where('num_caja','<', $maxcierre)
                     ->where('tipomovimiento_id',1)
                     ->where('estado', "=", 1)
@@ -202,59 +171,7 @@ class CajaController extends Controller
                         $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
                     })
                     ->sum('total');
-
                 round($monto_vuelto,2);
-
-                /*
-
-
-                SELECT SUM(montovisa)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta visa
-
-                $ingresos_visa = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('num_caja','<', $maxcierre)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montovisa');
-
-                round($ingresos_visa,2);
-
-                /*
-
-                SELECT SUM(montomaster)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta mastercard
-
-                $ingresos_master = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('num_caja','<', $maxcierre)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montomaster');
-
-                round($ingresos_master,2);
-
-                //ingresos total
 
                 $ingresos_total = Movimiento::where('num_caja','>', $maxapertura)
                                             ->where('num_caja','<', $maxcierre)
@@ -267,18 +184,6 @@ class CajaController extends Controller
                                             ->sum('total');
                 round($ingresos_total,2);
 
-                /*
-
-                SELECT SUM(total)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 1 // EGRESO
-
-                */
-                //egresos
                 $egresos = Movimiento::where('num_caja','>', $maxapertura)
                                             ->where('num_caja','<', $maxcierre)
                                             ->where('tipomovimiento_id',1)
@@ -295,35 +200,8 @@ class CajaController extends Controller
 
                 //saldo
                 $saldo = round($ingresos_total - $egresos, 2);
-
                 $monto_caja = round($montoapertura + $ingresos_total - $egresos - $monto_vuelto, 2);
-
             }else if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura hasta ultimo movimiento
-                /*
-
-                SELECT SUM(montoefectivo)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                
-                //ingresos efectivo
-                $ingresos_efectivo = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->where('concepto_id', "!=", 12)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montoefectivo');
-                round($ingresos_efectivo,2);
-
-
-                //montos vuelto
                 $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
                 ->where('tipomovimiento_id',1)
                 ->where('estado', "=", 1)
@@ -333,57 +211,8 @@ class CajaController extends Controller
                         $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
                     })
                 ->sum('total');
-
                 round($monto_vuelto,2);
-
-
-                /*
-
-                SELECT SUM(montovisa)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta visa
-
-
-                $ingresos_visa = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montovisa');
-                round($ingresos_visa,2);
-
-                /*
-
-                SELECT SUM(montomaster)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta mastercard
-
-                $ingresos_master = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('tipomovimiento_id',1)  
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montomaster');
-                round($ingresos_master,2);
-
-                //ingresos total
-
+                
                 $ingresos_total = Movimiento::where('num_caja','>', $maxapertura)
                                             ->where('tipomovimiento_id',1)
                                             ->where('estado', "=", 1)
@@ -394,18 +223,6 @@ class CajaController extends Controller
                                             ->sum('total');
                 round($ingresos_total,2);
 
-                /*
-
-                SELECT SUM(total)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 1 // EGRESO
-
-                */
-                //egresos
                 $egresos = Movimiento::where('num_caja','>', $maxapertura)
                                             ->where('tipomovimiento_id',1)
                                             ->where('estado', "=", 1)
@@ -418,9 +235,9 @@ class CajaController extends Controller
                                             })
                                             ->sum('total');
                 round($egresos,2);
+
                 //saldo
                 $saldo = round($ingresos_total - $egresos, 2);
-
                 $monto_caja = round($montoapertura + $ingresos_total - $egresos - $monto_vuelto, 2);
             }
             $saldo += $montoapertura;
@@ -431,31 +248,6 @@ class CajaController extends Controller
                 ->where('num_caja',$maxapertura)->first();
             $montoapertura = $apertura->total;
             if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura hasta ultimo movimiento
-                /*
-
-                SELECT SUM(montoefectivo)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                
-                //ingresos efectivo
-                $ingresos_efectivo = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->where('concepto_id', "!=", 12)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montoefectivo');
-                round($ingresos_efectivo,2);
-
-
-                //montos vuelto
                 $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
                 ->where('tipomovimiento_id',1)
                 ->where('estado', "=", 1)
@@ -467,53 +259,7 @@ class CajaController extends Controller
                         $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
                     })
                 ->sum('total');
-
                 round($monto_vuelto,2);
-                /*
-
-                SELECT SUM(montovisa)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta visa
-
-                $ingresos_visa = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montovisa');
-                round($ingresos_visa,2);
-
-                /*
-
-                SELECT SUM(montomaster)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta mastercard
-
-                $ingresos_master = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montomaster');
-                round($ingresos_master,2);
-
-                //ingresos total
 
                 $ingresos_total = Movimiento::where('num_caja','>', $maxapertura)
                                             ->where('tipomovimiento_id',1)
@@ -525,18 +271,6 @@ class CajaController extends Controller
                                             ->sum('total');
                 round($ingresos_total,2);
 
-                /*
-
-                SELECT SUM(total)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.num_caja = con.id
-                WHERE mov.serie_numero >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 1 // EGRESO
-
-                */
-                //egresos
                 $egresos = Movimiento::where('num_caja','>', $maxapertura)
                                             ->where('tipomovimiento_id',1)
                                             ->where('estado', "=", 1)
@@ -549,9 +283,9 @@ class CajaController extends Controller
                                             })
                                             ->sum('total');
                 round($egresos,2);
+
                 //saldo
                 $saldo = round($ingresos_total - $egresos, 2);
-
                 $monto_caja = round($montoapertura + $ingresos_total - $egresos - $monto_vuelto, 2);
             }
             $saldo += $montoapertura; // + $monto_vuelto;
@@ -594,9 +328,9 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('maxapertura','ultima_apertura', 'ultimo_cierre','sucursal_id', 'tituloIngresarCierres','cant_cajas_sucursales_abiertas', 'caja_principal','montoapertura','monto_vuelto', 'lista', 'ingresos_efectivo', 'monto_caja', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo',  'aperturas' , 'cierres' , 'ruta', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'aperturaycierre', 'tituloTurnoRepartidor', 'titulo_eliminar', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('maxapertura','ultima_apertura', 'ultimo_cierre','sucursal_id', 'tituloIngresarCierres','cant_cajas_sucursales_abiertas', 'caja_principal','montoapertura','monto_vuelto', 'lista', 'monto_caja', 'ingresos_total', 'egresos' , 'saldo',  'aperturas' , 'cierres' , 'ruta', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'aperturaycierre', 'tituloTurnoRepartidor', 'titulo_eliminar', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'ruta'));
         }
-        return view($this->folderview.'.list')->with(compact('maxapertura','ultimo_cierre','tituloIngresarCierres','sucursal_id','caja_principal','montoapertura', 'monto_vuelto', 'lista', 'ingresos_efectivo', 'monto_caja', 'ingresos_visa', 'ingresos_master' , 'ingresos_total', 'egresos' , 'saldo', 'aperturas' , 'cierres' , 'ruta', 'aperturaycierre', 'titulo_registrar', 'tituloTurnoRepartidor', 'titulo_apertura', 'titulo_cierre', 'entidad'));
+        return view($this->folderview.'.list')->with(compact('maxapertura','ultimo_cierre','tituloIngresarCierres','sucursal_id','caja_principal','montoapertura', 'monto_vuelto', 'lista', 'monto_caja' , 'ingresos_total', 'egresos' , 'saldo', 'aperturas' , 'cierres' , 'ruta', 'aperturaycierre', 'titulo_registrar', 'tituloTurnoRepartidor', 'titulo_apertura', 'titulo_cierre', 'entidad'));
     }
 
     /**
@@ -727,23 +461,17 @@ class CajaController extends Controller
         $user = Auth::user();
         $persona_id = $user->person_id;
         $num_caja   = Movimiento::where('sucursal_id', '=' , $sucursal_id)->max('num_caja') + 1;
-
+        
         $sucursal = Sucursal::find(1);
-
         $lstsucursal = Sucursal::all();
-
         foreach ($lstsucursal as $key => $value) {
             if($value == $sucursal){
                unset($lstsucursal[$key]);
             }
         }
-
         $cant_cajas_sucursales_abiertas = 0;
-
         $sucursales_cerradas_no_ingresadas = 0;
-
         foreach ($lstsucursal as $key => $value) {
-
             $aperturas_sucursal = Movimiento::where('concepto_id', 1)
                                 ->where('sucursal_id', "=", $value->id)
                                 ->where('estado', "=", 1)
@@ -753,35 +481,21 @@ class CajaController extends Controller
                                 ->where('sucursal_id', "=", $value->id)
                                 ->where('estado', "=", 1)
                                 ->count();
-
-
             if($aperturas_sucursal == $cierres_sucursal){ // habilitar apertura de caja = caja cerrada
-
                 $cierre_max_sucursal = Movimiento::where('concepto_id', 2)
                 ->where('sucursal_id', "=", $value->id)
                 ->where('estado', "=", 1)
                 ->max('id');
-
                 $cierre_max  = Movimiento::find($cierre_max_sucursal);
-
                 if(!is_null($cierre_max)){
-
                     if( $cierre_max->ingreso_caja_principal == null ){
-
                         $sucursales_cerradas_no_ingresadas++;
-
                     }
-
                 }
-
-
             }else if($aperturas_sucursal != $cierres_sucursal){ //habilitar cierre de caja = caja abierta
                 $cant_cajas_sucursales_abiertas++;
             }
-
         }
-        
-
         $turnos_iniciados = Turnorepartidor::where('estado','I')->get();
         // TRABAJADORES EN TURNO
         $trabajadores_iniciados = array();
@@ -791,13 +505,11 @@ class CajaController extends Controller
                 array_push($trabajadores_iniciados, $trabajador);
             }
         }
-
         if(!empty($trabajadores_iniciados)){
             $turnos_cerrados = "NO";
         }else{
             $turnos_cerrados = "SI";
         }
-
         $boton        = 'Guardar';
         return view($this->folderview.'.cierre')->with(compact('sucursales_cerradas_no_ingresadas', 'cant_cajas_sucursales_abiertas', 'persona_id' , 'num_caja', 'sucursal_id','movimiento', 'turnos_cerrados' ,'formData', 'entidad', 'boton', 'listar'));
     }
@@ -1025,9 +737,6 @@ class CajaController extends Controller
 
         $montoapertura = 0.00;
         $monto_vuelto = 0.00;
-        $ingresos_efectivo = 0.00;
-        $ingresos_visa = 0.00;
-        $ingresos_master = 0.00;
         $ingresos_total = 0.00;
         $egresos = 0.00;
         $saldo = 0.00;
@@ -1040,35 +749,7 @@ class CajaController extends Controller
                 ->where('num_caja',$maxapertura)->first();
             $montoapertura = $apertura->total;
             if($aperturaycierre == 0){ //apertura y cierre iguales ---- mostrar desde apertura a cierre
-                /*
-
-                SELECT SUM(montoefectivo)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                
-                //ingresos efectivo
-                $ingresos_efectivo = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('num_caja','<', $maxcierre)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->where('concepto_id', "!=", 12)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montoefectivo');
-
-                round($ingresos_efectivo,2);
-
-
-
-                    //montos vuelto
-                    $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
+                $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
                     ->where('num_caja','<', $maxcierre)
                     ->where('tipomovimiento_id',1)
                     ->where('estado', "=", 1)
@@ -1078,187 +759,47 @@ class CajaController extends Controller
                         $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
                     })
                     ->sum('total');
-
                 round($monto_vuelto,2);
-
-                /*
-
-
-                SELECT SUM(montovisa)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta visa
-
-                $ingresos_visa = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('num_caja','<', $maxcierre)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montovisa');
-
-                round($ingresos_visa,2);
-
-                /*
-
-                SELECT SUM(montomaster)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta mastercard
-
-                $ingresos_master = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('num_caja','<', $maxcierre)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montomaster');
-
-                round($ingresos_master,2);
-
-                //ingresos total
-
-                $ingresos_total = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('num_caja','<', $maxcierre)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->where('concepto_id', "!=", 12)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('total');
-                round($ingresos_total,2);
-
-                /*
-
-                SELECT SUM(total)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 1 // EGRESO
-
-                */
-                //egresos
-                $egresos = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('num_caja','<', $maxcierre)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 1) //egreso
-                                            ->where(function($subquery)
-                                            {
-                                                $subquery->where('concepto_id', '!=', 12)->where('concepto_id', "!=", 15);
-                                            })
-                                            ->sum('total');
-                round($egresos,2);
-
-                //saldo
-                $saldo = round($ingresos_total - $egresos, 2);
-
-                $monto_caja = round($montoapertura + $ingresos_total - $egresos - $monto_vuelto, 2);
-
-            }else if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura hasta ultimo movimiento
-                /*
-
-                SELECT SUM(montoefectivo)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
                 
-                //ingresos efectivo
-                $ingresos_efectivo = Movimiento::where('num_caja','>', $maxapertura)
+                $ingresos_total = Movimiento::where('num_caja','>', $maxapertura)
+                                            ->where('num_caja','<', $maxcierre)
                                             ->where('tipomovimiento_id',1)
                                             ->where('estado', "=", 1)
                                             ->where('sucursal_id', "=", $sucursal_id)
                                             ->where('concepto_id', "!=", 12)
                                             ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
                                             ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montoefectivo');
-                round($ingresos_efectivo,2);
+                                            ->sum('total');
+                round($ingresos_total,2);
 
-
-                //montos vuelto
-                $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
-                ->where('tipomovimiento_id',1)
-                ->where('estado', "=", 1)
-                ->where('sucursal_id', "=", $sucursal_id)
-                ->where(function($subquery)
-                    {
-                        $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
-                    })
-                ->sum('total');
-
-                round($monto_vuelto,2);
-
-
-                /*
-
-                SELECT SUM(montovisa)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta visa
-
-
-                $ingresos_visa = Movimiento::where('num_caja','>', $maxapertura)
+                $egresos = Movimiento::where('num_caja','>', $maxapertura)
+                                            ->where('num_caja','<', $maxcierre)
                                             ->where('tipomovimiento_id',1)
                                             ->where('estado', "=", 1)
                                             ->where('sucursal_id', "=", $sucursal_id)
                                             ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montovisa');
-                round($ingresos_visa,2);
+                                            ->where('concepto.tipo', "=", 1) //egreso
+                                            ->where(function($subquery)
+                                            {
+                                                $subquery->where('concepto_id', '!=', 12)->where('concepto_id', "!=", 15);
+                                            })
+                                            ->sum('total');
+                round($egresos,2);
 
-                /*
-
-                SELECT SUM(montomaster)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta mastercard
-
-                $ingresos_master = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('tipomovimiento_id',1)  
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montomaster');
-                round($ingresos_master,2);
-
-                //ingresos total
+                //saldo
+                $saldo = round($ingresos_total - $egresos, 2);
+                $monto_caja = round($montoapertura + $ingresos_total - $egresos - $monto_vuelto, 2);
+            }else if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura hasta ultimo movimiento
+                $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
+                    ->where('tipomovimiento_id',1)
+                    ->where('estado', "=", 1)
+                    ->where('sucursal_id', "=", $sucursal_id)
+                    ->where(function($subquery)
+                        {
+                            $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
+                        })
+                    ->sum('total');
+                round($monto_vuelto,2);
 
                 $ingresos_total = Movimiento::where('num_caja','>', $maxapertura)
                                             ->where('tipomovimiento_id',1)
@@ -1270,18 +811,6 @@ class CajaController extends Controller
                                             ->sum('total');
                 round($ingresos_total,2);
 
-                /*
-
-                SELECT SUM(total)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 1 // EGRESO
-
-                */
-                //egresos
                 $egresos = Movimiento::where('num_caja','>', $maxapertura)
                                             ->where('tipomovimiento_id',1)
                                             ->where('estado', "=", 1)
@@ -1294,9 +823,9 @@ class CajaController extends Controller
                                             })
                                             ->sum('total');
                 round($egresos,2);
+
                 //saldo
                 $saldo = round($ingresos_total - $egresos, 2);
-
                 $monto_caja = round($montoapertura + $ingresos_total - $egresos - $monto_vuelto, 2);
             }
             $saldo += $montoapertura;
@@ -1307,89 +836,18 @@ class CajaController extends Controller
                 ->where('num_caja',$maxapertura)->first();
             $montoapertura = $apertura->total;
             if($aperturaycierre == 1){ //apertura y cierre diferentes ------- mostrar desde apertura hasta ultimo movimiento
-                /*
-
-                SELECT SUM(montoefectivo)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                
-                //ingresos efectivo
-                $ingresos_efectivo = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->where('concepto_id', "!=", 12)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montoefectivo');
-                round($ingresos_efectivo,2);
-
-
-                //montos vuelto
                 $monto_vuelto = Movimiento::where('num_caja','>', $maxapertura)
-                ->where('tipomovimiento_id',1)
-                ->where('estado', "=", 1)
-                ->where('sucursal_id', "=", $sucursal_id)
-                /*->where('concepto_id', "=", 12) // montovuelto
-                ->orwhere('concepto_id', "=", 15)*/
-                ->where(function($subquery)
-                    {
-                        $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
-                    })
-                ->sum('total');
-
+                    ->where('tipomovimiento_id',1)
+                    ->where('estado', "=", 1)
+                    ->where('sucursal_id', "=", $sucursal_id)
+                    /*->where('concepto_id', "=", 12) // montovuelto
+                    ->orwhere('concepto_id', "=", 15)*/
+                    ->where(function($subquery)
+                        {
+                            $subquery->where('concepto_id', '=', 12)->orwhere('concepto_id', "=", 15);
+                        })
+                    ->sum('total');
                 round($monto_vuelto,2);
-                /*
-
-                SELECT SUM(montovisa)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta visa
-
-                $ingresos_visa = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montovisa');
-                round($ingresos_visa,2);
-
-                /*
-
-                SELECT SUM(montomaster)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.concepto_id = con.id
-                WHERE mov.num_caja >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 0 // INGRESO
-
-                */
-                //ingresos tarjeta mastercard
-
-                $ingresos_master = Movimiento::where('num_caja','>', $maxapertura)
-                                            ->where('tipomovimiento_id',1)
-                                            ->where('estado', "=", 1)
-                                            ->where('sucursal_id', "=", $sucursal_id)
-                                            ->join('concepto', 'movimiento.concepto_id', '=', 'concepto.id')
-                                            ->where('concepto.tipo', "=", 0) //ingreso
-                                            ->sum('montomaster');
-                round($ingresos_master,2);
-
-                //ingresos total
 
                 $ingresos_total = Movimiento::where('num_caja','>', $maxapertura)
                                             ->where('tipomovimiento_id',1)
@@ -1401,18 +859,6 @@ class CajaController extends Controller
                                             ->sum('total');
                 round($ingresos_total,2);
 
-                /*
-
-                SELECT SUM(total)
-                FROM movimiento as mov
-                INNER JOIN concepto as con 
-                ON mov.num_caja = con.id
-                WHERE mov.serie_numero >= 5 
-                and mov.sucursal_id = 1
-                and con.tipo = 1 // EGRESO
-
-                */
-                //egresos
                 $egresos = Movimiento::where('num_caja','>', $maxapertura)
                                             ->where('tipomovimiento_id',1)
                                             ->where('estado', "=", 1)
@@ -1425,16 +871,14 @@ class CajaController extends Controller
                                             })
                                             ->sum('total');
                 round($egresos,2);
+
                 //saldo
                 $saldo = round($ingresos_total - $egresos, 2);
-
                 $monto_caja = round($montoapertura + $ingresos_total - $egresos - $monto_vuelto, 2);
             }
             $saldo += $montoapertura; // + $monto_vuelto;
         }
-
         return $monto_caja;
-
     }
 
     /**

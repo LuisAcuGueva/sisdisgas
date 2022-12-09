@@ -1,4 +1,4 @@
-Resolución de pantalla => 1024 x 768
+Resolución de pantalla => 1342 x 768
 
 1 - Stock en decimales para producto como manguera (OK)
     Vistas afectadas:
@@ -42,3 +42,7 @@ Agregar total_pagado en movimiento
 3- REDONDEAR STOCK EN INVENTARIO
 4- REDONDEAR STOCK EN REGISTRAR PEDIDO
 5- AL NO AGREGAR CANTIDAD A PRODUCTO CON ENVASE EN COMPRA - TENIA QUE COLOCAR 0 PARA PROCEDER
+
+### 09-12-2022 ###
+1- Trasferir dinero entre cajas
+

@@ -351,8 +351,9 @@ var clientes = new Bloodhound({
 		filter: function (clientes) {
 			return $.map(clientes, function (cliente) {
 				return {
-					value: cliente.value,
 					id: cliente.id,
+					value: cliente.value,
+					name: cliente.name,
 					direccion: cliente.direccion,
 				};
 			});
@@ -364,7 +365,8 @@ $('#cliente').typeahead(null,{
 	displayKey: 'value',
 	source: clientes.ttAdapter()
 }).on('typeahead:selected', function (object, datum) {
-	$('#cliente').val(datum.value);
+	console.log(datum.name)
+	$('#cliente').val(datum.name);
 	$('#cliente_id').val(datum.id);
 	$('#cliente_direccion').val(datum.direccion);
 	$("#cliente").prop('disabled',true);

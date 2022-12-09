@@ -326,7 +326,8 @@ class ClienteController extends Controller
             }
             $data[] = array(
                             'id'    => $value->id,
-                            'value' => $mostrar,
+                            'value' => $mostrar . ' - ' . $value->direccion,
+                            'name' => $mostrar,
                             'direccion'    => $value->direccion,
                         );
         }
