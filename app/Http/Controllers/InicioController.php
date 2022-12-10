@@ -797,7 +797,7 @@ class InicioController extends Controller
             array_push($todos_trabajadores, $trabajador);
         }
         //* TRABAJADORES POR INICIAR TURNO
-        $empleados = array_diff($todos_trabajadores, $trabajadores_iniciados);
+        $empleados = $todos_trabajadores;
         $formData                 = array('profile.update', $user->id);
         $formData                 = array('route' => $formData, 'method' => 'PUT', 'class' => 'form-horizontal' , 'id' => 'formMantenimientoPassword', 'autocomplete' => 'off');
         return view($this->folderview.'.admin')->with(compact('entidad', 'entidad_credito', 'empleados', 'entidad_turnos', 'turnos_iniciados','entidad_caja', 'entidad_productos' , 'entidad_inventario','cboSucursal','formData', 'user','listar', 'person', 'title', 'titulo_registrar', 'ruta'));
