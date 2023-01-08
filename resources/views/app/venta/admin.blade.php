@@ -365,7 +365,6 @@ $('#cliente').typeahead(null,{
 	displayKey: 'value',
 	source: clientes.ttAdapter()
 }).on('typeahead:selected', function (object, datum) {
-	console.log(datum.name)
 	$('#cliente').val(datum.name);
 	$('#cliente_id').val(datum.id);
 	$('#cliente_direccion').val(datum.direccion);
