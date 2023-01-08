@@ -5,7 +5,12 @@ use App\Movimiento;
 use App\Detalleturnopedido;
 use App\Turnorepartidor;
 ?>
-
+<style>
+	.secondary {
+		background: #800080;
+		color: white;
+	}
+</style>
 <div>
 @if($aperturaycierre == 0)
 	@if($sucursal_id != 1 && $caja_principal == 0) 
@@ -48,6 +53,9 @@ use App\Turnorepartidor;
 	@endif
 	{!! Form::button('<i class="glyphicon glyphicon-print"></i> Reporte Caja Actual', array('class' => 'btn btn-warning waves-effect waves-light m-l-10 btn-sm btnReporte', 'onclick' => 'imprimirDetalle();')) !!}
 @endif
+	<!-- GERSON (16-12-22) -->
+	{!! Form::button('<i class="fa fa-exchange"></i> Transferencia entre Sucursal', array('class' => 'btn secondary waves-effect waves-light m-l-10 btn-sm btnCierre', 'onclick' => 'modalCaja (\''.URL::route($ruta["transferenciaSucursal"], array('listar'=>'SI')).'\', \''.$tituloTransferencia.'\', this);')) !!}
+	<!--  -->
 </div>
 
 @if(count($lista) == 0)

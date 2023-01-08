@@ -34,6 +34,7 @@ class CajaController extends Controller
     protected $tituloTurnoRepartidor  = 'Iniciar Turno de Repartidor';
     protected $tituloCierre    = 'Cierre de Caja';
     protected $tituloIngresarCierres    = 'Ingresar Cajas de otras sucursales';
+    protected $tituloTransferencia    = 'Transferencia entre sucursal';
     protected $tituloPersona   = 'Registrar Nueva Persona';
     protected $rutas           = array('create' => 'caja.create', 
             'persona'  => 'caja.persona',
@@ -47,6 +48,8 @@ class CajaController extends Controller
             'ingresarcierres'   => 'caja.ingresarcierres',
             'repetido' => 'caja.repetido',
             'aperturaycierre' => 'caja.aperturaycierre',
+            'transferenciaSucursal' => 'caja.transferenciaSucursal',
+            'guardartransferencia' => 'caja.guardartransferencia'
         );
 
     public function __construct()
@@ -317,6 +320,7 @@ class CajaController extends Controller
         $titulo_apertura  = $this->tituloApertura;
         $titulo_cierre    = $this->tituloCierre;
         $tituloIngresarCierres  = $this->tituloIngresarCierres;
+        $tituloTransferencia  = $this->tituloTransferencia;
         $ruta             = $this->rutas;
 
         if (count($lista) > 0) {
@@ -328,9 +332,9 @@ class CajaController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('maxapertura','ultima_apertura', 'ultimo_cierre','sucursal_id', 'tituloIngresarCierres','cant_cajas_sucursales_abiertas', 'caja_principal','montoapertura','monto_vuelto', 'lista', 'monto_caja', 'ingresos_total', 'egresos' , 'saldo',  'aperturas' , 'cierres' , 'ruta', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'aperturaycierre', 'tituloTurnoRepartidor', 'titulo_eliminar', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('maxapertura','ultima_apertura', 'ultimo_cierre','sucursal_id', 'tituloIngresarCierres','tituloTransferencia' ,'cant_cajas_sucursales_abiertas', 'caja_principal','montoapertura','monto_vuelto', 'lista', 'monto_caja', 'ingresos_total', 'egresos' , 'saldo',  'aperturas' , 'cierres' , 'ruta', 'paginacion', 'inicio', 'fin', 'entidad', 'cabecera', 'aperturaycierre', 'tituloTurnoRepartidor', 'titulo_eliminar', 'titulo_registrar', 'titulo_apertura', 'titulo_cierre', 'ruta'));
         }
-        return view($this->folderview.'.list')->with(compact('maxapertura','ultimo_cierre','tituloIngresarCierres','sucursal_id','caja_principal','montoapertura', 'monto_vuelto', 'lista', 'monto_caja' , 'ingresos_total', 'egresos' , 'saldo', 'aperturas' , 'cierres' , 'ruta', 'aperturaycierre', 'titulo_registrar', 'tituloTurnoRepartidor', 'titulo_apertura', 'titulo_cierre', 'entidad'));
+        return view($this->folderview.'.list')->with(compact('maxapertura','ultimo_cierre','tituloIngresarCierres','tituloTransferencia' ,'sucursal_id','caja_principal','montoapertura', 'monto_vuelto', 'lista', 'monto_caja' , 'ingresos_total', 'egresos' , 'saldo', 'aperturas' , 'cierres' , 'ruta', 'aperturaycierre', 'titulo_registrar', 'tituloTurnoRepartidor', 'titulo_apertura', 'titulo_cierre', 'entidad'));
     }
 
     /**
@@ -1236,6 +1240,90 @@ class CajaController extends Controller
         });
         return is_null($error) ? "OK" : $error;
     }
+
+    /* GERSON (07-01-23) */
+    public function transferenciaSucursal(Request $request)
+    {
+        $listar       = Libreria::getParam($request->input('listar'), 'NO');
+        $entidad      = 'Caja';
+        $movimiento   = null;
+        $formData     = array('caja.guardartransferencia');
+        $formData     = array('route' => $formData, 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        
+        $sucursal_id  = $request->input('sucursal_id');
+        $sucursal_origen  = Sucursal::where('id','=',$sucursal_id)->pluck('nombre', 'id')->all();
+        $sucursal_destino  = Sucursal::where('id', '<>', $sucursal_id)->pluck('nombre', 'id')->all();
+        $user = Auth::user();
+        $persona_id = $user->person_id;
+
+        $boton        = 'Transferir'; 
+
+        return view($this->folderview.'.transferenciaSucursal')->with(compact('persona_id', 'movimiento', 'formData', 'entidad', 'boton', 'listar', 'num_caja', 'sucursal_id', 'sucursal_origen', 'sucursal_destino'));
+    }
+
+    public function guardarTransferencia(Request $request)
+    {
+        $listar     = Libreria::getParam($request->input('listar'), 'NO');
+        if($request->input('concepto_id') == 1 ){
+            $reglas     = array('total_transferir'      => 'required|numeric');
+        }else{
+            $reglas     = array('total_transferir'      => 'required|numeric');
+        }
+        $mensajes   = array();
+        $validacion = Validator::make($request->all(), $reglas, $mensajes);
+        if ($validacion->fails()) {
+            return $validacion->messages()->toJson();
+        }
+        $error = DB::transaction(function() use($request){
+            
+            $suc_origen = Sucursal::find($request->input("sucursal_origen"));
+            $num_caja_o   = Movimiento::where('sucursal_id', '=' , $request->input("sucursal_origen"))->max('num_caja') + 1;
+
+            $suc_destino = Sucursal::find($request->input("sucursal_destino"));
+            $num_caja_d   = Movimiento::where('sucursal_id', '=' , $request->input("sucursal_destino"))->max('num_caja') + 1;
+
+            // registrar egreso de caja origen
+            $movimiento_o                 = new Movimiento();
+            $movimiento_o->tipomovimiento_id = 1; // movimiento de caja
+            $movimiento_o->concepto_id    = 21; // concepto transferencia de caja
+            $movimiento_o->num_caja       = $num_caja_o;
+            $movimiento_o->fecha          = date('Y-m-d h:i:s');
+            $movimiento_o->estado         = 1;
+            $user = Auth::user();
+            $movimiento_o->usuario_id     = $user->id;
+            $movimiento_o->total          = $request->input('total_transferir');;
+            $movimiento_o->trabajador_id  = $user->person_id;
+            $movimiento_o->sucursal_id    = $request->input('sucursal_origen');
+            if($request->input('comentario')==null || $request->input('comentario')==''){
+                $movimiento_o->comentario     = "EGRESO DE CAJA DE ".$suc_origen->nombre." PARA LA CAJA DE ".$suc_destino->nombre;
+            }else{
+                $movimiento_o->comentario     = strtoupper($request->input('comentario'));
+            }
+            $movimiento_o->save();
+
+            // registrar ingreso de caja destino
+            $movimiento_d                 = new Movimiento();
+            $movimiento_d->tipomovimiento_id = 1; // movimiento de caja
+            $movimiento_d->concepto_id    = 20; // concepto transferencia de caja
+            $movimiento_d->num_caja       = $num_caja_d;
+            $movimiento_d->fecha          = date('Y-m-d h:i:s');
+            $movimiento_d->estado         = 1;
+            $user = Auth::user();
+            $movimiento_d->usuario_id     = $user->id;
+            $movimiento_d->total          = $request->input('total_transferir');;
+            $movimiento_d->trabajador_id  = $user->person_id;
+            $movimiento_d->sucursal_id    = $request->input('sucursal_destino');
+            if($request->input('comentario')==null || $request->input('comentario')==''){
+                $movimiento_d->comentario     = "INGRESO A CAJA DE ".$suc_destino->nombre." DESDE LA CAJA DE ".$suc_origen->nombre;
+            }else{
+                $movimiento_d->comentario     = strtoupper($request->input('comentario'));
+            }
+            $movimiento_d->save();
+
+        });
+        return is_null($error) ? "OK" : $error;
+    }
+    /*  */
 
     //REPORTES 
 
