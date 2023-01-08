@@ -25,11 +25,13 @@ class PrestamoController extends Controller
 
     protected $folderview      = 'app.prestamo';
     protected $tituloAdmin     = 'Balones prestados';
+    protected $titulo_registrar  = 'Crear prestamo de envase de pedido';
     protected $tituloDetalle  = 'Devolver envases prestados';
     protected $tituloAnulacion  = 'Anular prestamo o devolución de envases';
     protected $rutas           = array(
             'detalle' => 'prestamoenvase.detalle', 
             'prestar' => 'prestamoenvase.prestar', 
+            'crear' => 'prestamoenvase.crearPrestamo', 
             'prestarbalon' => 'prestamoenvase.prestarbalon', 
             'search'   => 'prestamoenvase.buscar',
             'index'    => 'prestamoenvase.index',
@@ -74,6 +76,7 @@ class PrestamoController extends Controller
 
         $tituloDetalle = $this->tituloDetalle;
         $tituloAnulacion = $this->tituloAnulacion;
+        $titulo_registrar = $this->titulo_registrar;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -84,7 +87,7 @@ class PrestamoController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloAnulacion', 'tituloDetalle', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloAnulacion', 'titulo_registrar', 'tituloDetalle', 'ruta'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -98,6 +101,7 @@ class PrestamoController extends Controller
     {
         $entidad          = 'Pedidos';
         $title            = $this->tituloAdmin;
+        $titulo_registrar = $this->titulo_registrar;
         $ruta             = $this->rutas;
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
         $cboTipo = array(
@@ -118,7 +122,7 @@ class PrestamoController extends Controller
             '2' => 'VALE SUBCAFAE',
             '3' => 'VALE MONTO',
         );
-        return view($this->folderview.'.admin')->with(compact('entidad', 'cboTipo', 'cboTipoDocumento', 'cboTipoVale','cboSucursal','title', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'cboTipo', 'cboTipoDocumento', 'titulo_registrar', 'cboTipoVale','cboSucursal','title', 'ruta'));
     }
 
     /**
@@ -161,6 +165,51 @@ class PrestamoController extends Controller
         $detallespago_credito = Detallepagos::where('pedido_id', '=', $id)->where('credito',1)->get();  
         $total_pagado = Detallepagos::where('pedido_id', '=', $id)->sum('monto');  
         return view($this->folderview.'.detalle')->with(compact('pedido', 'total_pagado', 'total_productos','detallespago', 'detallespago_credito','detalles','formData', 'entidad', 'boton', 'listar'));
+    }
+
+    public function crearPrestamo(Request $request, $id)
+    {
+        $existe = Libreria::verificarExistencia($id, 'movimiento');
+        if ($existe !== true) {
+            return $existe;
+        }
+        $listar   = Libreria::getParam($request->input('listar'), 'NO');
+        $pedido = Movimiento::find($id);
+        $detalles = Detallemovalmacen::where('movimiento_id',$pedido->id)->get();
+        $detalles_prestamos = array();
+        $detalles_devuelto = array();
+        $balones_devueltos= array();
+        $guardar = array();
+        
+        foreach ($detalles as $key => $value) {
+            $detalleprestamo = Detalleprestamo::where('detalle_mov_almacen_id',$value->id)->where('tipo','P')->first();
+            if($detalleprestamo != null) $detalles_prestamos[$value->id] = $detalleprestamo->cantidad;
+            
+            /* GERSON (09-11-22) */
+            $sum_devuelto = Detalleprestamo::where('detalle_mov_almacen_id',$value->id)->where('tipo','D')->select(DB::raw('SUM(cantidad) as devueltos'))->first();
+            if($sum_devuelto != null) $detalles_devuelto[$value->id] = $sum_devuelto->devueltos;
+            $balones_devueltos[$value->id] = Detalleprestamo::select('detalle_prestamo.cantidad', 'detalle_prestamo.created_at', 'producto.descripcion')
+                                ->where('detalle_mov_almacen_id',$value->id)
+                                ->join('detalle_mov_almacen','detalle_prestamo.detalle_mov_almacen_id','detalle_mov_almacen.id')
+                                ->join('producto','detalle_mov_almacen.producto_id','producto.id')
+                                ->where('tipo','D')->orderBy('detalle_prestamo.id','ASC')->get();
+            if($detalles_prestamos[$value->id]==$detalles_devuelto[$value->id]){
+                $guardar[$value->id] = false;
+            }else{
+                $guardar[$value->id] = true;
+            }
+            /*  */
+        }
+        
+        $entidad  = 'Pedidos';
+        $formData = array('prestamoenvase.prestarbalon', $id);
+        $formData = array('route' => $formData, 'method' => 'POST', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton    = 'Guardar';
+        $detallespago = Detallepagos::where('pedido_id', '=', $id)
+                    ->join('movimiento', 'detalle_pagos.metodo_pago_id', '=', 'movimiento.id')
+                    ->where('estado',1)
+                    ->get(); 
+        return view($this->folderview.'.crearPrestamo')->with(compact('pedido', 'detalles_prestamos', 'detalles_devuelto','detallespago','detalles','guardar','sum_prestamo','sum_devuelto','balones_devueltos','formData', 'entidad', 'boton', 'listar'));
     }
 
     public function prestar(Request $request, $id)

@@ -59,7 +59,8 @@ $desde = date( 'Y-m-d' , $desde );
 						{!! Form::label('filas', 'Filas a mostrar:')!!}
 						{!! Form::selectRange('filas', 1, 30, 15, array('class' => 'form-control input-sm', 'onchange' => 'buscar(\''.$entidad.'\')')) !!}
 					</div>
-					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
+					{!! Form::button('<i class="glyphicon glyphicon-search"></i> Buscar', array('class' => 'btn btn-success waves-effect waves-light btn-sm', 'style' => 'margin-top: 5px;' , 'id' => 'btnBuscar', 'onclick' => 'buscar(\''.$entidad.'\')')) !!}
+				{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Nuevo', array('class' => 'btn btn-primary waves-effect waves-light m-l-10 btn-sm btnNuevo', 'style' => 'margin-top: 5px;', 'onclick' => 'modal (\''.URL::route($ruta["crear"], array('listar'=>'SI')).'\', \''.$titulo_registrar.'\', this);')) !!}
 				</div>
 				{!! Form::close() !!}
 				<div id="listado{{ $entidad }}"></div>
