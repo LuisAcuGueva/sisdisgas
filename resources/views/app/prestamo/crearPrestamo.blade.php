@@ -1,75 +1,52 @@
-<?php
-use App\Producto;
-$sum_dev = 0 ;
-if($sum_devuelto->devueltos!=null){
-	$sum_dev = $sum_devuelto->devueltos;
-}
-?>
+<style>
+	input[type=number]::-webkit-inner-spin-button, 
+	input[type=number]::-webkit-outer-spin-button { 
+		-webkit-appearance: none; 
+		margin: 0; 
+	}
+	input[type=number] { -moz-appearance:textfield; }
+</style>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($pedido, $formData) !!}	
-	{!! Form::hidden('listar', $listar, array('id' => 'listar')) !!}
-	{!! Form::hidden('pedido_id',$pedido->id,array('id'=>'pedido_id')) !!}
-	{!! Form::hidden('devolver_envases','',array('id'=>'devolver_envases')) !!}
-	{!! Form::hidden('data','',array('id'=>'data')) !!}
 	<div class="col-lg-12 col-md-12 col-sm-12">
+		<div class="col-lg-12 col-md-12 col-sm-12">
+			<div class="col-lg-3 col-md-3 col-sm-3" style="margin-left:-10px;">
+				{!! Form::label('cliente', 'Cliente:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+			</div>
+			<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 20px;">
+				{!! Form::button('<i class="glyphicon glyphicon-plus"></i>', array('class' => 'btn btn-success waves-effect waves-light btn-sm', 'onclick' => 'modal (\''.URL::route($ruta["cliente"], array('listar'=>'SI')).'\', \''.$titulo_cliente.'\', this);', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'NUEVO')) !!}
+			</div>
+			<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 10px;">
+				{!! Form::button('<i class="glyphicon glyphicon-user"></i>', array('class' => 'btn btn-primary waves-effect waves-light btn-sm', 'onclick' => 'clienteVarios()', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'VARIOS')) !!}
+			</div>
+			<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 10px;">
+				{!! Form::button('<i class="glyphicon glyphicon-trash"></i>', array('class' => 'btn btn-danger waves-effect waves-light btn-sm', 'onclick' => 'borrarCliente()', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'BORRAR')) !!}
+			</div>
+			{!! Form::text('cliente_prestamo', '', array('class' => 'form-control input-sm', 'id' => 'cliente_prestamo', 'style' => 'background-color: white;')) !!}
+			{!! Form::hidden('cliente_prestamo_id',null,array('id'=>'cliente_prestamo_id')) !!}
+			{!! Form::hidden('ultimo_cliente',null,array('id'=>'ultimo_cliente')) !!}
+		</div>
 		<div class="col-lg-12 col-md-12 col-sm-12">
 			<div style=" border: solid 1px; border-radius: 5px; height: 40px; margin-top: 10px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
 				<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">LISTA DE PRODUCTOS</h4>
 				<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
-					<thead id="cabecera"><tr><th style="font-size: 13px !important;">Descripción</th><th style="font-size: 13px !important;">Cantidad</th><th style="font-size: 13px !important;">Envases prestados</th><th style="font-size: 13px !important;">Devolver envases</th></tr></thead>
+					<thead id="cabecera">
+						<tr>
+							<th width="60%" style="font-size: 13px !important;">Descripción</th>
+							<th width="20%" style="font-size: 13px !important;">Cantidad</th>
+							<th width="20%" style="font-size: 13px !important;">Envases prestados</th>
+						</tr>
+					</thead>
 					<tbody id="detalle">
-						@foreach($detalles  as $key => $value)
-							<tr>
-								<td>{{ $value->producto->descripcion }} </td>
-								<td align="center">{{ intval($value->cantidad) }} </td>
-								@if($value->producto->recargable ==1)
-									@if($value->producto_id == 4 || $value->producto_id == 5)
-										<td align="center">
-										@php
-											$idinput = "cant_".$value->id;
-										@endphp
-										@if( $detalles_prestamos != null)
-											@if( $detalles_prestamos[$value->id] != null )
-												{{ $detalles_prestamos[$value->id] }}
-											@else
-												-
-											@endif
-										@else
-											-
-										@endif
-										</td>
-									@else
-										<td align="center"> - </td>
-									@endif
-								@else
-									<td align="center"> - </td>
-								@endif
-
-								@if($value->producto->recargable ==1)
-									@if($value->producto_id == 4 || $value->producto_id == 5)
-										<td align="center">
-										@php
-											$idinput = "cant_".$value->id;
-											$cant_max = 0;
-											if($sum_dev > 0){
-												$cant_max = $detalles_prestamos[$value->id] - $sum_dev;
-											}else{
-												$cant_max = $detalles_prestamos[$value->id];
-											}
-										@endphp
-										@if( $detalles_prestamos[$value->id] == $detalles_devuelto[$value->id] )
-											{!! Form::number($idinput, '0', array('class' => 'cantidades form-control input-xs','style' => 'width:80px; ', 'readonly', 'id' => $idinput, 'max' => $cant_max, 'min' => '0')) !!}
-										@else
-											{!! Form::number($idinput, '0', array('class' => 'cantidades form-control input-xs', 'style' => 'width:80px; ', 'id' => $idinput, 'max' => $cant_max, 'min' => '0')) !!}
-										@endif
-										</td>
-									@else
-										<td align="center"> - </td>
-									@endif
-								@else
-									<td align="center"> - </td>
-								@endif
-
+						@foreach($productos_balones as $producto)
+							<tr id="{{$producto->id}}">
+								<td>{{$producto->descripcion}}</td>
+								<td>
+									{!! Form::number($producto->id.'_cant', '0', array('class' => 'cantidad_total form-control input-xs','style' => 'width:80px; ', 'producto_id' => $producto->id, 'id' => $producto->id.'_cant', 'min' => '0')) !!}
+								</td>
+								<td>
+									{!! Form::number($producto->id.'_prest', '0', array('class' => 'cantidad_prestamo form-control input-xs','style' => 'width:80px; ', 'producto_id' => $producto->id, 'id' => $producto->id.'_prest', 'min' => '0')) !!}
+								</td>
 							</tr>
 						@endforeach
 					</tbody>
@@ -77,63 +54,63 @@ if($sum_devuelto->devueltos!=null){
 			</div>
 		</div>
 	</div>
-
-	<div class="form-group">
-		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
-			@if(in_array(true,$guardar))
-				{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
-			@endif
-		{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
-		</div>
-	</div>
-
-	<!-- GERSON (09-11-22) -->
-	<hr>
-	<div class="col-lg-12 col-md-12 col-sm-12">
-		<div class="col-lg-12 col-md-12 col-sm-12">
-			<div style=" border: solid 1px; border-radius: 5px; height: 40px; margin-top: 10px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
-				<h4 class="page-venta" style="padding-top: 1px;  font-weight: 600;">DEVOLUCIONES</h4>
-				<table class="table table-striped table-bordered col-lg-12 col-md-12 col-sm-12 " style="margin-top: 15px; padding: 0px 0px !important;">
-					<thead id="cabecera">
-						<tr>
-							<th style="font-size: 13px !important;">#</th>
-							<th style="font-size: 13px !important;">Producto</th>
-							<th style="font-size: 13px !important;">Fecha de devolución</th>
-							<th style="font-size: 13px !important;">Cantidad</th>
-						</tr>
-					</thead>
-					<tbody id="">
-						@php $cont = 1; @endphp
-						@foreach($detalles  as $key => $v)
-							@foreach($balones_devueltos[$v->id]  as $key => $b)
-								<tr>
-									<td>{{ $cont }} </td>
-									<td>{{ $b->descripcion }} </td>
-									<td>{{ date('d/m/Y H:i:s',strtotime($v->created_at)) }}</td>
-									<td align="center">{{ $b->cantidad }} </td>
-								</tr>
-								@php $cont++; @endphp
-							@endforeach
-						@endforeach
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-	<!--  -->
-
 {!! Form::close() !!}
 <script type="text/javascript">
-$(document).ready(function() {
-	configurarAnchoModal('600');
-	init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+	$(document).ready(function() {
+		configurarAnchoModal('700');
+		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+	}); 
 
-	$('input').iCheck({
-		checkboxClass: 'icheckbox_flat-green',
-		radioClass: 'iradio_flat-green'
+	//* Buscador de clientes
+	var clientes = new Bloodhound({
+		datumTokenizer: function (d) {
+			return Bloodhound.tokenizers.whitespace(d.value);
+		},
+		limit: 5,
+		queryTokenizer: Bloodhound.tokenizers.whitespace,
+		remote: {
+			url: 'cliente/clienteautocompleting/%QUERY',
+			filter: function (clientes) {
+				return $.map(clientes, function (cliente) {
+					return {
+						id: cliente.id,
+						value: cliente.value,
+						name: cliente.name,
+					};
+				});
+			}
+		}
+	});
+	clientes.initialize();
+	$('#cliente_prestamo').typeahead(null,{
+		displayKey: 'value',
+		source: clientes.ttAdapter()
+	}).on('typeahead:selected', function (object, datum) {
+		$('#cliente_prestamo').val(datum.name);
+		$('#cliente_prestamo_id').val(datum.id);
+		$("#cliente_prestamo").prop('disabled',true);
 	});
 
-	$(".cantidades").blur(function(){
+	function clienteVarios(){
+		$('#cliente_prestamo_id').val({{ $anonimo->id }});
+		$('#cliente_prestamo').val('VARIOS');
+		$("#cliente_prestamo").prop('disabled',true);
+	}
+
+	function borrarCliente(){
+		$('#cliente_prestamo_id').val("");
+		$('#cliente_prestamo').val("");
+		$("#cliente_prestamo").prop('disabled',false);
+	} 
+
+	$(".cantidad_total").blur(function(){
+		var producto_id = $(this).attr('producto_id');
+		var max_cant = $(this).val();
+		console.log(max_cant);
+		$('#' + producto_id + '_prest').attr('max', max_cant);
+	});
+
+	$(".cantidad_prestamo").blur(function(){
 		var max = $(this).attr('max');
 		var val = $(this).val();
 		var data = [];
@@ -168,7 +145,6 @@ $(document).ready(function() {
 				}
 			});
 		}
-		console.log(data);
 		if(data.length == 0){
 			$("#devolver_envases").val("");
 		}else{
@@ -176,5 +152,4 @@ $(document).ready(function() {
 			$("#data").val(JSON.stringify(data));
 		}
 	});
-}); 
 </script>
