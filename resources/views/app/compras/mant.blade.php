@@ -127,6 +127,9 @@
 			<!-- GERSON (19-11-22) -->
 			{!! Form::hidden('decimal', null, array('id' => 'decimal')) !!}
 			<!--  -->
+			<!-- GERSON (09-01-23) -->
+			{!! Form::hidden('balon_transicion', null, array('id' => 'balon_transicion')) !!}
+			<!--  -->
 		</div>
 		
 		<div class="form-group col-lg-12 col-md-12 col-sm-12" id="divProductos" style="margin-top: 20px; overflow: auto; height: 280px;">
@@ -175,6 +178,16 @@
 				{!! Form::number('cantidad_envase', null, array('class' => 'form-control input-sm', 'id' => 'cantidad_envase')) !!}
 			</div>
 		</div>
+		<!-- GERSON (09-01-23) -->
+		<div align="left" class="form-group col-lg-12 col-md-12 col-sm-12">
+			<div class="form-group transicion" style ="">
+				{!! Form::label('', 'Transición:' ,array('class' => 'col-lg-6 col-md-6 col-sm-6 control-label'))!!}
+				<div class="col-lg-6 col-md-6 col-sm-6" style ="margin-top: 8px;">
+					<input id="transicion" name="transicion" type="checkbox">
+				</div>
+			</div>
+		</div>
+		<!--  -->
 		<div class="col-lg-12 col-md-12 col-sm-12 text-center">
 			{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Agregar Producto', array('class' => 'btn btn-warning btn-sm float-right', 'style' => 'height: 30px; margin-bottom: 1px;', 'id' => 'agregarProducto')) !!}
 		</div>
@@ -242,6 +255,18 @@ $('.a_cuenta .iCheck-helper').on('click', function(){
 		$('#credito').prop('checked',false);
 	}
 });
+
+$("#balon_transicion").val('0');
+$('.transicion .iCheck-helper').on('click', function(){
+	if( $(this).parent().hasClass('checked')) { 
+		$("#balon_transicion").val('1');
+	}else{
+		$("#balon_transicion").val('0');
+	}
+});
+
+
+
 
 $("#pago").keyup(function(){
 	if( $("#pago").val() != ""){
@@ -426,6 +451,7 @@ function agregarCarrito(elemento){
 	var stock = $('#stock').val();
 	var recargable = parseInt($('#recargable').val());
 	var envases_vacios = parseInt($('#envases_vacios').val());
+	var balon_transicion = $('#balon_transicion').val();
 	
 	if( cantidad ==""){
 		cantidad = 0;
@@ -443,6 +469,14 @@ function agregarCarrito(elemento){
 		var cantidad = parseFloat(cantidad);
 	}
 	/*  */
+
+	/* GERSON (09-01-23) */
+	var transicion = 0;
+	if(balon_transicion=='1'){
+		transicion = 1;
+	}
+	/*  */
+
 	if( cantidad =="" && cantidad_envase =="" ){
 		swal({
 			type: 'error',
@@ -500,17 +534,21 @@ function agregarCarrito(elemento){
 			});
 	}else{
 		if( recargable == 1){
-			if( cantidad > envases_vacios){
-				swal({
-				type: 'error',
-				title: 'NO HAY SUFICIENTES ENVASES VACÍOS',
-				});
-				$('#cantidad').val('');
-				$('#cantidad').focus();
-				return false;
+			if(transicion>0){
+				$('#transicion').prop('checked',false);
+			}else{
+				if( cantidad > envases_vacios){
+					swal({
+					type: 'error',
+					title: 'NO HAY SUFICIENTES ENVASES VACÍOS',
+					});
+					$('#cantidad').val('');
+					$('#cantidad').focus();
+					return false;
+				}
 			}
 		}
-		$.post('{{ URL::route("compras.agregarcarritocompra")}}', {cantidad: cantidad, cantidad_envase: cantidad_envase, precio_compra: precio_compra, precio_compra_envase: precio_compra_envase, producto_id: product_id, precio_venta: precio_venta, precio_venta_envase: precio_venta_envase, detalle: $('#detalle').val(),_token: _token} , function(data){
+		$.post('{{ URL::route("compras.agregarcarritocompra")}}', {cantidad: cantidad, cantidad_envase: cantidad_envase, precio_compra: precio_compra, precio_compra_envase: precio_compra_envase, producto_id: product_id, precio_venta: precio_venta, precio_venta_envase: precio_venta_envase, detalle: $('#detalle').val(), transicion: transicion, _token: _token} , function(data){
 			$('#detalle').val(true);
 			if(data === '0-0') {
 				swal({
@@ -607,6 +645,7 @@ function calculatetotal(){
 		$(this).find('.precioventa').attr('name', '').attr('name', 'precioventa' + i);
 		$(this).find('.precioventaenvase').attr('name', '').attr('name', 'precioventaenvase' + i);
 		$(this).find('.subtotal').attr('name', '').attr('name', 'subtotal' + i);
+		$(this).find('.transicion').attr('name', '').attr('name', 'transicion' + i);
 		total += parseFloat($(this).find('.subtotal').val());
 		i++;
 	});

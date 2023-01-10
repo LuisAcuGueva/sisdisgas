@@ -214,6 +214,15 @@ class ComprasController extends Controller
                 $detalleCompra->subtotal = $subtotal;
                 $detalleCompra->movimiento_id = $compra->id;
                 $detalleCompra->producto_id = $request->input('producto_id'.$i);
+                /* GERSON (09-01-23) */
+                $stock = Stock::where('producto_id','=',$request->input('producto_id'.$i))->where('sucursal_id','=',$sucursal_id)->first();
+                $detalleCompra->transicion = intval($request->input('transicion'.$i));
+                if(intval($request->input('transicion'.$i))>0){
+                    if($stock->envases_vacios < $cantidad){
+                        $detalleCompra->cant_transicion = $cantidad - $stock->envases_vacios;
+                    }
+                }
+                /*  */
                 $detalleCompra->save();
 
                 //* Editamos valores del producto
@@ -540,6 +549,9 @@ class ComprasController extends Controller
         $precio_compra_envase           = Libreria::getParam(str_replace(",", "", $request->input('precio_compra_envase')));
         $precio_venta           = Libreria::getParam(str_replace(",", "", $request->input('precio_venta')));
         $precio_venta_envase           = Libreria::getParam(str_replace(",", "", $request->input('precio_venta_envase')));
+        /* GERSON (24-11-22) */
+        $transicion           = Libreria::getParam(str_replace(",", "", $request->input('transicion')));
+        /*  */
         //$distribuidora_id = Libreria::getParam($request->input('person_id'));
         //$producto         = Producto::find($producto_id);
         /* GERSON (24-11-22) */
@@ -571,6 +583,7 @@ class ComprasController extends Controller
                         <input type ="hidden" class="precioventaenvase" value="'.$precio_venta_envase.'">
                         <input type ="hidden" class="precioventa" value="'.$precio_venta.'">
                         <input type ="hidden" class="subtotal" value="'.$subtotal.'">
+                        <input type ="hidden" class="transicion" value="'.$transicion.'">
                     </td>';
 
         if($cantidad != 0){
