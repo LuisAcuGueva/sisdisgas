@@ -47,6 +47,7 @@ class InventarioController extends Controller
         $cabecera[]       = array('valor' => 'ENVASES LLENOS', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ENVASES VACIOS', 'numero' => '1');
         $cabecera[]       = array('valor' => 'ENVASES PRESTADOS', 'numero' => '1');
+        $cabecera[]       = array('valor' => 'ENVASES VENDIDOS', 'numero' => '1');
         
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
