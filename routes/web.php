@@ -163,6 +163,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('pedidos_actual/eliminar/{id}/{listarluego}','PedidosActualController@eliminar')->name('pedidos_actual.eliminar');
     Route::resource('pedidos_actual', 'PedidosActualController', array('except' => array('show')));
 
+    Route::get('prestamoenvase/crear', 'PrestamoController@crear')->name('prestamoenvase.crear');
+    Route::post('prestamoenvase/crearprestamo', 'PrestamoController@crearPrestamo')->name('prestamoenvase.crearprestamo');
     Route::post('prestamoenvase/buscar','PrestamoController@buscar')->name('prestamoenvase.buscar');
     Route::get('prestamoenvase/detalle/{id}/', 'PrestamoController@detalle')->name('prestamoenvase.detalle');
     Route::get('prestamoenvase/prestar/{id}/', 'PrestamoController@prestar')->name('prestamoenvase.prestar');

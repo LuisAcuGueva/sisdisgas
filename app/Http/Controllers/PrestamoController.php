@@ -9,6 +9,7 @@ use App\Concepto;
 use App\Turnorepartidor;
 use App\Person;
 use App\Sucursal;
+use App\Producto;
 use App\Movimiento;
 use App\Detalleturnopedido;
 use App\Detallemovalmacen;
@@ -25,15 +26,20 @@ class PrestamoController extends Controller
 
     protected $folderview      = 'app.prestamo';
     protected $tituloAdmin     = 'Balones prestados';
+    protected $titulo_registrar  = 'Crear prestamo de envase de pedido';
     protected $tituloDetalle  = 'Devolver envases prestados';
     protected $tituloAnulacion  = 'Anular prestamo o devolución de envases';
+    protected $tituloCliente   = 'Registrar Nuevo Cliente';
     protected $rutas           = array(
             'detalle' => 'prestamoenvase.detalle', 
             'prestar' => 'prestamoenvase.prestar', 
             'prestarbalon' => 'prestamoenvase.prestarbalon', 
+            'crear' => 'prestamoenvase.crear', 
+            'crearprestamo' => 'prestamoenvase.crearprestamo', 
             'search'   => 'prestamoenvase.buscar',
             'index'    => 'prestamoenvase.index',
             'delete'   => 'prestamoenvase.eliminar',
+            'cliente'  => 'venta.cliente',
         );
 
     public function __construct()
@@ -74,6 +80,7 @@ class PrestamoController extends Controller
 
         $tituloDetalle = $this->tituloDetalle;
         $tituloAnulacion = $this->tituloAnulacion;
+        $titulo_registrar = $this->titulo_registrar;
         $ruta             = $this->rutas;
         if (count($lista) > 0) {
             $clsLibreria     = new Libreria();
@@ -84,7 +91,7 @@ class PrestamoController extends Controller
             $paginaactual    = $paramPaginacion['nuevapagina'];
             $lista           = $resultado->paginate($filas);
             $request->replace(array('page' => $paginaactual));
-            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloAnulacion', 'tituloDetalle', 'ruta'));
+            return view($this->folderview.'.list')->with(compact('lista', 'paginacion', 'inicio', 'ingresos_credito', 'ingresos_repartidor', 'total_ingresos', 'egresos_repartidor', 'vueltos_repartidor','saldo_repartidor','fin', 'entidad', 'cabecera', 'tituloAnulacion', 'titulo_registrar', 'tituloDetalle', 'ruta'));
         }
         return view($this->folderview.'.list')->with(compact('lista', 'entidad'));
     }
@@ -98,6 +105,7 @@ class PrestamoController extends Controller
     {
         $entidad          = 'Pedidos';
         $title            = $this->tituloAdmin;
+        $titulo_registrar = $this->titulo_registrar;
         $ruta             = $this->rutas;
         $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
         $cboTipo = array(
@@ -118,7 +126,7 @@ class PrestamoController extends Controller
             '2' => 'VALE SUBCAFAE',
             '3' => 'VALE MONTO',
         );
-        return view($this->folderview.'.admin')->with(compact('entidad', 'cboTipo', 'cboTipoDocumento', 'cboTipoVale','cboSucursal','title', 'ruta'));
+        return view($this->folderview.'.admin')->with(compact('entidad', 'cboTipo', 'cboTipoDocumento', 'titulo_registrar', 'cboTipoVale','cboSucursal','title', 'ruta'));
     }
 
     /**
@@ -161,6 +169,104 @@ class PrestamoController extends Controller
         $detallespago_credito = Detallepagos::where('pedido_id', '=', $id)->where('credito',1)->get();  
         $total_pagado = Detallepagos::where('pedido_id', '=', $id)->sum('monto');  
         return view($this->folderview.'.detalle')->with(compact('pedido', 'total_pagado', 'total_productos','detallespago', 'detallespago_credito','detalles','formData', 'entidad', 'boton', 'listar'));
+    }
+
+    public function crear(Request $request)
+    {
+        $pedido = new Movimiento();
+        $entidad  = 'Pedidos';
+        $formData = array('prestamoenvase.crearprestamo');
+        $formData = array('route' => $formData, 'method' => 'POST', 'class' => 'form-horizontal', 'id' => 'formMantenimiento'.$entidad, 'autocomplete' => 'off');
+        $boton    = 'Guardar';
+        $productos_balones = Producto::where('id','=','4')
+                                    ->orWhere('id','=','5')->get();
+        $ruta  = $this->rutas;
+        $anonimo = Person::where('id','=',1)->first();
+        $cboSucursal      = Sucursal::pluck('nombre', 'id')->all();
+        $titulo_cliente = $this->tituloCliente;
+        return view($this->folderview.'.crearPrestamo')->with(compact('pedido', 'formData', 'cboSucursal', 'anonimo', 'ruta', 'titulo_cliente', 'entidad', 'boton', 'productos_balones'));
+    }
+
+    public function crearPrestamo(Request $request){
+        $reglas     = array(
+            'cliente_prestamo_id' => 'required',
+            'fecha' => 'required',
+        );
+        $mensajes   = array(
+            'cliente_prestamo_id.required' => 'El campo Cliente es obligatorio',
+            'fecha.required' => 'El campo Fecha es obligatorio',
+        );
+        $validacion = Validator::make($request->all(), $reglas, $mensajes);
+        if ($validacion->fails()) {
+            return $validacion->messages()->toJson();
+        }
+        $error = DB::transaction(function() use($request){
+            $mov_pedido = new Movimiento();
+            $mov_pedido->tipomovimiento_id = 2; //* Pedido
+            $mov_pedido->concepto_id = 22;  //* PEDIDO CON PRÉSTAMO DE BALÓN (CASCO)
+            $mov_pedido->balon_prestado = 1;
+            $mov_pedido->estado = 1;
+            $mov_pedido->persona_id = $request->input('cliente_prestamo_id');            
+            $mov_pedido->sucursal_id = $request->input('sucursal_id');
+            $user = Auth::user();
+            $mov_pedido->usuario_id = $user->id;
+            $mov_pedido->trabajador_id = $user->id;
+            $mov_pedido->save();
+            
+            //* Detalle de mov almacen 
+            $cantidad_prod4 = $request->input('4_cant') != '' ? $request->input('4_cant') : null;
+            $prestamo_prod4 = $request->input('4_prest') != '' ? $request->input('4_prest') : null;
+
+            if(isset($cantidad_prod4) && isset($prestamo_prod4)){
+                //* Se crea detalle movimiento almacen
+                $det_mov_alm_4 = new Detallemovalmacen();
+                $det_mov_alm_4->movimiento_id = $mov_pedido->id;
+                $det_mov_alm_4->producto_id = 4;
+                $det_mov_alm_4->cantidad = $cantidad_prod4;
+                $det_mov_alm_4->precio = 0;
+                $det_mov_alm_4->subtotal = 0;
+                $det_mov_alm_4->cantidad_envase = 0;
+                $det_mov_alm_4->precio_envase = 0;
+                $det_mov_alm_4->save();
+                
+                //* Se crea detalle prestamo balon
+                $detalle_prestamo_4 = new Detalleprestamo();
+                $detalle_prestamo_4->cantidad = $prestamo_prod4;
+                $detalle_prestamo_4->detalle_mov_almacen_id = $det_mov_alm_4->id;
+                $detalle_prestamo_4->tipo = 'P';
+                $detalle_prestamo_4->save();
+
+                //* Guardamos stock envases prestados
+                $stock_4 = Stock::where('producto_id', 4)->where('sucursal_id', $mov_pedido->sucursal_id)->first();
+                $stock_4->envases_prestados += $prestamo_prod4;
+                $stock_4->save();
+            }
+            
+            $cantidad_prod5 = $request->input('5_cant') != '' ? $request->input('5_cant') : null;
+            $prestamo_prod5 = $request->input('5_prest') != '' ? $request->input('5_prest') : null;
+            if(isset($cantidad_prod5) && isset($prestamo_prod5)){
+                $det_mov_alm_5 = new Detallemovalmacen();
+                $det_mov_alm_5->movimiento_id = $mov_pedido->id;
+                $det_mov_alm_5->producto_id = 5;
+                $det_mov_alm_5->cantidad = $cantidad_prod5;
+                $det_mov_alm_5->precio = 0;
+                $det_mov_alm_5->subtotal = 0;
+                $det_mov_alm_5->cantidad_envase = 0;
+                $det_mov_alm_5->precio_envase = 0;
+                $det_mov_alm_5->save();
+
+                $detalle_prestamo_5 = new Detalleprestamo();
+                $detalle_prestamo_5->cantidad = $prestamo_prod5;
+                $detalle_prestamo_5->detalle_mov_almacen_id = $det_mov_alm_5->id;
+                $detalle_prestamo_5->tipo = 'P';
+                $detalle_prestamo_5->save();
+
+                $stock_5 = Stock::where('producto_id', 5)->where('sucursal_id', $mov_pedido->sucursal_id)->first();
+                $stock_5->envases_prestados += $prestamo_prod5;
+                $stock_5->save();
+            }
+        });
+        return is_null($error) ? "OK" : $error;
     }
 
     public function prestar(Request $request, $id)
