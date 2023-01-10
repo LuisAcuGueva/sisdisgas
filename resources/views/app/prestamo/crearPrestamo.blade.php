@@ -8,23 +8,31 @@
 </style>
 <div id="divMensajeError{!! $entidad !!}"></div>
 {!! Form::model($pedido, $formData) !!}	
+	{!! Form::hidden('listar', 'SI', array('id' => 'listar')) !!}
 	<div class="col-lg-12 col-md-12 col-sm-12">
-		<div class="col-lg-12 col-md-12 col-sm-12">
-			<div class="col-lg-3 col-md-3 col-sm-3" style="margin-left:-10px;">
+		<div class="col-lg-4 col-md-4 col-sm-6">
+			{!! Form::label('sucursal_id', 'Sucursal:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+			{!! Form::select('sucursal_id', $cboSucursal, null, array('class' => 'form-control input-sm', 'id' => 'sucursal_id' , 'onchange' => 'cambiarSucursal();', 'style' => 'margin-top: 7px;')) !!}
+		</div>
+		<div class="col-lg-3 col-md-3 col-sm-6">
+			{!! Form::label('fecha', 'Fecha:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
+			{!! Form::date('fecha', '', array('class' => 'form-control input-sm', 'id' => 'fecha', 'style' => 'margin-top: 7px;')) !!}
+		</div>
+		<div class="col-lg-5 col-md-5 col-sm-12">
+			<div class="col-lg-3 col-md-3 col-sm-3">
 				{!! Form::label('cliente', 'Cliente:' ,array('class' => 'input-sm', 'style' => 'margin-bottom: -8px;'))!!}
 			</div>
-			<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 20px;">
+			<div class="col-lg-2 col-md-2 col-sm-2">
 				{!! Form::button('<i class="glyphicon glyphicon-plus"></i>', array('class' => 'btn btn-success waves-effect waves-light btn-sm', 'onclick' => 'modal (\''.URL::route($ruta["cliente"], array('listar'=>'SI')).'\', \''.$titulo_cliente.'\', this);', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'NUEVO')) !!}
 			</div>
-			<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 10px;">
+			<div class="col-lg-2 col-md-2 col-sm-2">
 				{!! Form::button('<i class="glyphicon glyphicon-user"></i>', array('class' => 'btn btn-primary waves-effect waves-light btn-sm', 'onclick' => 'clienteVarios()', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'VARIOS')) !!}
 			</div>
-			<div class="col-lg-2 col-md-2 col-sm-2" style="margin-left: 10px;">
+			<div class="col-lg-2 col-md-2 col-sm-2">
 				{!! Form::button('<i class="glyphicon glyphicon-trash"></i>', array('class' => 'btn btn-danger waves-effect waves-light btn-sm', 'onclick' => 'borrarCliente()', 'data-toggle' => 'tooltip', 'data-placement' => 'top' ,  'title' => 'BORRAR')) !!}
 			</div>
 			{!! Form::text('cliente_prestamo', '', array('class' => 'form-control input-sm', 'id' => 'cliente_prestamo', 'style' => 'background-color: white;')) !!}
 			{!! Form::hidden('cliente_prestamo_id',null,array('id'=>'cliente_prestamo_id')) !!}
-			{!! Form::hidden('ultimo_cliente',null,array('id'=>'ultimo_cliente')) !!}
 		</div>
 		<div class="col-lg-12 col-md-12 col-sm-12">
 			<div style=" border: solid 1px; border-radius: 5px; height: 40px; margin-top: 10px; margin-bottom: 10px; text-align: center; color: #ffffff; border-color: #2a3f54; background-color: #2a3f54; ">
@@ -53,12 +61,17 @@
 				</table>
 			</div>
 		</div>
+		<div class="col-lg-12 col-md-12 col-sm-12 text-right">
+			{!! Form::button('<i class="fa fa-check fa-lg"></i> '.$boton, array('class' => 'btn btn-success btn-sm', 'id' => 'btnGuardar', 'onclick' => 'guardar(\''.$entidad.'\', this)')) !!}
+			{!! Form::button('<i class="fa fa-exclamation fa-lg"></i> Cancelar', array('class' => 'btn btn-dark btn-sm', 'id' => 'btnCancelar'.$entidad, 'onclick' => 'cerrarModal();')) !!}
+		</div>
 	</div>
 {!! Form::close() !!}
 <script type="text/javascript">
 	$(document).ready(function() {
-		configurarAnchoModal('700');
+		configurarAnchoModal('800');
 		init(IDFORMMANTENIMIENTO+'{!! $entidad !!}', 'M', '{!! $entidad !!}');
+		// generarFecha();
 	}); 
 
 	//* Buscador de clientes
@@ -152,4 +165,16 @@
 			$("#data").val(JSON.stringify(data));
 		}
 	});
+
+	function generarFecha(){
+		var date = new Date();
+		var anio = date.getFullYear();
+		var mes = date.getMonth();
+		var ndia = date.getDate();
+		mes+=1;
+		if(mes<10) mes="0"+mes;
+		if(ndia<10) ndia="0"+ndia;
+		var fecha = ndia + "/" + mes + "/" + anio;
+		$('#fecha').val(fecha);
+	}
 </script>

@@ -25,7 +25,11 @@ use App\Detalleprestamo;
 		@elseif($value->estado == 0)
 			<tr style ="background-color: #ffc8cb !important">
 		@endif
-			<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
+			@if($value->concepto_id == 22)
+				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'disabled', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
+			@else
+				<td align="center">{!! Form::button('', array('onclick' => 'modal (\''.URL::route($ruta["detalle"], array($value->id, 'listar'=>'SI')).'\', \''.$tituloDetalle.'\', this);', 'class' => 'btn btn-sm btn-primary glyphicon glyphicon-eye-open')) !!}</td>
+			@endif
 
 			@php
 				$detalles = Detallemovalmacen::where('movimiento_id',$value->id)->get();
@@ -64,14 +68,10 @@ use App\Detalleprestamo;
 
 			<td>{{ $fechaformato = date("d/m/Y h:i:s a",strtotime($value->fecha )) }}</td>
 
-			<td> {{ $value->tipodocumento->abreviatura . $value->num_venta  }} </td>
+			<td align="center">{{ $value->num_venta ? $value->tipodocumento->abreviatura . $value->num_venta : '-' }} </td>
 
 			@if (!is_null($value->persona))
-				@if(!is_null($value->persona->dni))
-				<td>{{ $value->persona->apellido_pat.' '.$value->persona->apellido_mat.' '.$value->persona->nombres  }}</td>
-				@else
-				<td>{{ $value->persona->razon_social  }}</td>
-				@endif
+				<td>{{ $value->persona->razon_social ? $value->persona->razon_social : $value->persona->nombres.' '.$value->persona->apellido_pat.' '.$value->persona->apellido_mat }}</td>
 			@else
 				<td align="center"> - </td>
 			@endif
@@ -80,6 +80,8 @@ use App\Detalleprestamo;
 
 			@if($value->pedido_sucursal == 1)
 				<td style ="background-color: #fdf8c1b0 !important">SUCURSAL: {{  $value->sucursal->nombre }} </td>
+			@elseif($value->concepto_id == 22)
+				<td style ="background-color: #e4c1fdb0 !important"> DEVOLUCION PENDIENTE </td>
 			@else
 				<td style ="background-color: #b5e7ffb0 !important">{{ $value->trabajador->apellido_pat.' '.$value->trabajador->apellido_mat.' '.$value->trabajador->nombres  }}</td>
 			@endif
