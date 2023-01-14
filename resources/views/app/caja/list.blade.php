@@ -42,6 +42,9 @@ use App\Turnorepartidor;
 	@else
 		{!! Form::button('<i class="glyphicon glyphicon-print"></i> Reporte Caja Actual', array('class' => 'btn btn-warning waves-effect waves-light m-l-10 btn-sm btnReporte', 'onclick' => 'imprimirDetalle();')) !!}
 	@endif
+	<!-- GERSON (13-01-23) -->
+	{!! Form::button('<i class="fa fa-exchange"></i> Transferencia entre Sucursal', array('class' => 'btn secondary waves-effect waves-light m-l-10 btn-sm btnCierre', 'disabled', 'onclick' => 'modalCaja (\''.URL::route($ruta["transferenciaSucursal"], array('listar'=>'SI')).'\', \''.$tituloTransferencia.'\', this);')) !!}
+	<!--  -->
 @else
 	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Apertura', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnApertura', 'disabled' , 'onclick' => 'modalCaja (\''.URL::route($ruta["apertura"], array('listar'=>'SI')).'\', \''.$titulo_apertura.'\', this);')) !!}
 	{!! Form::button('<i class="glyphicon glyphicon-plus"></i> Iniciar Turno de Repartidor', array('class' => 'btn btn-primary waves-effect waves-light m-l-10 btn-sm btnTurno' , 'onclick' => 'modalCaja (\''.URL::route($ruta["turnoRepartidor"], array('listar'=>'SI')).'\', \''.$tituloTurnoRepartidor.'\', this);')) !!}
@@ -52,10 +55,11 @@ use App\Turnorepartidor;
 		{!! Form::button('<i class="glyphicon glyphicon-download-alt"></i> Ingresar cajas de otras sucursales', array('class' => 'btn btn-success waves-effect waves-light m-l-10 btn-sm btnIngresarCierres' , 'onclick' => 'modalCaja (\''.URL::route($ruta["ingresarcierres"], array('listar'=>'SI')).'\', \''.$tituloIngresarCierres.'\', this);')) !!}
 	@endif
 	{!! Form::button('<i class="glyphicon glyphicon-print"></i> Reporte Caja Actual', array('class' => 'btn btn-warning waves-effect waves-light m-l-10 btn-sm btnReporte', 'onclick' => 'imprimirDetalle();')) !!}
-@endif
-	<!-- GERSON (16-12-22) -->
+	<!-- GERSON (13-01-23) -->
 	{!! Form::button('<i class="fa fa-exchange"></i> Transferencia entre Sucursal', array('class' => 'btn secondary waves-effect waves-light m-l-10 btn-sm btnCierre', 'onclick' => 'modalCaja (\''.URL::route($ruta["transferenciaSucursal"], array('listar'=>'SI')).'\', \''.$tituloTransferencia.'\', this);')) !!}
 	<!--  -->
+@endif
+	
 </div>
 
 @if(count($lista) == 0)
