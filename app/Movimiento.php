@@ -60,6 +60,7 @@ class Movimiento extends Model
 						}
 					})
 					->where('sucursal_id', "=", $sucursal_id)
+					->where('movimiento.concepto_id', "!=" , 22)
 					->where('tipomovimiento_id', "=", $tipomovimiento_id)
         			->orderBy('id','DESC')->orderBy('fecha', 'DESC');
 	}
@@ -104,6 +105,7 @@ class Movimiento extends Model
 					})
 					->where('movimiento.sucursal_id', "=", $sucursal_id)
 					->where('tipomovimiento_id', "=", 2)
+					->where('movimiento.concepto_id', "!=" , 22)
         			->orderBy('movimiento.id','DESC')->orderBy('fecha', 'DESC');
 	}
 
@@ -193,6 +195,7 @@ class Movimiento extends Model
 					})
 					->where('sucursal_id', "=", $sucursal_id)
 					->where('balon_a_cuenta', "=", 1)
+					->where('movimiento.concepto_id', "!=" , 22)
 					->where('tipomovimiento_id', "=", 2)
         			->orderBy('num_caja','DESC')->orderBy('fecha', 'DESC');
 	}

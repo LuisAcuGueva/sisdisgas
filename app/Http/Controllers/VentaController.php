@@ -213,6 +213,9 @@ class VentaController extends Controller
                     $stock->cantidad -= ($detalleMovAlmacen->cantidad + $detalleMovAlmacen->cantidad_envase);
                     $stock->envases_llenos = $stock->cantidad;
                     $stock->envases_total -= $detalleMovAlmacen->cantidad_envase;
+                    if($detalleMovAlmacen->producto_id == 4 || $detalleMovAlmacen->producto_id == 5){
+                        $stock->envases_vendidos += $detalleMovAlmacen->cantidad_envase;
+                    }
                     $stock->envases_vacios += $detalleMovAlmacen->cantidad;
                 }else{
                     $stock->cantidad -= $detalleMovAlmacen->cantidad;

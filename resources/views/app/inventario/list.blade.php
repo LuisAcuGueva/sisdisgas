@@ -28,7 +28,9 @@
 			<td align="center">{{ $value->envases_llenos }}</td>
 			<td align="center">{{ $value->envases_vacios }}</td>
 			<td align="center">{{ $value->envases_prestados }}</td>
+			<td align="center">{{ $value->envases_vendidos }}</td>
 			@else
+			<td align="center"> - </td>
 			<td align="center"> - </td>
 			<td align="center"> - </td>
 			<td align="center"> - </td>

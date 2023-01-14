@@ -63,3 +63,7 @@ Crear mov de almacen para pedidos
 Crear detalla prestamos de balon ligado al detalle de mov. Almacen
 
 Listar todos los pedidos con el concepto
+
+// Para balones vendidos
+
+ALTER TABLE sisdisgas.stock ADD envases_vendidos int(11) NULL;
